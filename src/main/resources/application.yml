@@ -1,0 +1,70 @@
+server:
+  port: ${PORT:9092}
+  servlet:
+    context-path: /
+
+# logging:
+#   level:
+#     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:postgresql://ec2-184-72-237-95.compute-1.amazonaws.com:5432/d5gfjjf0e7e3g2
+    username: utqisrinovbulz
+    password: 44ab5d4be338648ea11e5399b6adeaf275376ac34961a4ddf852851b13dad1f7
+    driver-class-name: org.postgresql.Driver
+
+    tomcat:
+      initial-size: 2
+      # max-wait: 20000
+      # max-active: 2
+      # max-idle: 150
+      # min-idle: 8
+      # default-auto-commit: true
+      
+  #
+  # JPA properties.
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      temp:
+        use_jdbc_metadata_defaults: false
+    show-sql: true
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+
+  #
+  # Spring-boot Mail properties
+  mail:
+    host: br510.hostgator.com.br # smtp.gmail.com | mail.ottimizza.com.br
+    port: 465 # 26 ? --- 587 comum --- 465  SSL (doesn't connect)
+    username: redefinicao@ottimizza.com.br
+    password: ottimizza
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+    test-connection: true
+
+  #
+  # Thymeleaf properties.
+  thymeleaf:
+    cache: false
+
+security:
+  basic:
+    enabled: false
+
+  oauth2:
+    resource:
+      filter_order: 3
