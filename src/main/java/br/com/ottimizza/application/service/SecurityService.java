@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import br.com.ottimizza.application.exceptions.ExpiredPasswordResetTokenException;
+import br.com.ottimizza.application.exceptions.InvalidPasswordResetTokenException;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
@@ -38,27 +40,34 @@ public class SecurityService {
     @Inject
     PasswordRecoveryRepository passwordRecoveryRepository;
 
-    public SecurityService() {
+    private void validateTokenForUser(String username, PasswordResetToken passwordRecoveryToken)
+            throws InvalidPasswordResetTokenException {
+        if (passwordRecoveryToken.getUser().getUsername().equals(username) || passwordRecoveryToken == null) {
+            throw new InvalidPasswordResetTokenException("invalid");
+        }
+    }
+
+    private void validateTokenExpiryDate(PasswordResetToken passwordRecoveryToken)
+            throws ExpiredPasswordResetTokenException {
+        long currentTime = Calendar.getInstance().getTime().getTime();
+        long passwordRecoveryTokenExpiryTime = passwordRecoveryToken.getExpiryDate().getTime();
+        if (currentTime > passwordRecoveryTokenExpiryTime) {
+            throw new ExpiredPasswordResetTokenException("expired");
+        }
     }
 
     public String validatePasswordRecoveryToken(String username, String token, HttpServletRequest request) { // @formatter:off
         PasswordResetToken passwordRecoveryToken = passwordRecoveryRepository.findByToken(token);
         User user = passwordRecoveryToken.getUser();        
 
-        System.out.println("Teste");
-
-        // verifica se o token é do mesmo usuario.
-        if (user.getUsername().equals(username)  || passwordRecoveryToken == null) {
-            return "invalidToken";
+        try {
+            validateTokenForUser(username, passwordRecoveryToken);  
+            validateTokenExpiryDate(passwordRecoveryToken);
+        } catch (ExpiredPasswordResetTokenException expiredEx) {
+            return expiredEx.getMessage();
+        } catch (InvalidPasswordResetTokenException invalidEx) {
+            return invalidEx.getMessage();
         }
-
-        // verfica validade do token.
-        long currentTime = Calendar.getInstance().getTime().getTime();
-        long passwordRecoveryTokenExpiryTime = passwordRecoveryToken.getExpiryDate().getTime();
-        if (currentTime > passwordRecoveryTokenExpiryTime) {
-            return "expired";
-        }
-        System.out.println("Teste0");
 
         this.authenticate(user, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")), request);
         // this.authenticate(user.getUsername(), "", request);

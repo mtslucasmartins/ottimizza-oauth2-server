@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" class="loading" xmlns="http://www.sprinfgramework.org/schema/security"
+  xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+<!-- BEGIN : Head-->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description"
+    content="Apex admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
+  <meta name="keywords"
+    content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
+  <meta name="author" content="PIXINVENT">
+  <title>Ottimizza - Criar Conta</title>
+  <link rel="apple-touch-icon" sizes="60x60" href="assets/img/ico/apple-icon-60.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/img/ico/apple-icon-76.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/img/ico/apple-icon-120.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/img/ico/apple-icon-152.png">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/ico/favicon.ico">
+  <link rel="shortcut icon" type="image/png" href="assets/img/ico/favicon-32.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900"
+    rel="stylesheet">
+  <!-- BEGIN VENDOR CSS-->
+  <!-- font icons-->
+  <link rel="stylesheet" type="text/css" href="assets/fonts/feather/style.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/fonts/simple-line-icons/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/fonts/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/vendors/css/perfect-scrollbar.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/vendors/css/prism.min.css">
+  <!-- END VENDOR CSS-->
+  <!-- BEGIN APEX CSS-->
+  <link rel="stylesheet" type="text/css" href="assets/css/app.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+  <!-- END APEX CSS-->
+  <!-- BEGIN Page Level CSS-->
+  <!-- END Page Level CSS-->
+  <style>
+    meter {
+      /* Reset the default appearance */
+      display: none;
+
+      margin: 0 auto 1em;
+      width: 100%;
+      height: 0.5em;
+
+      /* Applicable only to Firefox */
+      background: none;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    meter::-webkit-meter-bar {
+      background: none;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Webkit based browsers */
+    meter[value="1"]::-webkit-meter-optimum-value {
+      background: red;
+    }
+
+    meter[value="2"]::-webkit-meter-optimum-value {
+      background: orange;
+    }
+
+    meter[value="3"]::-webkit-meter-optimum-value {
+      background: yellow;
+    }
+
+    meter[value="4"]::-webkit-meter-optimum-value {
+      background: lightgreen;
+    }
+
+    meter[value="5"]::-webkit-meter-optimum-value {
+      background: green;
+    }
+
+
+    /* Gecko based browsers */
+    meter[value="1"]::-moz-meter-bar {
+      background: red;
+    }
+
+    meter[value="2"]::-moz-meter-bar {
+      background: orange;
+    }
+
+    meter[value="3"]::-moz-meter-bar {
+      background: yellow;
+    }
+
+    meter[value="4"]::-moz-meter-bar {
+      background: lightgreen;
+    }
+
+    meter[value="5"]::-moz-meter-bar {
+      background: green;
+    }
+  </style>
+</head>
+<!-- END : Head-->
+
+<!-- BEGIN : Body-->
+
+<body data-col="1-column" class=" 1-column  blank-page">
+  <!-- ////////////////////////////////////////////////////////////////////////////-->
+  <div class="wrapper">
+    <div class="main-panel">
+      <!-- BEGIN : Main Content-->
+      <div class="main-content">
+        <div class="content-wrapper">
+          <!--Registration Page Starts-->
+          <section id="regestration">
+            <div class="container-fluid">
+              <div class="row full-height-vh m-0">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                  <div class="card">
+                    <div class="card-content">
+                      <div class="card-body register-img">
+                        <form id="form-register" s="f" th:action="@{/register}" method="post"
+                          onsubmit="return checkPasswordMatch();" class="row m-0">
+                          <div class="col-lg-6 d-none d-lg-block py-2 text-center">
+                            <img src="assets/img/gallery/register.png" alt="" class="img-fluid mt-3 pl-3" width="400"
+                              height="230">
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-4 pt-3 bg-white">
+                            <h4 class="card-title mb-2">Criar Conta</h4>
+                            <p class="card-text mb-3">
+                              Preencha os campos abaixo para criar uma nova conta.
+                            </p>
+
+
+                            <!-- User's Organization Stuff Here -->
+                            <div th:object="${organization}">
+                              <input id="name" th:value="${organization.name}" name="name" class="form-control mb-3"
+                                placeholder="Empresa" type="text" required />
+                              <input id="cnpj" th:value="${organization.cnpj}" name="cnpj" class="form-control mb-3"
+                                placeholder="CNPJ" type="text" required />
+                            </div>
+                            <!-- // User's Organization Stuff Here -->
+
+
+                            <!-- User's Stuff Here -->
+                            <div th:object="${user}">
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <input id="firstName" th:value="${user.firstName}" class="form-control"
+                                      name="firstName" placeholder="Nome" type="text" required />
+                                  </div>
+                                </div>
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <input id="lastName" th:value="${user.lastName}" class="form-control"
+                                      name="lastName" placeholder="Sobrenome" type="text" required />
+                                  </div>
+                                </div>
+                              </div>
+                              <input id="email" th:value="${user.email}" name="email" class="form-control mb-3"
+                                placeholder="Email" type="email" required />
+                              <div class="form-group">
+                                <div class="controls mb-1">
+                                  <!--  data-validation-required-message="123" -->
+                                  <input id="password-input" th:value="${user.password}" name="password"
+                                    data-validation-required-message="Este campo é obrigatório" class="form-control"
+                                    aria-invalid="false" type="password" required />
+                                  <div class="help-block"></div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="controls mb-1">
+                                  <input id="password-check-input" name="password_check"
+                                    data-validation-match-message="As senhas não coincidem!"
+                                    data-validation-match-match="password" class="form-control" aria-invalid="false"
+                                    type="password" />
+                                  <div class="help-block"></div>
+                                </div>
+                              </div>
+
+                              <!-- <input id="password-input" th:value="${user.password}" name="password"
+                                class="form-control mb-3" placeholder="Senha" type="password" required /> -->
+                              <!-- <input id="password-check-input" name="password_check" class="form-control mb-3"
+                                placeholder="Confirmar Senha" type="password" required /> -->
+                              <meter max="5" id="password-strength-meter"></meter>
+                              <p id="password-strength-text"></p>
+                            </div>
+                            <!-- // User's Stuff Here -->
+
+
+                            <div class="custom-control custom-checkbox custom-control-inline mb-3">
+                              <input type="checkbox" id="customCheckboxInline1" name="customCheckboxInline1"
+                                class="custom-control-input" checked />
+                              <label class="custom-control-label" for="customCheckboxInline1">
+                                I accept the terms & conditions.
+                              </label>
+                            </div>
+                            <div class="fg-actions d-flex justify-content-between">
+                              <div class="login-btn">
+                                <button class="btn btn-outline-primary">
+                                  <a href="login" class="text-decoration-none">
+                                    Voltar
+                                  </a>
+                                </button>
+                              </div>
+                              <div class="recover-pass">
+                                <button type="submit" class="btn btn-primary">
+                                  <span class="text-decoration-none text-white">
+                                    Criar Conta
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!--Registration Page Ends-->
+
+        </div>
+      </div>
+      <!-- END : End Main Content-->
+    </div>
+  </div>
+  <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+  <!-- BEGIN VENDOR JS-->
+  <script src="assets/vendors/js/core/jquery-3.2.1.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/core/popper.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/core/bootstrap.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/prism.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/jquery.matchHeight-min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/screenfull.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/pace/pace.min.js" type="text/javascript"></script>
+
+  <script src="assets/vendors/js/jqBootstrapValidation.js" type="text/javascript"></script>
+  <!-- BEGIN VENDOR JS-->
+  <!-- BEGIN PAGE VENDOR JS-->
+  <!-- END PAGE VENDOR JS-->
+  <!-- BEGIN APEX JS-->
+  <script src="assets/js/app-sidebar.js" type="text/javascript"></script>
+  <script src="assets/js/notification-sidebar.js" type="text/javascript"></script>
+  <script src="assets/js/customizer.js" type="text/javascript"></script>
+  <!-- END APEX JS-->
+  <!-- BEGIN PAGE LEVEL JS-->
+  <!-- END PAGE LEVEL JS-->
+  <script>
+
+    (function (window, document, $) {
+      'use strict';
+
+      // Input, Select, Textarea validations except submit button
+      $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
+
+    })(window, document, jQuery);</script>
+  <script>
+    var strength = {
+      1: "Pior",
+      2: "Ruim",
+      3: "Fraca",
+      4: "Boa",
+      5: "Forte"
+    }
+    let organizationCnpjField = document.getElementById('organization-cnpj-input');
+
+    let passwordField = document.getElementById('password-input');
+    let passwordCheckField = document.getElementById('password-check-input');
+    var meter = document.getElementById('password-strength-meter');
+    var text = document.getElementById('password-strength-text');
+
+    passwordField.addEventListener('input', function () {
+      let val = passwordField.value;
+      let result = zxcvbn(val);
+
+      // Update the password strength meter
+      meter.value = result.score + 1;
+      meter.style.display = 'block';
+
+      // Update the text indicator
+      if (val !== "") {
+        text.innerHTML = "Força: " + strength[result.score+ 1];
+      } else {
+        text.innerHTML = "";
+      }
+    });
+
+    let checkPasswordMatch = function () {
+      if (passwordField.value == passwordCheckField.value) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  </script>
+
+</body>
+<!-- END : Body-->
+
+</html>

@@ -23,55 +23,57 @@ import lombok.Setter;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor // @formatter:off
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Getter @Setter
     @Column(updatable = false, nullable = false)
-    @Getter
-    @Setter
     private String username;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Column(name = "email")
     private String email;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Column(name = "first_name")
     private String firstName;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Column(name = "last_name")
     private String lastName;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private boolean activated;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Column(name = "activationkey")
     private String activationKey;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Column(name = "resetpasswordkey")
     private String resetPasswordKey;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @ManyToMany
-    @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "username"), inverseJoinColumns = @JoinColumn(name = "authority"))
+    @JoinTable(
+        name = "user_authority", 
+        joinColumns = @JoinColumn(name = "username"), 
+        inverseJoinColumns = @JoinColumn(name = "authority"))
     private Set<Authority> authorities;
+
+    @Getter @Setter
+    @ManyToMany
+    @JoinTable(
+        name = "users_organizations", 
+        joinColumns = @JoinColumn(name = "username"), 
+        inverseJoinColumns = @JoinColumn(name = "fk_organizations_id"))
+    private Set<Organization> organizations;
 
 }

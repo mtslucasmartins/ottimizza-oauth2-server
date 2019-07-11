@@ -46,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         String[] allowed = Arrays.asList(new String[] {
                 "/password_recovery*", 
                 "/password_reset*", 
+                "/register*", 
                 "/user/password_recovery*", 
                 "/user/password_reset*",
                 "/maintenance"
