@@ -1,0 +1,25 @@
+{
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    }
+  ],
+  "description": "Serviço de Autorização e Contas Ottimizza.",
+  "env": {
+    "DATABASE_URL": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "ottimizza-oauth2-server",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
