@@ -6,7 +6,11 @@ import java.math.BigInteger;
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -24,24 +28,34 @@ public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @NonNull
     @Getter @Setter
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private BigInteger id;
 
+    @NonNull
     @Getter @Setter
-    @Column(name = "externalId", nullable = false)
+    @Column(name = "external_id", nullable = false)
     private String externalId;
 
+    @NonNull
     @Getter @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NonNull
     @Getter @Setter
     @Column(name = "cnpj", nullable = false)
     private String cnpj;
 
     @Getter @Setter
-    @Column(name = "avatar", nullable = true)
+    @Column(name = "avatar")
     private String avatar;
+
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "fk_organizations_id")
+    private Organization organization;
 
 }

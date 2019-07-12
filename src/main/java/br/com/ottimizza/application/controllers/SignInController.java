@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import br.com.ottimizza.application.service.SecurityService;
 
 @Controller
-public class LoginController {
+public class SignInController {
 
     @Inject
     SecurityService securityService;

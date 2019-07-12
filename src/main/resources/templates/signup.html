@@ -37,70 +37,12 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
   <!-- END APEX CSS-->
+
+
   <!-- BEGIN Page Level CSS-->
+  <link rel="stylesheet" type="text/css" href="/css/register.css">
   <!-- END Page Level CSS-->
-  <style>
-    meter {
-      /* Reset the default appearance */
-      display: none;
 
-      margin: 0 auto 1em;
-      width: 100%;
-      height: 0.5em;
-
-      /* Applicable only to Firefox */
-      background: none;
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-
-    meter::-webkit-meter-bar {
-      background: none;
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-
-    /* Webkit based browsers */
-    meter[value="1"]::-webkit-meter-optimum-value {
-      background: red;
-    }
-
-    meter[value="2"]::-webkit-meter-optimum-value {
-      background: orange;
-    }
-
-    meter[value="3"]::-webkit-meter-optimum-value {
-      background: yellow;
-    }
-
-    meter[value="4"]::-webkit-meter-optimum-value {
-      background: lightgreen;
-    }
-
-    meter[value="5"]::-webkit-meter-optimum-value {
-      background: green;
-    }
-
-
-    /* Gecko based browsers */
-    meter[value="1"]::-moz-meter-bar {
-      background: red;
-    }
-
-    meter[value="2"]::-moz-meter-bar {
-      background: orange;
-    }
-
-    meter[value="3"]::-moz-meter-bar {
-      background: yellow;
-    }
-
-    meter[value="4"]::-moz-meter-bar {
-      background: lightgreen;
-    }
-
-    meter[value="5"]::-moz-meter-bar {
-      background: green;
-    }
-  </style>
 </head>
 <!-- END : Head-->
 
@@ -133,6 +75,9 @@
                               Preencha os campos abaixo para criar uma nova conta.
                             </p>
 
+                            <div th:if="${error_message != null}" th:text="${error_message}"
+                              class="alert alert-danger">
+                            </div>
 
                             <!-- User's Organization Stuff Here -->
                             <div th:object="${organization}">
@@ -180,13 +125,10 @@
                                   <div class="help-block"></div>
                                 </div>
                               </div>
-
-                              <!-- <input id="password-input" th:value="${user.password}" name="password"
-                                class="form-control mb-3" placeholder="Senha" type="password" required /> -->
-                              <!-- <input id="password-check-input" name="password_check" class="form-control mb-3"
-                                placeholder="Confirmar Senha" type="password" required /> -->
-                              <meter max="5" id="password-strength-meter"></meter>
-                              <p id="password-strength-text"></p>
+                              <div class="form-group">
+                                <p id="password-strength-text" class="mb-1"></p>
+                                <meter id="password-strength-meter" max="5"></meter>
+                              </div>
                             </div>
                             <!-- // User's Stuff Here -->
 
@@ -254,14 +196,12 @@
   <!-- BEGIN PAGE LEVEL JS-->
   <!-- END PAGE LEVEL JS-->
   <script>
-
     (function (window, document, $) {
       'use strict';
-
       // Input, Select, Textarea validations except submit button
       $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
-
-    })(window, document, jQuery);</script>
+    })(window, document, jQuery);
+  </script>
   <script>
     var strength = {
       1: "Pior",
@@ -287,7 +227,7 @@
 
       // Update the text indicator
       if (val !== "") {
-        text.innerHTML = "Força: " + strength[result.score+ 1];
+        text.innerHTML = "Força: " + strength[result.score + 1];
       } else {
         text.innerHTML = "";
       }

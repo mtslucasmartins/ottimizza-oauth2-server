@@ -1,7 +1,6 @@
 
 package br.com.ottimizza.application.controllers;
 
-import java.net.URISyntaxException;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.Locale;

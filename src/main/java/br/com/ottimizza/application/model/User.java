@@ -3,8 +3,10 @@ package br.com.ottimizza.application.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -57,10 +59,6 @@ public class User implements Serializable {
     private String activationKey;
 
     @Getter @Setter
-    @Column(name = "resetpasswordkey")
-    private String resetPasswordKey;
-
-    @Getter @Setter
     @ManyToMany
     @JoinTable(
         name = "user_authority", 
@@ -69,7 +67,7 @@ public class User implements Serializable {
     private Set<Authority> authorities;
 
     @Getter @Setter
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType .LAZY)
     @JoinTable(
         name = "users_organizations", 
         joinColumns = @JoinColumn(name = "username"), 

@@ -1,0 +1,86 @@
+meter {
+  /* Reset the default appearance */
+  -webkit-appearence: none;
+  -moz-appearence: none;
+  appearance: none;
+  -ms-progress-appearance: none;
+
+  display: none;
+  margin: 0 auto 1em;
+  width: 100%;
+  height: 0.7em;
+  /* Applicable only to Firefox */
+  background: none;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+meter::-webkit-meter-bar {
+  background: none; /* Required to get rid of the default background property */
+  background-color: #ddd;
+  /* box-shadow: 0 5px 5px -5px #333 inset; */
+  border-radius: 10px;
+}
+/* meter::-webkit-meter-bar {
+  background: none;
+  background-color: rgba(0, 0, 0, 0.1);
+} */
+
+
+/*
+success: #28a745!important
+primary/info: #007bff
+warning: #ffc107
+danger: #dc3545
+*/
+
+meter::-webkit-meter-optimum-value {
+  /* box-shadow: 0 5px 5px -5px #999 inset; */
+  background-size: 100% 100%;
+  border-radius: 10px;
+}
+
+/* Webkit based browsers */
+
+meter[value="1"]::-webkit-meter-optimum-value {
+  background: red;
+}
+
+meter[value="2"]::-webkit-meter-optimum-value {
+  background: #dc3545;
+}
+
+meter[value="3"]::-webkit-meter-optimum-value {
+  background: #ffc107;
+}
+
+meter[value="4"]::-webkit-meter-optimum-value {
+  background: #007bff;
+}
+
+meter[value="5"]::-webkit-meter-optimum-value {
+  background: #28a745;
+}
+
+
+/* Gecko based browsers */
+
+meter[value="1"]::-moz-meter-bar {
+  background: red;
+}
+
+meter[value="2"]::-moz-meter-bar {
+  background: #dc3545;
+}
+
+meter[value="3"]::-moz-meter-bar {
+  background: #ffc107;
+}
+
+meter[value="4"]::-moz-meter-bar {
+  background: #007bff;
+}
+
+meter[value="5"]::-moz-meter-bar {
+  background: #28a745;
+}

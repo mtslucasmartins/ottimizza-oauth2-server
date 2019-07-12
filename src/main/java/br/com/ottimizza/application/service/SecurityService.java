@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import br.com.ottimizza.application.exceptions.ExpiredPasswordResetTokenException;
-import br.com.ottimizza.application.exceptions.InvalidPasswordResetTokenException;
+import br.com.ottimizza.application.exceptions.PasswordResetTokenExpiredException;
+import br.com.ottimizza.application.exceptions.PasswordResetTokenInvalidException;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
@@ -40,84 +40,54 @@ public class SecurityService {
     @Inject
     PasswordRecoveryRepository passwordRecoveryRepository;
 
-    private void validateTokenForUser(String username, PasswordResetToken passwordRecoveryToken)
-            throws InvalidPasswordResetTokenException {
+    private void validatePasswordResetTokenForUser(String username, PasswordResetToken passwordRecoveryToken)
+            throws PasswordResetTokenInvalidException {
         if (passwordRecoveryToken.getUser().getUsername().equals(username) || passwordRecoveryToken == null) {
-            throw new InvalidPasswordResetTokenException("invalid");
+            throw new PasswordResetTokenInvalidException("invalid");
         }
     }
 
-    private void validateTokenExpiryDate(PasswordResetToken passwordRecoveryToken)
-            throws ExpiredPasswordResetTokenException {
-        long currentTime = Calendar.getInstance().getTime().getTime();
-        long passwordRecoveryTokenExpiryTime = passwordRecoveryToken.getExpiryDate().getTime();
-        if (currentTime > passwordRecoveryTokenExpiryTime) {
-            throw new ExpiredPasswordResetTokenException("expired");
+    private void validatePasswordResetTokenExpiryDate(PasswordResetToken passwordRecoveryToken)
+            throws PasswordResetTokenExpiredException {
+        if (Calendar.getInstance().getTime().getTime() > passwordRecoveryToken.getExpiryDate().getTime()) {
+            throw new PasswordResetTokenExpiredException("expired");
         }
     }
 
     public String validatePasswordRecoveryToken(String username, String token, HttpServletRequest request) { // @formatter:off
         PasswordResetToken passwordRecoveryToken = passwordRecoveryRepository.findByToken(token);
-        User user = passwordRecoveryToken.getUser();        
-
         try {
-            validateTokenForUser(username, passwordRecoveryToken);  
-            validateTokenExpiryDate(passwordRecoveryToken);
-        } catch (ExpiredPasswordResetTokenException expiredEx) {
+            validatePasswordResetTokenForUser(username, passwordRecoveryToken);  
+            validatePasswordResetTokenExpiryDate(passwordRecoveryToken);
+        } catch (PasswordResetTokenExpiredException expiredEx) {
             return expiredEx.getMessage();
-        } catch (InvalidPasswordResetTokenException invalidEx) {
+        } catch (PasswordResetTokenInvalidException invalidEx) {
             return invalidEx.getMessage();
         }
-
-        this.authenticate(user, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")), request);
-        // this.authenticate(user.getUsername(), "", request);
-        
-        // UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(
-        //         user, null, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE"))
-        // );//new UsernamePasswordAuthenticationToken (user, pass);
-        
-        // System.out.println("Teste0.1");
-        // Authentication auth = authManager.authenticate(authReq);
-        // System.out.println("Teste0.2");
-        // SecurityContext sc = SecurityContextHolder.getContext();
-        // System.out.println("Teste0.3");
-        // sc.setAuthentication(auth);
-        // System.out.println("Teste0.4");
-        // // // cria um contexto de autenticação para o usuario com o scope para alteração de senha.
-        // // 
-        // // Authentication authentication = new UsernamePasswordAuthenticationToken(
-        // //         user, null, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE"))
-        // // );
-        // // SecurityContext securityContext = SecurityContextHolder.getContext();
-        // // securityContext.setAuthentication(authentication);
-        // System.out.println("Teste1");
-        // // // Create a new session and add the security context.
-        // // HttpSession session = request.getSession(true);
-        // // session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-        // HttpSession session = request.getSession(true);
-        // session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
-        // System.out.println("Teste2");
-
+        // this.authenticate(user, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")), request);
         return null;
     }
     
-    //@formatter:on
-    public void authenticate(String login, String password, HttpServletRequest httpRequest) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login, password);
-        token.setDetails(new WebAuthenticationDetails(httpRequest));
-        ServletContext servletContext = httpRequest.getSession().getServletContext();
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        AuthenticationManager authManager = wac.getBean(AuthenticationManager.class);
-        Authentication authentication = authManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
+    // //@formatter:on
+    // public void authenticate(String login, String password, HttpServletRequest
+    // httpRequest) {
+    // UsernamePasswordAuthenticationToken token = new
+    // UsernamePasswordAuthenticationToken(login, password);
+    // token.setDetails(new WebAuthenticationDetails(httpRequest));
+    // ServletContext servletContext = httpRequest.getSession().getServletContext();
+    // WebApplicationContext wac =
+    // WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+    // AuthenticationManager authManager = wac.getBean(AuthenticationManager.class);
+    // Authentication authentication = authManager.authenticate(token);
+    // SecurityContextHolder.getContext().setAuthentication(authentication);
+    // }
 
-    //@formatter:off 
-    public void authenticate(User user, List<SimpleGrantedAuthority> authorities, HttpServletRequest httpRequest) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
-                AuthorityUtils.createAuthorityList("CHANGE_PASSWORD_PRIVILEGE")
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
+    // //@formatter:off 
+    // public void authenticate(User user, List<SimpleGrantedAuthority> authorities, HttpServletRequest httpRequest) {
+    //     Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+    //             AuthorityUtils.createAuthorityList("CHANGE_PASSWORD_PRIVILEGE")
+    //     );
+    //     SecurityContextHolder.getContext().setAuthentication(authentication);
+    // }
 
 }
