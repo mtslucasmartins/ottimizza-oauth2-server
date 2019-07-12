@@ -41,7 +41,7 @@ public class SignUpController {
             organization.setExternalId(organization.getCnpj());
             user.setUsername(user.getEmail());
 
-            // savin
+            // registering user
             user = signUpService.register(user, organization);
 
         } catch (UserAlreadyRegisteredException ex) {
