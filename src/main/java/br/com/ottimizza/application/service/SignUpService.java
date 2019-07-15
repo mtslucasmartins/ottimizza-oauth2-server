@@ -29,6 +29,8 @@ public class SignUpService {
 
     public User register(User user, Organization organization)
             throws OrganizationAlreadyRegisteredException, UserAlreadyRegisteredException, Exception {
+        user.setUsername(user.getEmail());
+        organization.setExternalId(organization.getCnpj());
 
         // Checking if organization wont cause an loop
         if (organization.getOrganization() != null) {

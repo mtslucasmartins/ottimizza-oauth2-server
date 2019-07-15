@@ -1,60 +1,77 @@
-    * {
-      font-family: 'IBM Plex Sans', sans-serif;
-    }
+* {
+  outline: none;
+  /* font-family: "IBM Plex Sans", sans-serif; */
+}
 
-    .white-snackbar {
-      background-color: #fafafa;
-      color: #333;
-    }
+*:focus {
+  outline: none !important;
+}
 
-    * {
-      outline: none;
-      font-family: "IBM Plex Sans", sans-serif;
-    }
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #004ecb !important;
+}
 
-    *:focus {
-      outline: none !important;
-    }
+#login {
+  background-image: none !important;
+}
 
-    :focus {
-      outline: 0 !important;
-    }
+.page-container {
+  background-color: #f7f7f8;
+}
 
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background-color: #f7f7f8;
-    }
+bg-dark {
+  background-color: #2b323a !important;
+}
 
-    .page-container {
-      background-color: #f7f7f8;
-    }
+.btn span {
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 
-    bg-dark {
-      background-color: #2b323a !important;
-    }
+.ui-inputtext {
+  border-color: #ccc !important;
+}
 
-    .btn span {
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
+.w-0 {
+  max-width: 0px !important;
+  min-width: 0px !important;
+  width: 0px !important;
+}
 
-    .ui-inputtext {
-      border-color: #ccc !important;
-    }
+.app-text {
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 
-    .w-0 {
-      max-width: 0px !important;
-      min-width: 0px !important;
-      width: 0px !important;
-    }
+/* .btn-primary {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
 
-    .app-text {
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
+.btn-outline-primary {
+  color: #007bff;
+  background-color: transparent;
+  background-image: none;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.bg-primary {
+  background-color: #007bff!important;
+}
+
+.text-primary {
+  color: #007bff!important;
+} */
