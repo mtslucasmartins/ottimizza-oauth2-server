@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="loading" xmlns="http://www.sprinfgramework.org/schema/security"
   xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
-<!-- BEGIN : Head-->
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -24,26 +23,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900"
     rel="stylesheet">
-  <!-- BEGIN VENDOR CSS-->
-  <!-- font icons-->
   <link rel="stylesheet" type="text/css" href="assets/fonts/feather/style.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/fonts/simple-line-icons/style.css">
   <link rel="stylesheet" type="text/css" href="assets/fonts/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/vendors/css/perfect-scrollbar.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/vendors/css/prism.min.css">
-  <!-- END VENDOR CSS-->
-  <!-- BEGIN APEX CSS-->
-  <link rel="stylesheet" type="text/css" href="assets/css/app.css">
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-  <!-- END APEX CSS-->
 
-
-  <!-- BEGIN Page Level CSS-->
+  <link rel="stylesheet" type="text/css" href="assets/css/app.min.css">
   <link rel="stylesheet" type="text/css" href="/css/register.css">
-  <!-- END Page Level CSS-->
-
-
 </head>
 
 <body data-col="1-column" class=" 1-column  blank-page">
@@ -90,8 +75,6 @@
                             <p class="card-text mb-3">
                               Preencha os campos abaixo para criar uma nova conta.
                             </p>
-
-                            <!-- ALERT MESSAGES -->
                             <div th:if="${success}" role="alert"
                               class="alert bg-primary alert-icon-left alert-dismissible mb-3 px-3">
                               <strong>Sucesso!</strong>
@@ -101,16 +84,12 @@
                               class="alert bg-warning alert-icon-left alert-dismissible mb-3 px-3">
                               <strong>Oops!</strong> <span th:text="${error_message}"></span>
                             </div>
-                            <!-- /// ALERT MESSAGES -->
-                            <!-- User's Organization Stuff Here -->
                             <div th:object="${organization}">
                               <input id="name" th:value="${organization.name}" name="name"
                                 class="form-control text-dark mb-3" placeholder="Empresa" type="text" required />
                               <input id="cnpj" th:value="${organization.cnpj}" name="cnpj"
                                 class="form-control text-dark mb-3" placeholder="CNPJ" type="text" required />
                             </div>
-                            <!-- // User's Organization Stuff Here -->
-                            <!-- User's Stuff Here -->
                             <div th:object="${user}">
                               <div class="row">
                                 <div class="col-md-6">
@@ -130,7 +109,6 @@
                                 class="form-control mb-3 text-dark" placeholder="Email" type="email" required />
                               <div class="form-group">
                                 <div class="controls mb-1">
-                                  <!--  data-validation-required-message="123" -->
                                   <input id="password-input" th:value="${user.password}" name="password"
                                     data-validation-required-message="Este campo é obrigatório"
                                     class="form-control text-dark" aria-invalid="false" type="password" required />
@@ -151,7 +129,6 @@
                                 <meter id="password-strength-meter" max="5"></meter>
                               </div>
                             </div>
-                            <!-- // User's Stuff Here -->
                             <div class="custom-control custom-checkbox custom-control-inline mb-3">
                               <input type="checkbox" id="customCheckboxInline1" name="customCheckboxInline1"
                                 class="custom-control-input" checked />
@@ -161,14 +138,14 @@
                             </div>
                             <div class="fg-actions d-flex justify-content-between">
                               <div class="login-btn">
-                                <button class="btn btn-outline-primary">
+                                <button class="btn btn-outline-primary text-uppercase">
                                   <a href="login" class="text-decoration-none">
                                     Voltar
                                   </a>
                                 </button>
                               </div>
                               <div class="recover-pass">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary text-uppercase">
                                   <span class="text-decoration-none text-white">
                                     Criar Conta
                                   </span>
@@ -188,27 +165,8 @@
       </div>
     </div>
   </div>
-  <!-- BEGIN VENDOR JS-->
   <script src="assets/vendors/js/core/jquery-3.2.1.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/core/popper.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/core/bootstrap.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/prism.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/jquery.matchHeight-min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/screenfull.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/pace/pace.min.js" type="text/javascript"></script>
-
   <script src="assets/vendors/js/jqBootstrapValidation.js" type="text/javascript"></script>
-  <!-- BEGIN VENDOR JS-->
-  <!-- BEGIN PAGE VENDOR JS-->
-  <!-- END PAGE VENDOR JS-->
-  <!-- BEGIN APEX JS-->
-  <script src="assets/js/app-sidebar.js" type="text/javascript"></script>
-  <script src="assets/js/notification-sidebar.js" type="text/javascript"></script>
-  <script src="assets/js/customizer.js" type="text/javascript"></script>
-  <!-- END APEX JS-->
-  <!-- BEGIN PAGE LEVEL JS-->
-  <!-- END PAGE LEVEL JS-->
   <script>
     (function (window, document, $) {
       'use strict';
