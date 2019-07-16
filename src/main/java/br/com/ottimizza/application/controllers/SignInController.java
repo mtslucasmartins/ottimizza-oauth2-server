@@ -42,11 +42,6 @@ public class SignInController {
         model.addAttribute("logo", logoURL);
     }
 
-    @GetMapping("/")
-    public String indexPage() {
-        return "index.html";
-    }
-
     @GetMapping("/login")
     public String loginPage(Model model, HttpServletRequest request, HttpServletResponse response) {
         // sets custom attributes such as logo.

@@ -1,11 +1,7 @@
 * {
-  outline: none;
-  /* font-family: "IBM Plex Sans", sans-serif; */
-}
-
-*:focus {
-  outline: none !important;
-}
+  outline: none; }
+  *:focus {
+    outline: none !important;}
 
 html, body {
   width: 100%;
@@ -18,60 +14,3 @@ html, body {
 #login {
   background-image: none !important;
 }
-
-.page-container {
-  background-color: #f7f7f8;
-}
-
-bg-dark {
-  background-color: #2b323a !important;
-}
-
-.btn span {
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.ui-inputtext {
-  border-color: #ccc !important;
-}
-
-.w-0 {
-  max-width: 0px !important;
-  min-width: 0px !important;
-  width: 0px !important;
-}
-
-.app-text {
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-/* .btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.btn-outline-primary {
-  color: #007bff;
-  background-color: transparent;
-  background-image: none;
-  border-color: #007bff;
-}
-
-.btn-outline-primary:hover {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.bg-primary {
-  background-color: #007bff!important;
-}
-
-.text-primary {
-  color: #007bff!important;
-} */

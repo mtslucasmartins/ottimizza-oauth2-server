@@ -4,14 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
   <meta name="description" content="Ottimizza Conta do Usuario.">
   <meta name="keywords" content="Ottimizza, Ottimizza conta, Ottimizza entrar, Ottimizza login">
   <meta name="author" content="Ottimizza">
-
   <title>Ottimizza - Entrar</title>
-
   <link rel="apple-touch-icon" sizes="60x60" href="assets/img/ico/apple-icon-60.png">
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/ico/apple-icon-76.png">
   <link rel="apple-touch-icon" sizes="120x120" href="assets/img/ico/apple-icon-120.png">
@@ -24,9 +21,9 @@
   <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900"
     rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="assets/fonts/feather/style.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/fonts/simple-line-icons/style.css">
   <link rel="stylesheet" type="text/css" href="assets/fonts/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/app.css">
+
+  <link rel="stylesheet" type="text/css" href="assets/css/app.min.css">
   <link rel="stylesheet" type="text/css" href="css/login.css">
 </head>
 
@@ -91,13 +88,13 @@
                             <div class="fg-actions d-flex justify-content-between">
                               <div class="login-btn">
                                 <button type="button" class="btn btn-outline-primary p-0">
-                                  <a href="register" class="btn text-decoration-none">
+                                  <a href="register" class="btn text-decoration-none text-uppercase">
                                     <span>Criar Conta</span>
                                   </a>
                                 </button>
                               </div>
                               <div class="recover-pass">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary text-uppercase ">
                                   <span class="text-decoration-none text-white">Entrar</span>
                                 </button>
                               </div>
@@ -115,53 +112,7 @@
       </div>
     </div>
   </div>
-  <script type="text/javascript">
-    const passwordField = document.getElementById('password');
-    function passwordFieldTypeToggle(e) {
-      const passwordFieldToggle = document.querySelector('#passwordFieldToggle');
-      const passwordFieldToggleIcon = document.querySelector('#passwordFieldToggle i');
-
-      // For IE9
-      let classes = passwordFieldToggleIcon.className.split(" ");
-      let iEyeOff = classes.indexOf("ft-eye-off");
-
-      console.log(classes);
-
-      toggleInputType(passwordField, 'password', 'text');
-      if (iEyeOff >= 0) {
-        classes.splice(iEyeOff, 1);
-        classes.push("ft-eye");
-      } else {
-        classes.push("ft-eye-off");
-        classes.splice(classes.indexOf("ft-eye"), 1);
-      }
-      passwordFieldToggleIcon.className = classes.join(" ");
-    }
-
-    function toggleInputType(el, t1, t2) {
-      el.type = (el.type === t2) ? t1 : t2;
-    }
-
-    function toggleCssClasses(el, c1, c2) {
-      if (containsCssClass(el, c1)) {
-        appendCssClass(el, c2);
-        removeCssClass(el, c1);
-      } else {
-        appendCssClass(el, c1);
-        removeCssClass(el, c2);
-      }
-    }
-    function containsCssClass(el, c) {
-      return el.className.split(" ").indexOf(c) >= 0;
-    }
-    function removeCssClass(el, c) {
-      let classes = el.className.split(" ");
-      el.className = classes.splice(classes.indexOf(c), 1).join(" ");
-    }
-    function appendCssClass(el, c) {
-      el.className = el.className.split(" ").append(c).join(" ");
-    }
-  </script>
+  <script type="text/javascript" src="js/signin.js"></script>
 </body>
 
 </html>
