@@ -59,6 +59,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(allowed).permitAll();
         
+        http.authorizeRequests()
+                .antMatchers("/oauth/revoke_token*").permitAll();
+
         http
             .csrf().disable()
             .authorizeRequests()

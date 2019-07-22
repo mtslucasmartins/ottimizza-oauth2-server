@@ -41,6 +41,15 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    @Primary
+    public DefaultTokenServices tokenServices() {
+        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+        defaultTokenServices.setTokenStore(jdbcTokenStore());
+        defaultTokenServices.setSupportRefreshToken(true);
+        return defaultTokenServices;
+    }
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //@formatter:off
