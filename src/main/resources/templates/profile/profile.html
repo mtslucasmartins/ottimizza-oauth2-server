@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="loading" xmlns:th="https://www.thymeleaf.org">
+
+<head th:insert="profile/head.html :: head"> </head>
+
+<body data-col="2-columns" class=" 2-columns ">
+  <div class="wrapper">
+    <div th:insert="profile/sidebar.html :: sidebar"> </div>
+    <nav th:insert="profile/navbar.html :: navbar"> </nav>
+
+
+    <div class="main-panel">
+      <div class="main-content">
+        <div class="content-wrapper">
+          <div class="container">
+            <section id="user-profile">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card profile-with-cover">
+                    <div class="card-img-top img-fluid bg-cover height-75 mx-2"></div>
+                    <div class="media profil-cover-details row">
+                      <div class="col-sm-4 col-md-4">
+                        <div class="align-self-center halfway-fab text-center">
+                          <a class="profile-image">
+                            <img src="assets/img/portrait/avatars/avatar-01.png"
+                              class="rounded-circle img-border gradient-summer width-100 mx-2" alt="Card image">
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="profile-section">
+                      <div class="row">
+                        <div class="col-lg-4 col-md-4 text-center">
+                          <span th:text="${authorizedUser.firstName + ' ' + authorizedUser.lastName}"
+                            class="font-medium-2 text-uppercase">
+                          </span>
+                          <p th:text="${authorizedUser.email}" class="grey font-small-2"> </p>
+                        </div>
+                        <div class="d-none d-md-block col-md-8 col-lg-8">
+                          <ul class="profile-menu no-list-style">
+                            <li>
+                              <a href="#about" class="primary font-medium-2 font-weight-600"><ins>Perfil</ins></a>
+                            </li>
+                            <li>
+                              <a href="#user" class="primary font-medium-2 font-weight-600">Preferências</a>
+                            </li>
+                            <li>
+                              <a th:href="@{/profile/security}" class="primary font-medium-2 font-weight-600">Segurança</a>
+                            </li>
+                            <li>
+                              <a href="#photos" class="primary font-medium-2 font-weight-600">Faturas</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="basic-form-layouts">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h4 class="card-title mb-4">Informações Básicas</h4>
+                    </div>
+                    <div class="card-content">
+                      <div class="px-3">
+                        <form class="form">
+                          <div class="form-body">
+                            <div class="row">
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="name-input">Nome</label>
+                                  <input th:value="${authorizedUser.firstName}" id="name-input" class="form-control"
+                                    name="first_name" type="text" />
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="last-name-input">Sobrenome</label>
+                                  <input th:value="${authorizedUser.lastName}" id="last-name-input" class="form-control"
+                                    name="last_name" type="text" />
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="email-input">E-mail</label>
+                                  <input th:value="${authorizedUser.email}" id="email-input" class="form-control"
+                                    name="email" type="email" />
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="phone-input">Celular</label>
+                                  <input id="phone-input" class="form-control" name="phone" type="text" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-actions right">
+                            <button type="button" class="btn btn-raised btn-raised btn-warning mr-1">
+                              Cancelar
+                            </button>
+                            <button type="button" class="btn btn-raised btn-raised btn-primary">
+                              Salvar
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div th:if="${authorizedUser.organizations}" class="col-md-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h4 class="card-title mb-4">Empresas</h4>
+                    </div>
+                    <div class="card-content">
+                      <div class="card-body">
+
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>Razão Social</th>
+                              <th>CPF/CNPJ</th>
+                            </tr>
+                          </thead>
+                          <th:block th:each="organization : ${authorizedUser.organizations}">
+                            <tr role="row">
+                              <td class="text-uppercase" th:text="${organization.name}"></td>
+                              <td class="text-uppercase" th:text="${organization.cnpj}"></td>
+                            </tr>
+                          </th:block>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div>
+      </div>
+      <footer class="footer footer-static footer-light">
+        <p class="clearfix text-muted text-sm-center px-2"><span>Copyright &copy; 2019 <a
+              href="https://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" id="pixinventLink" target="_blank"
+              class="text-bold-800 primary darken-2">PIXINVENT </a>, All rights reserved. </span></p>
+      </footer>
+    </div>
+  </div>
+
+  <div th:insert="profile/head.html :: foot"> </div>
+
+</body>
+
+</html>

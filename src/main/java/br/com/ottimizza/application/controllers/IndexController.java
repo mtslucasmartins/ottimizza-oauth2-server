@@ -24,4 +24,20 @@ public class IndexController {
         return "index.html";
     }
 
+    @GetMapping("/profile")
+    public String profile(Principal principal, Model model) {
+        // find user by username.
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+
+        return "profile/profile.html";
+    }
+
+    @GetMapping("/profile/security")
+    public String profileSecurity(Principal principal, Model model) {
+        // find user by username.
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+
+        return "profile/security.html";
+    }
+
 }
