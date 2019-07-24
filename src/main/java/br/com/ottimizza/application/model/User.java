@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -32,10 +33,11 @@ public class User implements Serializable {
 
     @Id
     @Getter @Setter
-    @Column(updatable = false, nullable = false)
+    @Column(name = "username", updatable = false, nullable = false)
     private String username;
 
     @Getter @Setter
+    @Column(name = "password")
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
@@ -52,11 +54,12 @@ public class User implements Serializable {
     private String lastName;
 
     @Getter @Setter
+    @Column(name = "activated")
     private boolean activated;
 
     @Getter @Setter
     @Column(name = "activationkey")
-    private String activationKey;
+    private String activationKey; 
 
     @Getter @Setter
     @ManyToMany
@@ -67,11 +70,16 @@ public class User implements Serializable {
     private Set<Authority> authorities;
 
     @Getter @Setter
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType .LAZY)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(
         name = "users_organizations", 
         joinColumns = @JoinColumn(name = "username"), 
         inverseJoinColumns = @JoinColumn(name = "fk_organizations_id"))
     private Set<Organization> organizations;
+
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "fk_accounting_id", nullable = true)
+    private Organization organization;
 
 }

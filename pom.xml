@@ -167,7 +167,7 @@
                             <goal>process</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/generated-sources</outputDirectory>
+                            <outputDirectory>target/generated-sources/querydsl</outputDirectory>
                             <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
                         </configuration>
                     </execution>
@@ -187,7 +187,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>target/generated-sources</source>
+                                <source>target/generated-sources/querydsl</source>
                             </sources>
                         </configuration>
                     </execution>
