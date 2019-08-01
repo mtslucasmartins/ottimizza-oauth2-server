@@ -62,6 +62,10 @@ public class User implements Serializable {
     private String activationKey; 
 
     @Getter @Setter
+    @Column(name = "avatar")
+    private String avatar; 
+
+    @Getter @Setter
     @ManyToMany
     @JoinTable(
         name = "user_authority", 

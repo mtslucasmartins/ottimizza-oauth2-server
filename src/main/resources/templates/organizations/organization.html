@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" class="loading" xmlns:th="https://www.thymeleaf.org">
 
-<head th:insert="profile/head.html :: head"> </head>
+<head th:insert="organizations/head.html :: head"> </head>
 
 <body data-col="2-columns" class=" 2-columns ">
   <div class="wrapper">
-    <div th:insert="profile/sidebar.html :: sidebar"> </div>
-    <nav th:insert="profile/navbar.html :: navbar"> </nav>
+    <div th:insert="organizations/sidebar.html :: sidebar"> </div>
+    <nav th:insert="organizations/navbar.html :: navbar"> </nav>
 
 
-    <div class="main-panel">
+    <div id="app" class="main-panel">
       <div class="main-content">
         <div class="content-wrapper">
           <div class="container">
+
+            <breadcrumb v-bind:items="breadcrumb"></breadcrumb>
+
             <section id="user-profile">
               <div class="row">
                 <div class="col-12">
@@ -22,13 +25,8 @@
                       <div class="col-sm-4 col-md-4">
                         <div class="align-self-center halfway-fab text-center">
                           <a class="profile-image">
-                            <img th:if="${authorizedUser.avatar == null}"
-                              src="assets/img/portrait/avatars/avatar-01.png"
-                              class="rounded-circle img-border gradient-summer width-100 mx-2"
-                              th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
-                            <img th:if="${authorizedUser.avatar != null}" th:src="${authorizedUser.avatar}"
-                              class="rounded-circle img-border gradient-summer width-100 mx-2"
-                              th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
+                            <img src="assets/img/portrait/avatars/avatar-01.png"
+                              class="rounded-circle img-border gradient-summer width-100 mx-2" alt="Card image">
                           </a>
                         </div>
                       </div>
@@ -67,8 +65,8 @@
 
             <section id="basic-form-layouts">
               <div class="row">
-                <div class="col-md-6">
-                  <div class="card">
+                <div class="col-md-12">
+                  <div id="organization-basic-info-card" class="card">
                     <div class="card-header">
                       <h4 class="card-title mb-4">Informações Básicas</h4>
                     </div>
@@ -80,14 +78,14 @@
                               <div class="col-md-6">
                                 <div class="form-group">
                                   <label for="name-input">Nome</label>
-                                  <input th:value="${authorizedUser.firstName}" id="name-input" class="form-control"
+                                  <input v-model="organization.name" id="name-input" class="form-control"
                                     name="first_name" type="text" />
                                 </div>
                               </div>
                               <div class="col-md-6">
                                 <div class="form-group">
-                                  <label for="last-name-input">Sobrenome</label>
-                                  <input th:value="${authorizedUser.lastName}" id="last-name-input" class="form-control"
+                                  <label for="last-name-input">CNPJ</label>
+                                  <input v-model="organization.cnpj" id="last-name-input" class="form-control"
                                     name="last_name" type="text" />
                                 </div>
                               </div>
@@ -95,23 +93,14 @@
                             <div class="row">
                               <div class="col-md-6">
                                 <div class="form-group">
-                                  <label for="email-input">E-mail</label>
-                                  <input th:value="${authorizedUser.email}" id="email-input" class="form-control"
+                                  <label for="email-input">Código no Sistema Contábil</label>
+                                  <input v-model="organization.codigoERP" id="email-input" class="form-control"
                                     name="email" type="email" />
-                                </div>
-                              </div>
-                              <div class="col-md-6">
-                                <div class="form-group">
-                                  <label for="phone-input">Celular</label>
-                                  <input id="phone-input" class="form-control" name="phone" type="text" />
                                 </div>
                               </div>
                             </div>
                           </div>
                           <div class="form-actions right">
-                            <button type="button" class="btn btn-raised btn-raised btn-warning mr-1">
-                              Cancelar
-                            </button>
                             <button type="button" class="btn btn-raised btn-raised btn-primary">
                               Salvar
                             </button>
@@ -121,7 +110,7 @@
                     </div>
                   </div>
                 </div>
-                <div th:if="${authorizedUser.organizations}" class="col-md-6">
+                <div th:if="${authorizedUser.organizations}" class="d-none col-md-6">
                   <div class="card">
                     <div class="card-header">
                       <h4 class="card-title mb-4">Empresas</h4>
@@ -162,6 +151,10 @@
   </div>
 
   <div th:insert="profile/head.html :: foot"> </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- <script th:src="@{/js/services/organizations.service.js}" type="module"></script> -->
+  <script th:src="@{/js/views/organization-details.js}" type="module"></script>
 
 </body>
 

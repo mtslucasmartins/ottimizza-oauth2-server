@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import br.com.ottimizza.application.domain.OrganizationTypes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,8 +47,17 @@ public class Organization implements Serializable {
 
     @NonNull
     @Getter @Setter
+    @Column(name = "type", nullable = true)
+    private Integer type = OrganizationTypes.CLIENT.getValue();
+
+    @NonNull
+    @Getter @Setter
     @Column(name = "cnpj", nullable = false)
     private String cnpj;
+
+    @Getter @Setter
+    @Column(name = "codigo_erp", nullable = true)
+    private String codigoERP;
 
     @Getter @Setter
     @Column(name = "avatar")

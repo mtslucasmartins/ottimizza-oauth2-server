@@ -2,7 +2,9 @@ package br.com.ottimizza.application.service;
 
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -30,6 +32,11 @@ public class OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 
+    public Organization findByExternalId(String externalId, User authorizedUser) throws OrganizationNotFoundException, Exception {
+        return organizationRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+    }
+
     public List<Organization> findAll(String filter, int pageIndex, int pageSize, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         // All authorities to string array.
@@ -51,18 +58,26 @@ public class OrganizationService {
                     authorizedUser.getOrganization().getId(), authorizedUser.getUsername());
         }
 
-        return organizationRepository.findAll(filter, pageIndex, pageSize);
+        return new ArrayList<>();
     }
 
     public Organization save(Organization organization, User authorizedUser)
             throws OrganizationAlreadyRegisteredException, Exception {
-        organization.setExternalId(organization.getCnpj());
-
+        organization.setExternalId(UUID.randomUUID().toString());
         // Checking if organization wont cause an loop
         if (organization.getOrganization() != null) {
             if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
                 System.out.println("A organization cannot be a parent of itself.");
                 throw new Exception("A organization cannot be a parent of itself.");
+            }
+        } else {
+            if (authorizedUser.getOrganization() != null && authorizedUser.getOrganization().getId() != null) {
+                organization.setOrganization(authorizedUser.getOrganization());
+                if (organization.getId() != null
+                        && organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
+                    System.out.println("A organization cannot be a parent of itself.");
+                    throw new Exception("A organization cannot be a parent of itself.");
+                }
             }
         }
 
@@ -84,7 +99,7 @@ public class OrganizationService {
         Organization current = findById(id, authorizedUser);
 
         organization.setId(current.getId());
-        // organization.setExternalId(current.getExternalId());
+        organization.setExternalId(current.getExternalId());
 
         // Checking if organization wont cause an loop
         if (organization.getOrganization() != null) {
