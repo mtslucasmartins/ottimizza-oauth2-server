@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -49,8 +50,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/register*", 
                 "/user/password_recovery*", 
                 "/user/password_reset*",
-                "/maintenance"
+                "/maintenance",
+                "/tokens"
         }).toArray(new String[] {});
+        
+        // http
+        //     .authorizeRequests()
+        //         .antMatchers("/api/**").authenticated();
 
         http
             .authorizeRequests()
@@ -59,10 +65,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(allowed).permitAll();
         
+        http.authorizeRequests()
+                .antMatchers("/oauth/revoke_token*").permitAll();
+
         http
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/user/**").permitAll() 
+                .antMatchers("/user/**", "/api/**").permitAll() 
                 .anyRequest().authenticated()
                 .and()
             .formLogin()

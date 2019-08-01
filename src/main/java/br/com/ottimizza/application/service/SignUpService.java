@@ -7,8 +7,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
-import br.com.ottimizza.application.exceptions.OrganizationAlreadyRegisteredException;
-import br.com.ottimizza.application.exceptions.UserAlreadyRegisteredException;
+import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
+import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;

@@ -1,4 +1,4 @@
-package br.com.ottimizza.application.exceptions;
+package br.com.ottimizza.application.domain.exceptions;
 
 public class UserAlreadyRegisteredException extends Exception {
 

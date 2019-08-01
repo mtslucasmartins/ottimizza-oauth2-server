@@ -1,15 +1,22 @@
 package br.com.ottimizza.application.domain;
 
-public enum Authorities {
+public enum Authorities { // @formatter:off
 
-    ROLE_USER, ROLE_ADMIN;
+    ADMIN("ADMIN"),
+    CUSTOMER_READ("CUSTOMER_READ"),
+    CUSTOMER_WRITE("CUSTOMER_WRITE"),
+    ACCOUNTANT_READ("ACCOUNTANT_READ"),
+    ACCOUNTANT_WRITE("ACCOUNTANT_WRITE"),
+    ACCOUNTANT_ADMIN("ACCOUNTANT_ADMIN");
 
-    public static String[] names() {
-        String[] names = new String[values().length];
-        for (int index = 0; index < values().length; index++) {
-            names[index] = values()[index].name();
-        }
+    private String name;
 
-        return names;
+    private Authorities(String name) {
+        this.name = name;
     }
+
+    public String getName() {
+        return this.name;
+    }
+
 }

@@ -32,7 +32,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Bean
-    public JdbcTokenStore jdbcTokenStore() {
+    public JdbcTokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }
 
@@ -41,12 +41,21 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    @Primary
+    public DefaultTokenServices tokenServices() {
+        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+        defaultTokenServices.setTokenStore(tokenStore());
+        defaultTokenServices.setSupportRefreshToken(true);
+        return defaultTokenServices;
+    }
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //@formatter:off
         endpoints
                 .authenticationManager(authenticationManager)
-                .tokenStore(jdbcTokenStore())
+                .tokenStore(tokenStore())
                 .userDetailsService(userDetailsService)
                 ;
         //@formatter:on
@@ -56,6 +65,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         //@formatter:off
         oauthServer
+                .passwordEncoder(passwordEncoder()) // ???
                 .allowFormAuthenticationForClients()
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");

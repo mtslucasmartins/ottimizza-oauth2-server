@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,9 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "oauth_client_details")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "oauth_client_details")
 public class OAuthClientDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
