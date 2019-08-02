@@ -1,4 +1,5 @@
 import { findAllOrganizations, saveOrganization } from './../services/organizations.service.js';
+import { BootstrapPaginationComponent } from './../components/bootstrap-breadcrumb.component.js';
 
 Vue.component('suspension-points-animation', {
   template: `
@@ -15,20 +16,47 @@ Vue.component('suspension-points-animation', {
 // Tabela com Lista de organizações relacionadas ao Usuário logado.
 var organizationsTable = new Vue({
   el: '#organizations-table',
+  components: { 'bootstrap-pagination': BootstrapPaginationComponent },
   data: {
     loading: false,
+    pageInfo: {
+      pageIndex: 0,
+      pageSize: 10,
+      totalPages: 0
+    },
     organizations: []
   },
   methods: {
-    findAllOrganizations: (filter = '', pageIndex = 0, pageSize = 10) => {
+    findAllOrganizations: function (filter = '', pageIndex = this.pageInfo.pageIndex, pageSize = this.pageInfo.pageSize) {
       return findAllOrganizations(filter, pageIndex, pageSize);
+    },
+    onPageChange: function (event) {
+
+      if (event.selected === 'first')
+        this.pageInfo.pageIndex = 0;
+      if (event.selected === 'previous')
+        this.pageInfo.pageIndex = (this.pageInfo.pageIndex - 1 < 0) ? 0 : this.pageInfo.pageIndex - 1;
+      if (event.selected === 'next')
+        this.pageInfo.pageIndex = this.pageInfo.pageIndex + 1 > this.pageInfo.totalPages ? this.pageInfo.totalPages-1 : this.pageInfo.pageIndex + 1;
+      if (event.selected === 'last')
+        this.pageInfo.pageIndex = this.pageInfo.totalPages-1;
+
+      this.loading = true;
+      this.findAllOrganizations().then((response) => {
+        this.loading = false;
+        this.organizations = response.records;
+        this.pageInfo = response.pageInfo;
+      });
     }
   },
   created() {
     this.loading = true;
-    this.findAllOrganizations().then((organizations) => {
+    this.findAllOrganizations().then((response) => {
       this.loading = false;
-      this.organizations = organizations;
+      this.organizations = response.records;
+      this.pageInfo = response.pageInfo;
+      console.log(this.pageInfo);
+
     });
   }
 });

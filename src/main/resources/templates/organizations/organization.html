@@ -14,98 +14,62 @@
         <div class="content-wrapper">
           <div class="container">
 
-            <breadcrumb v-bind:items="breadcrumb"></breadcrumb>
-
-            <section id="user-profile">
-              <div class="row">
-                <div class="col-12">
-                  <div class="card profile-with-cover">
-                    <div class="card-img-top img-fluid bg-cover height-75 mx-2"></div>
-                    <div class="media profil-cover-details row">
-                      <div class="col-sm-4 col-md-4">
-                        <div class="align-self-center halfway-fab text-center">
-                          <a class="profile-image">
-                            <img src="assets/img/portrait/avatars/avatar-01.png"
-                              class="rounded-circle img-border gradient-summer width-100 mx-2" alt="Card image">
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="profile-section">
-                      <div class="row">
-                        <div class="col-lg-4 col-md-4 text-center">
-                          <span th:text="${authorizedUser.firstName + ' ' + authorizedUser.lastName}"
-                            class="font-medium-2 text-uppercase">
-                          </span>
-                          <p th:text="${authorizedUser.email}" class="grey font-small-2"> </p>
-                        </div>
-                        <div class="d-none d-md-block col-md-8 col-lg-8">
-                          <ul class="profile-menu no-list-style">
-                            <li>
-                              <a href="#about" class="primary font-medium-2 font-weight-600"><ins>Perfil</ins></a>
-                            </li>
-                            <li>
-                              <a href="#user" class="primary font-medium-2 font-weight-600">Preferências</a>
-                            </li>
-                            <li>
-                              <a th:href="@{/profile/security}"
-                                class="primary font-medium-2 font-weight-600">Segurança</a>
-                            </li>
-                            <li>
-                              <a href="#photos" class="primary font-medium-2 font-weight-600">Faturas</a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
+            <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb>
 
             <section id="basic-form-layouts">
               <div class="row">
                 <div class="col-md-12">
                   <div id="organization-basic-info-card" class="card">
                     <div class="card-header">
-                      <h4 class="card-title mb-4">Informações Básicas</h4>
+                      <h4 class="card-title">Informações Básicas</h4>
                     </div>
                     <div class="card-content">
-                      <div class="px-3">
-                        <form class="form">
-                          <div class="form-body">
-                            <div class="row">
-                              <div class="col-md-6">
-                                <div class="form-group">
-                                  <label for="name-input">Nome</label>
-                                  <input v-model="organization.name" id="name-input" class="form-control"
-                                    name="first_name" type="text" />
-                                </div>
-                              </div>
-                              <div class="col-md-6">
-                                <div class="form-group">
-                                  <label for="last-name-input">CNPJ</label>
-                                  <input v-model="organization.cnpj" id="last-name-input" class="form-control"
-                                    name="last_name" type="text" />
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-md-6">
-                                <div class="form-group">
-                                  <label for="email-input">Código no Sistema Contábil</label>
-                                  <input v-model="organization.codigoERP" id="email-input" class="form-control"
-                                    name="email" type="email" />
-                                </div>
-                              </div>
+
+                      <div class="card-body">
+                        <div v-bind:class="{ 'd-none': !alert.visible }" class="row">
+                          <div class="col-12">
+                            <div v-bind:class="{ 
+                                  'bg-warning': alert.type == 'warning', 'bg-success': alert.type == 'success'
+                              }" class="alert alert-icon-left alert-dismissible mb-3 px-3" role="alert">
+                              {{ alert.message }}
                             </div>
                           </div>
-                          <div class="form-actions right">
-                            <button type="button" class="btn btn-raised btn-raised btn-primary">
-                              Salvar
-                            </button>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="name-input">Nome</label>
+                              <input v-model="organization.name" id="name-input" class="form-control" name="first_name"
+                                type="text" />
+                            </div>
                           </div>
-                        </form>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="last-name-input">CNPJ</label>
+                              <input v-model="organization.cnpj" id="last-name-input" class="form-control"
+                                name="last_name" type="text" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="email-input">Código no Sistema Contábil</label>
+                              <input v-model="organization.codigoERP" id="email-input" class="form-control" name="email"
+                                type="email" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-footer">
+                      <div class="row">
+                        <div class="offset-sm-2 offset-md-10 col-sm-1 col-md-2">
+                          <button class="btn btn-raised btn-raised btn-primary w-100 m-0"
+                            v-on:click="updateOrganization(externalId, organization)">
+                            <span> Salvar </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -117,7 +81,6 @@
                     </div>
                     <div class="card-content">
                       <div class="card-body">
-
                         <table class="table table-striped">
                           <thead>
                             <tr>

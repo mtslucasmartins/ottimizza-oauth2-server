@@ -49,7 +49,7 @@ public class SignUpService {
         // Checking if organization is already registered.
         BigInteger organizationId = organization.getOrganization() == null ? null
                 : organization.getOrganization().getId();
-        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), organizationId)) {
+        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), null, organizationId)) {
             System.out.println("A organization with that cnpj is already registered.");
             throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
         }

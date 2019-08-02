@@ -38,3 +38,19 @@ export function saveOrganization(organization = {}) {
   });
 };
 
+export function updateOrganization(externalId, organization = {}) {
+  return new Promise(function (resolve, reject) {
+    const url = `/api/organizations/${externalId}`;
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+      type: 'put',
+      data: JSON.stringify(organization)
+    }).done(function (response) {
+      resolve(response);
+    }).fail(function (jqXHR, textStatus, response) {
+      reject(jqXHR);
+    });
+  });
+};

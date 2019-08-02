@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,7 +49,7 @@ public class OrganizationController {
                               Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findAll(filter, pageIndex, pageSize, authorizedUser));
+            return ResponseEntity.ok(organizationService.findAll(filter, PageRequest.of(pageIndex, pageSize), authorizedUser));
         } catch (OrganizationAlreadyRegisteredException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
@@ -104,13 +106,15 @@ public class OrganizationController {
         }
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpEntity<?> save(@PathVariable("id") BigInteger id, 
+    @PutMapping(value = "/{externalId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HttpEntity<?> save(@PathVariable("externalId") String externalId, 
                            @RequestBody Organization organization,
                            Principal principal) {
         try {
+            System.out.println(">>" + organization.getCnpj());
+
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.save(organization, authorizedUser));
+            return ResponseEntity.ok(organizationService.save(externalId, organization, authorizedUser));
         } catch (OrganizationNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("organization_not_found", ex.getMessage()));
