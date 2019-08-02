@@ -39,12 +39,12 @@ public class OAuthClientDetails implements Serializable {
     @Getter
     @Setter
     @Column(name = "scope", length = 256)
-    private String scope;
+    private String scope = "read,write,trust";
 
     @Getter
     @Setter
     @Column(name = "authorized_grant_types", length = 256)
-    private String authorizedGrantTypes;
+    private String authorizedGrantTypes = "password,authorization_code,refresh_token,implicit";
 
     @Getter
     @Setter
@@ -59,21 +59,21 @@ public class OAuthClientDetails implements Serializable {
     @Getter
     @Setter
     @Column(name = "access_token_validity")
-    private Long accessTokenValidity;
+    private Long accessTokenValidity = 3600L;
 
     @Getter
     @Setter
     @Column(name = "refresh_token_validity")
-    private Long refreshTokenValidity;
+    private Long refreshTokenValidity = 21600L;
 
     @Getter
     @Setter
     @Column(name = "additional_information", length = 4096)
-    private String additionalInformation;
+    private String additionalInformation = "{}";
 
     @Getter
     @Setter
     @Column(name = "autoapprove", length = 4096)
-    private String autoapprove;
+    private String autoapprove = "trust,read,write";
 
 }
