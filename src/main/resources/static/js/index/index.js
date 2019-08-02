@@ -1,5 +1,5 @@
 import { findAllOrganizations, saveOrganization } from './../services/organizations.service.js';
-import { BootstrapPaginationComponent } from './../components/bootstrap-breadcrumb.component.js';
+import { BootstrapBreadcrumbComponent, BootstrapPaginationComponent } from './../components/bootstrap-breadcrumb.component.js';
 
 Vue.component('suspension-points-animation', {
   template: `
@@ -16,9 +16,15 @@ Vue.component('suspension-points-animation', {
 // Tabela com Lista de organizações relacionadas ao Usuário logado.
 var organizationsTable = new Vue({
   el: '#organizations-table',
-  components: { 'bootstrap-pagination': BootstrapPaginationComponent },
+  components: {
+    'breadcrumb': BootstrapBreadcrumbComponent,
+    'bootstrap-pagination': BootstrapPaginationComponent
+  },
   data: {
     loading: false,
+    breadcrumb: [
+      { label: 'Início', href: '/', active: true }
+    ],
     pageInfo: {
       pageIndex: 0,
       pageSize: 10,
@@ -37,9 +43,9 @@ var organizationsTable = new Vue({
       if (event.selected === 'previous')
         this.pageInfo.pageIndex = (this.pageInfo.pageIndex - 1 < 0) ? 0 : this.pageInfo.pageIndex - 1;
       if (event.selected === 'next')
-        this.pageInfo.pageIndex = this.pageInfo.pageIndex + 1 > this.pageInfo.totalPages ? this.pageInfo.totalPages-1 : this.pageInfo.pageIndex + 1;
+        this.pageInfo.pageIndex = this.pageInfo.pageIndex + 1 > this.pageInfo.totalPages ? this.pageInfo.totalPages - 1 : this.pageInfo.pageIndex + 1;
       if (event.selected === 'last')
-        this.pageInfo.pageIndex = this.pageInfo.totalPages-1;
+        this.pageInfo.pageIndex = this.pageInfo.totalPages - 1;
 
       this.loading = true;
       this.findAllOrganizations().then((response) => {

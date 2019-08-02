@@ -6,6 +6,10 @@ a:hover {
   color: #1565C0;
 }
 
+.page-link {
+  color: #1E88E5;
+}
+
 .btn {
   display: inline-block;
   font-weight: 400;
