@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" class="loading" xmlns:th="https://www.thymeleaf.org">
 
-<head th:insert="organizations/head.html :: head"> </head>
+<head th:insert="profile/head.html :: head"> </head>
 
 <body data-col="2-columns" class=" 2-columns ">
   <div class="wrapper">
-    <div th:insert="organizations/sidebar.html :: sidebar"> </div>
-    <nav th:insert="organizations/navbar.html :: navbar"> </nav>
-
-
+    <div th:replace="components/sidebar.html :: sidebar"> </div>
+    <nav th:replace="components/navbar.html :: navbar"> </nav>
     <div id="app" class="main-panel">
       <div class="main-content">
         <div class="content-wrapper">
           <div class="container">
-
             <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb>
-
-            <section id="basic-form-layouts">
+            <section id="informacoes-basicas">
               <div class="row">
                 <div class="col-md-12">
-                  <div id="organization-basic-info-card" class="card">
+                  <div id="organization-basic-info-card" class="card border">
                     <div class="card-header">
                       <h4 class="card-title">Informações Básicas</h4>
                     </div>
                     <div class="card-content">
-
                       <div class="card-body">
                         <div v-bind:class="{ 'd-none': !alert.visible }" class="row">
                           <div class="col-12">
-                            <div v-bind:class="{ 
+                            <div v-cloak v-bind:class="{ 
                                   'bg-warning': alert.type == 'warning', 'bg-success': alert.type == 'success'
                               }" class="alert alert-icon-left alert-dismissible mb-3 px-3" role="alert">
                               {{ alert.message }}
@@ -67,34 +62,9 @@
                         <div class="offset-sm-2 offset-md-10 col-sm-1 col-md-2">
                           <button class="btn btn-raised btn-raised btn-primary w-100 m-0"
                             v-on:click="updateOrganization(externalId, organization)">
-                            <span> Salvar </span>
+                            <i class="fad fa-save"></i> <span class="ml-2"> Salvar </span>
                           </button>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div th:if="${authorizedUser.organizations}" class="d-none col-md-6">
-                  <div class="card">
-                    <div class="card-header">
-                      <h4 class="card-title mb-4">Empresas</h4>
-                    </div>
-                    <div class="card-content">
-                      <div class="card-body">
-                        <table class="table table-striped">
-                          <thead>
-                            <tr>
-                              <th>Razão Social</th>
-                              <th>CPF/CNPJ</th>
-                            </tr>
-                          </thead>
-                          <th:block th:each="organization : ${authorizedUser.organizations}">
-                            <tr role="row">
-                              <td class="text-uppercase" th:text="${organization.name}"></td>
-                              <td class="text-uppercase" th:text="${organization.cnpj}"></td>
-                            </tr>
-                          </th:block>
-                        </table>
                       </div>
                     </div>
                   </div>
@@ -102,21 +72,19 @@
               </div>
             </section>
           </div>
-
         </div>
       </div>
-      <footer class="footer footer-static footer-light">
-        <p class="clearfix text-muted text-sm-center px-2"><span>Copyright &copy; 2019 <a
-              href="https://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" id="pixinventLink" target="_blank"
-              class="text-bold-800 primary darken-2">PIXINVENT </a>, All rights reserved. </span></p>
-      </footer>
+      <footer th:replace="components/footer.html :: footer"> </footer>
     </div>
   </div>
 
   <div th:insert="profile/head.html :: foot"> </div>
 
+  <!-- Vue.js Development -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <!-- <script th:src="@{/js/services/organizations.service.js}" type="module"></script> -->
+  <!-- Font Awesome Kit -->
+  <script src="https://kit.fontawesome.com/fba5ae40d6.js"></script>
+
   <script th:src="@{/js/views/organization-details.js}" type="module"></script>
 
 </body>

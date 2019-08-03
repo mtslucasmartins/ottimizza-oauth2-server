@@ -28,6 +28,12 @@ public class IndexController {
         return "index.html";
     }
 
+    @GetMapping(value = { "/empresas", "/organizations" })
+    public String organizations(Principal principal, Model model) {
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+        return "organizations/organizations.html";
+    }
+
     @GetMapping("/profile")
     public String profile(Principal principal, Model model) {
         // find user by username.

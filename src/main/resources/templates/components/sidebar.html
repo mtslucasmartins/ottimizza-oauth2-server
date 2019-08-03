@@ -5,7 +5,7 @@
   <div th:fragment="sidebar" data-active-color="primary" data-background-color="primary" class="app-sidebar">
     <div class="sidebar-header">
       <div class="logo clearfix">
-        <a href="#" class="logo-text float-left">
+        <a th:href="${'/'}" class="logo-text float-left">
           <div class="mx-4">
             <img class="img-fluid" src="https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png" />
           </div>
@@ -17,27 +17,15 @@
         <ul id="main-menu-navigation" data-menu="menu-navigation" data-scroll-to-active="true"
           class="navigation navigation-main">
           <li class=" nav-item">
-            <a href="https://pixinvent.ticksy.com/">
-              <i class="ft-life-buoy"></i>
-              <span data-i18n="" class="menu-title">Usuários</span>
-            </a>
-          </li>
-          <li class=" nav-item">
-            <a href="https://pixinvent.ticksy.com/">
-              <i class="ft-life-buoy"></i>
+            <a th:href="${'/empresas'}">
+              <i class="fad fa-industry-alt"></i>
               <span data-i18n="" class="menu-title">Empresas</span>
             </a>
           </li>
           <li class=" nav-item">
-            <a href="https://pixinvent.ticksy.com/">
-              <i class="ft-life-buoy"></i>
-              <span data-i18n="" class="menu-title">Produtos</span>
-            </a>
-          </li>
-          <li class=" nav-item">
-            <a href="https://pixinvent.ticksy.com/">
-              <i class="ft-life-buoy"></i>
-              <span data-i18n="" class="menu-title">Support</span>
+            <a th:href="${'/usuarios'}">
+              <i class="fad fa-users"></i>
+              <span data-i18n="" class="menu-title">Usuários</span>
             </a>
           </li>
         </ul>

@@ -9,7 +9,7 @@
   <meta name="description"
     content="Apex admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
   <meta name="keywords"
-    content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
+    content="admin template, Ottimizza Gerenciamento de Conta, dashboard template, flat admin template, responsive admin template, web app">
   <meta name="author" content="PIXINVENT">
   <title>Gallery Page - Apex responsive bootstrap 4 admin template</title>
   <link rel="apple-touch-icon" sizes="60x60" href="assets/img/ico/apple-icon-60.png">
@@ -31,6 +31,30 @@
   <link rel="stylesheet" type="text/css" href="css/overwritten.css">
 
   <style>
+    input::-webkit-input-placeholder {
+      color: #ccc !important;
+    }
+
+    input:-moz-placeholder {
+      color: #ccc;
+    }
+
+    input::placeholder {
+      color: #ccc;
+      opacity: 1;
+      /* Firefox */
+    }
+
+    input::-ms-input-placeholder {
+      /* Internet Explorer 10-11 */
+      color: #ccc;
+    }
+
+    input::-ms-input-placeholder {
+      /* Microsoft Edge */
+      color: #ccc;
+    }
+
     #notification-sidebar {
       width: 360px;
       right: -360px;
@@ -220,7 +244,6 @@
         <div class="content-wrapper">
           <div class="container">
             <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb>
-
             <section id="striped-light">
               <div class="row">
                 <div class="col-sm-12">
@@ -271,7 +294,6 @@
                 </div>
               </div>
             </section>
-
           </div>
         </div>
       </div>
@@ -303,13 +325,12 @@
                       <strong>Oops!</strong> <span>Email e/ou senha incorretos.</span>
                     </div>
                     <div class="form-group">
-                      <label for="organization_name_input"><span class="text-muted text-uppercase">Nome</span></label>
+                      <label for="organization_name_input">Nome</label>
                       <input id="organization_name_input" v-model="organization.name" class="form-control"
                         placeholder="Nome da Empresa" type="text" required>
                     </div>
                     <div class="form-group">
-                      <label for="organization_cnpj_input"><span
-                          class="text-muted text-uppercase">CPF/CNPJ</span></label>
+                      <label for="organization_cnpj_input">CPF ou CNPJ</label>
                       <input id="organization_cnpj_input" v-model="organization.cnpj" class="form-control"
                         placeholder="99.999.999/0001-99" type="text" required>
                     </div>
@@ -318,14 +339,21 @@
                       <input id="organization_codigoerp_input" v-model="organization.codigoERP" class="form-control"
                         placeholder="999" type="text" required>
                     </div>
-                    <div class="row m-0 fg-actions d-flex justify-content-between mt-3">
-                      <button class="col-12 btn btn-outline-danger organization-create-sidebar-cancel">
-                        <span class="text-decoration-none text-uppercase">Cancelar</span>
-                      </button>
-                      <button id="organization-sidebar-create" v-on:click="saveOrganization(organization)"
-                        class="col-12 btn btn-primary">
-                        <span class=" text-decoration-none text-white text-uppercase">Criar</span>
-                      </button>
+                    <div class="container-fluid">
+
+                      <div class="row mt-3">
+                        <div class="col-6 px-1">
+                          <button class="btn btn-raised btn-warning organization-create-sidebar-cancel w-100 m-0">
+                            <i class="fad fa-times-square"></i> <span class="ml-2"> Cancelar </span>
+                          </button>
+                        </div>
+                        <div class="col-6 px-1">
+                          <button class="btn btn-raised btn-primary w-100 m-0"
+                            v-on:click="saveOrganization(organization)">
+                            <i class="fad fa-save"></i> <span class="ml-2"> Salvar </span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
