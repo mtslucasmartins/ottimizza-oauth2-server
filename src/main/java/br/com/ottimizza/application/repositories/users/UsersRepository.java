@@ -3,7 +3,6 @@ package br.com.ottimizza.application.repositories.users;
 import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.users.UsersRepositoryCustom;
 
-import java.math.BigInteger;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -23,7 +22,7 @@ public interface UsersRepository extends JpaRepository<User, String>, UsersRepos
 
     @Modifying
     @Transactional
-    @Query("update User u set u.password = :password where LOWER(u.username) = LOWER(:username)")
+    @Query("UPDATE User u set u.password = :password WHERE LOWER(u.username) = LOWER(:username)")
     void updatePassword(@Param("password") String password, @Param("username") String username);
 
     @Query("SELECT " 

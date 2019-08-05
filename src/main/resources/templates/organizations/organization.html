@@ -37,23 +37,46 @@
     .app-sidebar {
       background-color: #004ecb !important;
     }
+
+    .main-panel {
+      margin-top: 60px;
+    }
   </style>
 </head>
 
-<body data-col="2-columns" class=" 2-columns ">
+<body data-col="2-columns" class="bg-white 2-columns ">
   <div class="wrapper">
     <div th:replace="components/sidebar.html :: sidebar"> </div>
     <nav th:replace="components/navbar.html :: navbar"> </nav>
     <div id="app" class="main-panel">
       <div class="main-content">
+        <breadcrumb v-bind:items="breadcrumb"></breadcrumb>
+        <div class="full-width-nav-tabs content-wrapper pt-2">
+          <div class="container">
+            <ul class="nav nav-justified-not nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link p-2 active" id="homeIcon-tab" data-toggle="tab" href="#homeIcon"
+                  aria-controls="homeIcon" aria-expanded="true">
+                  <i class="fad fa-info-circle"></i>&nbsp;&nbsp;Informações Básicas
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link p-2" id="profileIcon-tab" data-toggle="tab" href="#profileIcon"
+                  aria-controls="profileIcon" aria-expanded="false">
+                  <i class="fad fa-user-shield"></i>&nbsp;&nbsp;Acesso
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div class="content-wrapper">
           <div class="container">
-            <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb>
-            <section id="informacoes-basicas">
+            <!-- <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb> -->
+            <section class="d-none" id="informacoes-basicas">
               <div class="row">
                 <div class="col-md-12">
-                  <div id="organization-basic-info-card" class="card border">
-                    <div class="card-header">
+                  <div id="organization-basic-info-card" class="">
+                    <div class="card-header d-none">
                       <h4 class="card-title">Informações Básicas</h4>
                     </div>
                     <div class="card-content">
@@ -96,13 +119,230 @@
                     </div>
                     <div class="card-footer">
                       <div class="row">
-                        <div class="offset-sm-2 offset-md-10 col-sm-1 col-md-2">
+                        <div class="offset-sm-2 offset-md-9 offset-lg-10 col-sm-1 col-md-3 col-lg-2">
                           <button class="btn btn-primary w-100 m-0"
                             v-on:click="updateOrganization(externalId, organization)">
-                            <i class="fad fa-save"></i> <span class="ml-2"> Salvar </span>
+                            <i class="fad fa-save"></i>&nbsp;<span> Salvar </span>
                           </button>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="tabs">
+
+              <div class="row d-none ">
+                <div class="col-md-12">
+                  <div class="card p-0">
+                    <div class="card-content">
+                      <div class="card-body p-0">
+                        <ul class="nav nav-justified nav-tabs">
+                          <li class="nav-item">
+                            <a class="nav-link p-2" id="homeIcon-tab" data-toggle="tab" href="#homeIcon"
+                              aria-controls="homeIcon" aria-expanded="true">
+                              <i class="fad fa-info-circle"></i>&nbsp;&nbsp;Informações Básicas
+                            </a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link p-2 active" id="profileIcon-tab" data-toggle="tab" href="#profileIcon"
+                              aria-controls="profileIcon" aria-expanded="false">
+                              <i class="fad fa-user-shield"></i>&nbsp;&nbsp;Acesso
+                            </a>
+                          </li>
+                        </ul>
+                        <div class="tab-content p-0">
+                          <div role="tabpanel" class="tab-pane" id="homeIcon" aria-labelledby="homeIcon-tab"
+                            aria-expanded="true">
+                            <div id="organization-basic-info-card">
+                              <div class="card-content">
+                                <div class="card-body px-3 py-3 border-left border-right">
+                                  <div v-bind:class="{ 'd-none': !alert.visible }" class="row">
+                                    <div class="col-12">
+                                      <div v-cloak v-bind:class="{ 
+                                        'bg-warning': alert.type == 'warning', 'bg-success': alert.type == 'success'
+                                    }" class="alert alert-icon-left alert-dismissible mb-3 px-3" role="alert">
+                                        {{ alert.message }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label for="name-input">Nome</label>
+                                        <input v-model="organization.name" id="name-input" class="form-control"
+                                          name="first_name" type="text" />
+                                      </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label for="last-name-input">CNPJ</label>
+                                        <input v-model="organization.cnpj" id="last-name-input" class="form-control"
+                                          name="last_name" type="text" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label for="email-input">Código no Sistema Contábil</label>
+                                        <input v-model="organization.codigoERP" id="email-input" class="form-control"
+                                          name="email" type="email" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="card-footer border">
+                                <div class="row">
+                                  <div class="offset-sm-2 offset-md-9 offset-lg-10 col-sm-1 col-md-3 col-lg-2">
+                                    <button class="btn btn-primary w-100 m-0"
+                                      v-on:click="updateOrganization(externalId, organization)">
+                                      <i class="fad fa-save"></i>&nbsp;<span> Salvar </span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-pane active show" id="profileIcon" role="tabpanel"
+                            aria-labelledby="profileIcon-tab" aria-expanded="false">
+                            <p>Pudding candy canes sugar plum cookie chocolate cake powder croissant. Carrot cake
+                              tiramisu
+                              danish
+                              candy cake muffin croissant tart dessert. Tiramisu caramels candy canes chocolate cake
+                              sweet
+                              roll
+                              liquorice icing cupcake.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="horizontal-layout" class="d-">
+              <div class="row">
+                <div class="col-12">
+                  <form class="form form-horizontal ">
+                    <div class="form-body">
+                      <h4 class="d-none form-section"><i class="ft-user"></i> Personal Info</h4>
+                      <div class="form-group row pt-3">
+                        <div class="col-md-3">
+                          <h5 class="m-0"><i class="ft-user"></i> Informações Básicas</h5>
+                        </div>
+                        <label class="col-md-3 label-control" for="projectinput1">Nome: </label>
+                        <div class="col-md-6">
+                          <input v-model="organization.name" type="text" id="projectinput1" class="form-control"
+                            name="fname">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label class="col-md-3 label-control" for="projectinput2">CPF ou CNPJ: </label>
+                        <div class="col-md-6">
+                          <input v-model="organization.cnpj" type="text" id="projectinput2" class="form-control"
+                            name="lname">
+                        </div>
+                      </div>
+
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Addon To Right"
+                          aria-describedby="basic-addon4">
+                        <div class="input-group-append">
+                          <!-- <div class="btn-group input-group-text" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-secondary"><i
+                                class="fa fa-star-o"></i></button>
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-primary"><i
+                                class="fa fa-user-o"></i></button>
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-success"><i
+                                class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-warning"><i
+                                class="fa fa-camera"></i></button>
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-info"><i
+                                class="fa fa-camera"></i></button>
+                            <button type="button" class="btn btn-raised btn-icon btn-outline-danger"><i
+                                class="fa fa-smile-o"></i></button>
+                          </div> -->
+                          <span class="input-group-text bg-transparent border-grey" id="basic-addon4"><i
+                              class="fa fa-save text-success"></i></span>
+                          <span class="input-group-text bg-transparent border-grey" id="basic-addon4"><i
+                              class="fa fa-times text-danger"></i></span>
+                        </div>
+                      </div>
+
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label class="col-md-3 label-control" for="projectinput3">Código no Sistema Contábil: </label>
+                        <div class="col-md-6">
+                          <input v-model="organization.codigoERP" type="text" id="projectinput3" class="form-control"
+                            name="email">
+                        </div>
+                      </div>
+
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+            <hr>
+            <section id="horizontal-layout-2" class="d-">
+              <div class="row">
+                <div class="col-12">
+                  <div class="row">
+                    <h5 class="col-3 form-section"><i class="ft-user"></i>Acesso</h5>
+                    <div class="offset-sm-6 col-sm-1 col-md-3 col-lg-3 mb-3">
+                      <button class="btn btn-primary w-100 m-0">
+                        <i class="fad fa-plus-square"></i>&nbsp;<span> Adicionar
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <p>
+                        Usuários ainda não registrados
+                      </p>
+                    </div>
+                    <div class="col-9">
+                      <table class="table table-striped" style="border: 1px solid #DEE2E6;">
+                        <tbody>
+                          <tr>
+                            <td class="text-center width-10-per"><i class="fal fa-envelope"></i></td>
+                            <td>
+                              mts.lucamartins@gmail.com (<a href="#" class="text-decoration-none">Reenviar convite</a>)
+                            </td>
+                            <td class="text-center width-10-per"><i class="fal fa-envelope"></i></td>
+                          </tr>
+                          <tr>
+                            <td class="text-center width-10-per"><i class="fal fa-envelope"></i></td>
+                            <td>
+                              u.carlosxis@hotmail.com (<a href="#" class="text-decoration-none">Reenviar convite</a>)
+                            </td>
+                            <td class="text-center width-10-per"><i class="fal fa-envelope"></i></td>
+                          </tr>
+                          <tr>
+                            <td class="text-center width-10-per">
+                              <img th:if="${authorizedUser.avatar == null}"
+                                src="assets/img/portrait/avatars/avatar-01.png" class="img-thumbnail rounded-circle"
+                                width="35" th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
+                              <img th:if="${authorizedUser.avatar != null}" th:src="${authorizedUser.avatar}"
+                                class="rounded-circle" width="25" height="25"
+                                th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
+                            </td>
+                            <td>
+                              <a href="#">Lucas Martins</a>
+                              <br>
+                              <small>mts.lucamartins@gmail.com</small>
+                            </td>
+                            <td class="text-center width-10-per"><i class="fal fa-check"></i></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>

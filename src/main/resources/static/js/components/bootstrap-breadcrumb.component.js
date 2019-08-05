@@ -3,13 +3,17 @@ export let BootstrapBreadcrumbComponent = Vue.component('bootstrap-breadcrumb', 
   props: ['items'],
   template: `
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li v-for="item in items" class="breadcrumb-item"  v-bind:class="{ active: item.active }">
-          <a v-bind:href="item.href" class="">
-            {{ item.label }}
-          </a>
-        </li>
-      </ol>
+      <div class="breadcrumb content-wrapper m-0">
+        <div class="container">
+          <ol class="breadcrumb m-0">
+            <li v-for="item in items" class="breadcrumb-item"  v-bind:class="{ active: item.active }">
+              <a v-bind:href="item.href" class="">
+                {{ item.label }}
+              </a>
+            </li>
+          </ol>
+        </div>
+      </div>
     </nav>
   `
 });

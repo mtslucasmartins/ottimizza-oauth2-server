@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="loading" 
-  xmlns:th="https://www.thymeleaf.org"
+<html lang="en" class="loading" xmlns:th="https://www.thymeleaf.org"
   xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
@@ -24,17 +23,11 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900"
     rel="stylesheet">
-
   <!-- Styles Vendors -->
-  <link rel="stylesheet" type="text/css" href="assets/vendors/css/perfect-scrollbar.min.css">
-  <link rel="stylesheet" type="text/css" href="assets/vendors/css/prism.min.css">
-
   <!-- Styles App -->
   <link rel="stylesheet" type="text/css" href="assets/css/app.css">
-
   <!-- Styles Custom -->
   <link rel="stylesheet" type="text/css" href="css/overwritten.css">
-
   <style>
     input::-webkit-input-placeholder {
       color: #ccc !important;
@@ -254,7 +247,8 @@
                 <div class="col-sm-12">
                   <div class="card border">
                     <div class="card-header p-3">
-                      <div sec:authorize="hasAuthority('ACCOUNTANT_READ')" class="float-right py-0">
+                      <div class="float-right py-0" sec:authorize="hasAuthority('ACCOUNTANT_ADMIN') 
+                                                                   or hasAuthority('ACCOUNTANT_WRITE')">
                         <button class="btn btn-raised btn-primary notification-sidebar-toggle w-100 m-0"
                           href="javascript:;">
                           <i class="fad fa-plus-square"></i> <span class="ml-2"> Nova Empresa </span>
@@ -369,22 +363,22 @@
       </div>
     </div>
   </aside>
-  <script src="assets/vendors/js/core/jquery-3.2.1.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/core/popper.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/core/bootstrap.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/prism.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/jquery.matchHeight-min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/screenfull.min.js" type="text/javascript"></script>
-  <script src="assets/vendors/js/pace/pace.min.js" type="text/javascript"></script>
-  <script src="assets/js/app-sidebar.js" type="text/javascript"></script>
-  <script src="assets/js/notification-sidebar.js" type="text/javascript"></script>
-  <script src="assets/js/customizer.js" type="text/javascript"></script>
 
   <!-- Vue.js Development -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- jQuery -->
+  <script src="assets/vendors/js/core/jquery-3.2.1.min.js" type="text/javascript"></script>
+  <script src="assets/vendors/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="assets/vendors/js/core/bootstrap.min.js" type="text/javascript"></script>
   <!-- Font Awesome Kit -->
   <script src="https://kit.fontawesome.com/fba5ae40d6.js"></script>
+
+  <!-- Other Stuff -->
+  <script src="assets/js/app-sidebar.js" type="text/javascript"></script>
+  <script src="assets/js/notification-sidebar.js" type="text/javascript"></script>
+  <script src="assets/js/customizer.js" type="text/javascript"></script>
 
   <script th:src="@{js/index/index.js}" type="module"></script>
 </body>

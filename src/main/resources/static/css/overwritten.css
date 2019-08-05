@@ -2,6 +2,37 @@
   display: none;
 }
 
+
+/*  */
+
+.full-width-nav-tabs {
+  border-bottom: 1px solid #DEE2E6;
+  background-color: #F8F9FA;
+}
+
+.full-width-nav-tabs .nav-tabs {
+  border-bottom: none;
+}
+
+.full-width-nav-tabs .nav-tabs .nav-link {
+  border: 0px;
+  border-radius: 0 !important;
+}
+
+.full-width-nav-tabs .nav-tabs .nav-link.active {
+  border-bottom: solid 2px #1976D2
+}
+
+.nav-tab-border-bottom {
+  border-bottom: 1px solid #DEE2E6;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.height-60 {
+  height: 60px;
+}
+
 a {
   color: #1E88E5;
 }
