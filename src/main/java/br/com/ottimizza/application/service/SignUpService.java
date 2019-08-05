@@ -5,12 +5,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
+import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.repositories.AuthorityRepository;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
@@ -25,11 +29,15 @@ public class SignUpService {
     OrganizationRepository organizationRepository;
 
     @Inject
+    AuthorityRepository authorityRepository;
+
+    @Inject
     PasswordRecoveryRepository passwordRecoveryRepository;
 
     public User register(User user, Organization organization)
             throws OrganizationAlreadyRegisteredException, UserAlreadyRegisteredException, Exception {
         user.setUsername(user.getEmail());
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         organization.setExternalId(organization.getCnpj());
 
         // Checking if organization wont cause an loop
@@ -61,7 +69,11 @@ public class SignUpService {
         Set<Organization> organizations = new HashSet<Organization>();
         organizations.add(organization);
 
+        Set<Authority> authorities = new HashSet<Authority>();
+        authorities.add(authorityRepository.findByName("ACCOUNTANT_ADMIN"));
+
         user.setOrganizations(organizations);
+        user.setAuthorities(authorities);
 
         // creates the user.
         user = userRepository.save(user);
