@@ -74,7 +74,7 @@ public class User implements Serializable {
     private Set<Authority> authorities;
 
     @Getter @Setter
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "users_organizations", 
         joinColumns = @JoinColumn(name = "username"), 
