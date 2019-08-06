@@ -325,21 +325,24 @@
                             </td>
                             <td class="text-center width-10-per"><i class="fal fa-envelope"></i></td>
                           </tr>
-                          <tr>
+                          <!--  -->
+                          <tr v-cloak v-for="customer in customers">
                             <td class="text-center width-10-per">
-                              <img th:if="${authorizedUser.avatar == null}"
-                                src="assets/img/portrait/avatars/avatar-01.png" class="img-thumbnail rounded-circle"
-                                width="35" th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
-                              <img th:if="${authorizedUser.avatar != null}" th:src="${authorizedUser.avatar}"
-                                class="rounded-circle" width="25" height="25"
-                                th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
+                              <img v-if="customer.avatar == null" src="/assets/img/portrait/avatars/avatar-01.png"
+                                class="rounded-circle" width="35" v-bind:alt="customer.email">
+                              <img v-if="customer.avatar != null" v-bind:src="customer.avatar" class="rounded-circle"
+                                width="25" height="25" v-bind:alt="customer.email">
                             </td>
                             <td>
-                              <a href="#">Lucas Martins</a>
+                              <a v-bind:href="'usuarios/' + customer.username">
+                                {{ customer.firstName + ' ' + customer.lastName }}
+                              </a>
                               <br>
-                              <small>mts.lucamartins@gmail.com</small>
+                              <small>{{ customer.email }}</small>
                             </td>
                             <td class="text-center width-10-per"><i class="fal fa-check"></i></td>
+                          </tr>
+
                           </tr>
                         </tbody>
                       </table>

@@ -1,35 +1,9 @@
-import { findOrganizationsByExternalId, updateOrganization } from './../services/organizations.service.js';
+import {
+  findOrganizationsByExternalId,
+  findCustomersByOrganizationId,
+  updateOrganization
+} from './../services/organizations.service.js';
 import { BootstrapBreadcrumbComponent } from './../components/bootstrap-breadcrumb.component.js';
-
-// let organizationBasicInfo = new Vue({
-//   el: '#organization-basic-info-card',
-//   data: {
-//     loading: false,
-//     breadcrumb: [
-//       { label: 'Início', href: '/', active: false },
-//       { label: 'Usuários', href: '/usuarios', active: false },
-//       { label: 'Lucas Martins', href: '/usuarios/1', active: false }
-//     ],
-//     organization: { name: '', cnpj: '', codigoERP: '' }
-//   },
-//   methods: {
-//     findOrganizationsByExternalId: (externalId) => {
-//       return findOrganizationsByExternalId(externalId);
-//     },
-//     saveOrganization: async (organization = {}) => {
-//       return saveOrganization(organization).then((response) => {
-//         const organization = response;
-//         window.location = `/organizations/${organization.externalId}`;
-//       });;
-//     }
-//   },
-//   created() {
-//     const externalId = window.location.href.split('organizations/')[1].replace(/\?.*/, '');
-//     this.findOrganizationsByExternalId(externalId).then((response) => {
-//       this.organization = response;
-//     });
-//   }
-// });
 
 var app = new Vue({
   el: '#app',
@@ -48,7 +22,8 @@ var app = new Vue({
         { label: 'Empresas', href: '/empresas', active: false }
       ],
       externalId: '',
-      organization: { name: '', cnpj: '', codigoERP: '' }
+      organization: { id: null, name: '', cnpj: '', codigoERP: '' },
+      customers: []
     }
   },
   methods: {
@@ -59,6 +34,9 @@ var app = new Vue({
     },
     findOrganizationsByExternalId: function (externalId) {
       return findOrganizationsByExternalId(externalId);
+    },
+    findCustomersByOrganizationId: function (id) {
+      return findCustomersByOrganizationId(id);
     },
     updateOrganization: async function (externalId, organization) {
       return updateOrganization(externalId, organization)
@@ -73,14 +51,17 @@ var app = new Vue({
     }
   },
   created() {
-    this.externalId = window.location.href.split('organizations/')[1].replace(/\?.*/, '');
-    this.findOrganizationsByExternalId(this.externalId).then((response) => {
-      this.organization = response;
-      this.organization = response;
-      this.breadcrumb = [
+    const that = this;
+    that.externalId = window.location.href.split('organizations/')[1].replace(/\?.*/, '');
+    that.findOrganizationsByExternalId(that.externalId).then((response) => {
+      that.organization = response;
+      that.findCustomersByOrganizationId(that.organization.id).then((response) => {
+        that.customers = response.records;
+      });
+      that.breadcrumb = [
         { label: 'Início', href: '/', active: false },
         { label: 'Empresas', href: '/empresas', active: false },
-        { label: response.name, href: `/empresas/${this.externalId}`, active: true }
+        { label: response.name, href: `/empresas/${that.externalId}`, active: true }
       ];
     });
   }
