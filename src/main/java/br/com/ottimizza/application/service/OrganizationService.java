@@ -1,7 +1,6 @@
 package br.com.ottimizza.application.service;
 
 import java.math.BigInteger;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,14 +9,15 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.Authorities;
+import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
@@ -46,25 +46,26 @@ public class OrganizationService {
     // @formatter:off
     public GenericPageableResponse<Organization> findAll(String filter, Pageable pageRequest, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
-        // All authorities to string array.
+        filter = "%" + filter + "%";
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
 
-        // When user is an accountant.
         if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
-            Page<Organization> p =  organizationRepository.findAllByAccountingId(
-                    "%" + filter + "%", authorizedUser.getOrganization().getId(), pageRequest);
-            return new GenericPageableResponse<Organization>(p);
+            Page<Organization> page =  organizationRepository.findAllByAccountingId(
+                    filter, authorizedUser.getOrganization().getId(), pageRequest
+            );
+            return new GenericPageableResponse<Organization>(page);
         }
-        // When user is an customer.
+
         if (authorities.contains(Authorities.CUSTOMER_READ.getName())
                 || authorities.contains(Authorities.CUSTOMER_WRITE.getName())) {
-            return new GenericPageableResponse<Organization>(
-                organizationRepository.findAllByAccountingIdAndUsername(
-                    "%" + filter + "%", authorizedUser.getOrganization().getId(), authorizedUser.getUsername(), pageRequest));
+            Page<Organization> page =  organizationRepository.findAllByAccountingIdAndUsername(
+                    filter, authorizedUser.getOrganization().getId(), authorizedUser.getUsername(), pageRequest
+            );
+            return new GenericPageableResponse<Organization>(page);
         }
 
         return new GenericPageableResponse<>();
@@ -94,6 +95,27 @@ public class OrganizationService {
         return new ArrayList<>();
     }
 
+    //
+    public GenericResponse<UserDTO> findUsersByOrganizationId(BigInteger id, User authorizedUser) {
+        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
+            return authority.getName();
+        }).collect(Collectors.toList());
+        
+         if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>(
+                UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(id))
+            );
+            return response;
+        }
+        return new GenericResponse<UserDTO>(new ArrayList<>());
+    }
+
+
+
+    //
+    //
     public Organization save(Organization organization, User authorizedUser)
             throws OrganizationAlreadyRegisteredException, Exception {
         organization.setExternalId(UUID.randomUUID().toString());
