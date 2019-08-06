@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

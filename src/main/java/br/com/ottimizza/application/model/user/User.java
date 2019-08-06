@@ -1,23 +1,22 @@
-package br.com.ottimizza.application.model;
+package br.com.ottimizza.application.model.user;
 
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import br.com.ottimizza.application.model.Authority;
+import br.com.ottimizza.application.model.Organization;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
@@ -72,14 +71,6 @@ public class User implements Serializable {
         joinColumns = @JoinColumn(name = "username"), 
         inverseJoinColumns = @JoinColumn(name = "authority"))
     private Set<Authority> authorities;
-
-    @Getter @Setter
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "users_organizations", 
-        joinColumns = @JoinColumn(name = "username"), 
-        inverseJoinColumns = @JoinColumn(name = "fk_organizations_id"))
-    private Set<Organization> organizations;
 
     @Getter @Setter
     @ManyToOne

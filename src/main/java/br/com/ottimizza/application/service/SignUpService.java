@@ -13,7 +13,7 @@ import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegiste
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.repositories.AuthorityRepository;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
@@ -65,18 +65,11 @@ public class SignUpService {
         // creates the organization.
         organization = organizationRepository.save(organization);
 
-        // inserts into users_organizations.
-        Set<Organization> organizations = new HashSet<Organization>();
-        organizations.add(organization);
-
-        Set<Authority> authorities = new HashSet<Authority>();
-        authorities.add(authorityRepository.findByName("ACCOUNTANT_ADMIN"));
-
-        user.setOrganizations(organizations);
-        user.setAuthorities(authorities);
-
         // creates the user.
         user = userRepository.save(user);
+
+        userRepository.addOrganization(user.getUsername(), organization.getId());
+        userRepository.addAuthority(user.getUsername(), "ACCOUNTANT_ADMIN");
 
         return user;
     }

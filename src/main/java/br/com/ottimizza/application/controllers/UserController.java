@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.model.PasswordResetToken;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 
 import br.com.ottimizza.application.service.SecurityService;
 import br.com.ottimizza.application.service.UserService;

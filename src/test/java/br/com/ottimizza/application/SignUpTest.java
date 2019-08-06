@@ -14,7 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.service.SignUpService;
 
 @SpringBootTest

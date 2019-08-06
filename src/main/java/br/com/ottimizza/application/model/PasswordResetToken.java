@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import br.com.ottimizza.application.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PasswordResetToken {
+public class PasswordResetToken implements Serializable {
 
     private static final int EXPIRATION = 60 * 24;
 

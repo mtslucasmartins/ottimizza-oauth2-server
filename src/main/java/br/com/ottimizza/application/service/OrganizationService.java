@@ -19,7 +19,7 @@ import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundExcept
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
@@ -71,30 +71,6 @@ public class OrganizationService {
         return new GenericPageableResponse<>();
     }
 
-    public List<Organization> findAll(String filter, int pageIndex, int pageSize, User authorizedUser)
-            throws OrganizationNotFoundException, Exception {
-        // All authorities to string array.
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
-
-        // When user is an accountant.
-        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
-            return organizationRepository.findAllByAccountingId(filter, pageIndex, pageSize,
-                    authorizedUser.getOrganization().getId());
-        }
-        // When user is an customer.
-        if (authorities.contains(Authorities.CUSTOMER_READ.getName())
-                || authorities.contains(Authorities.CUSTOMER_WRITE.getName())) {
-            return organizationRepository.findAllByAccountingIdAndUsername(filter, pageIndex, pageSize,
-                    authorizedUser.getOrganization().getId(), authorizedUser.getUsername());
-        }
-
-        return new ArrayList<>();
-    }
-
     //
     public GenericResponse<UserDTO> findUsersByOrganizationId(BigInteger id, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
@@ -111,8 +87,6 @@ public class OrganizationService {
         }
         return new GenericResponse<UserDTO>(new ArrayList<>());
     }
-
-
 
     //
     //

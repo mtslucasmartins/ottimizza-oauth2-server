@@ -1,6 +1,6 @@
 package br.com.ottimizza.application.repositories.users;
 
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 
 import java.util.Optional;
 import java.util.List;
@@ -31,6 +31,16 @@ public interface UsersRepository extends JpaRepository<User, String> {
     @Transactional
     @Query("UPDATE User u set u.password = :password WHERE LOWER(u.username) = LOWER(:username)")
     void updatePassword(@Param("password") String password, @Param("username") String username);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO user_authority (username, authority) VALUES (:username, :authority)", nativeQuery = true)
+    void addAuthority(@Param("username") String username, @Param("authority") String authority);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO users_organizations (username, fk_organizations_id) VALUES (:username, :organizationId)", nativeQuery = true)
+    void addOrganization(@Param("username") String username, @Param("organizationId") BigInteger authority);
 
     @Query("SELECT " + " CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END "
             + " FROM User u WHERE LOWER(u.email) = LOWER(:email)")

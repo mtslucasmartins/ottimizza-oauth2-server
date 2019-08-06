@@ -11,8 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
-public interface OrganizationRepository
-    extends PagingAndSortingRepository<Organization, BigInteger>, OrganizationRepositoryCustom { // @formatter:off
+public interface OrganizationRepository extends PagingAndSortingRepository<Organization, BigInteger> { // @formatter:off
 
   @Query("SELECT " 
       + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              " 

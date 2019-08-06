@@ -10,7 +10,7 @@ import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegiste
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 

@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import br.com.ottimizza.application.controllers.SignUpController;
 import br.com.ottimizza.application.controllers.UserController;
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 import br.com.ottimizza.application.service.SignUpService;
 

@@ -27,7 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenExpiredException;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
 import br.com.ottimizza.application.model.PasswordResetToken;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 

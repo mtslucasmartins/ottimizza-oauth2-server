@@ -1,7 +1,7 @@
 package br.com.ottimizza.application.service.impl;
 
 import br.com.ottimizza.application.model.Authority;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
 import java.util.ArrayList;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.model.Organization;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.service.SignUpService;
 
 @Controller

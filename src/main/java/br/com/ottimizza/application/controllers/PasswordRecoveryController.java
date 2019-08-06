@@ -31,7 +31,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 
 // Models 
 import br.com.ottimizza.application.model.PasswordResetToken;
-import br.com.ottimizza.application.model.User;
+import br.com.ottimizza.application.model.user.User;
 
 // Repositories
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
