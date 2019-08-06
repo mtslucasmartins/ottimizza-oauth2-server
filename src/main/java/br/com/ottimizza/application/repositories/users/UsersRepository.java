@@ -1,7 +1,6 @@
 package br.com.ottimizza.application.repositories.users;
 
 import br.com.ottimizza.application.model.User;
-import br.com.ottimizza.application.repositories.users.UsersRepositoryCustom;
 
 import java.util.Optional;
 
@@ -12,7 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UsersRepository extends JpaRepository<User, String>, UsersRepositoryCustom { // @formatter:off
+public interface UsersRepository extends JpaRepository<User, String> { // @formatter:off
 
     @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
     Optional<User> findByUsername(@Param("username") String username);
