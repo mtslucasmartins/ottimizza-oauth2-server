@@ -39,7 +39,9 @@ export function saveOrganization(organization = {}) {
     $.ajax({
       url: url,
       type: 'post',
-      data: organization
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(organization)
     }).done(function (response) {
       resolve(response);
     }).fail(function (jqXHR, textStatus, response) {

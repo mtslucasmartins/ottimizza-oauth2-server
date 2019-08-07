@@ -29,28 +29,23 @@ public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @NonNull
     @Getter @Setter
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private BigInteger id;
 
-    @NonNull
     @Getter @Setter
     @Column(name = "external_id", nullable = false)
     private String externalId;
 
-    @NonNull
     @Getter @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NonNull
     @Getter @Setter
     @Column(name = "type", nullable = true)
     private Integer type = OrganizationTypes.CLIENT.getValue();
 
-    @NonNull
     @Getter @Setter
     @Column(name = "cnpj", nullable = false)
     private String cnpj;

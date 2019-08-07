@@ -79,11 +79,25 @@ var organizationSidebarTab = new Vue({
     findAllOrganizations: (filter = '', pageIndex = 0, pageSize = 10) => {
       return findAllOrganizations(filter, pageIndex, pageSize)
     },
-    saveOrganization: (organization = {}) => {
-      return saveOrganization(organization).then((response) => {
-        const organization = response;
-        window.location = `/organizations/${organization.externalId}`;
-      });;
+    saveOrganization: async (organization = {}) => {
+      if (organization) {
+        if (typeof organization.name === 'undefined'
+          || organization.name === null || organization.name === '') {
+          return;
+        }
+        if (typeof organization.cnpj === 'undefined'
+          || organization.cnpj === null || organization.cnpj === '') {
+          return;
+        }
+        if (typeof organization.codigoERP === 'undefined'
+          || organization.codigoERP === null || organization.codigoERP === '') {
+          return;
+        }
+        return saveOrganization(organization).then((response) => {
+          const organization = response;
+          window.location = `/organizations/${organization.externalId}`;
+        });;
+      }
     }
   },
   created() { }
