@@ -37,12 +37,9 @@ export function saveOrganization(organization = {}) {
   return new Promise(function (resolve, reject) {
     const url = `/api/organizations`;
     $.ajax({
-      url: '/api/organizations',
+      url: url,
       type: 'post',
       data: organization
-      // beforeSend: function () {
-      //   // $("#resultado").html("ENVIANDO...");
-      // }
     }).done(function (response) {
       resolve(response);
     }).fail(function (jqXHR, textStatus, response) {
@@ -59,6 +56,22 @@ export function updateOrganization(externalId, organization = {}) {
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       type: 'put',
+      data: JSON.stringify(organization)
+    }).done(function (response) {
+      resolve(response);
+    }).fail(function (jqXHR, textStatus, response) {
+      reject(jqXHR);
+    });
+  });
+};
+
+export function patchOrganization(id, organization = {}) {
+  return new Promise(function (resolve, reject) {
+    const url = `/api/organizations/${id}`;
+    $.ajax({
+      url: url, type: 'patch',
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
       data: JSON.stringify(organization)
     }).done(function (response) {
       resolve(response);

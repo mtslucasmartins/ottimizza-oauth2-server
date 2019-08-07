@@ -57,10 +57,10 @@
               <li class="nav-item">
                 <a class="nav-link p-2 active" id="homeIcon-tab" data-toggle="tab" href="#homeIcon"
                   aria-controls="homeIcon" aria-expanded="true">
-                  <i class="fad fa-info-circle"></i>&nbsp;&nbsp;Informações Básicas
+                  <i class="fad fa-cog"></i>&nbsp;&nbsp;Configurações
                 </a>
               </li>
-              <li class="nav-item">
+              <li class="d-none nav-item">
                 <a class="nav-link p-2" id="profileIcon-tab" data-toggle="tab" href="#profileIcon"
                   aria-controls="profileIcon" aria-expanded="false">
                   <i class="fad fa-user-shield"></i>&nbsp;&nbsp;Acesso
@@ -71,218 +71,82 @@
         </div>
         <div class="content-wrapper">
           <div class="container">
-            <!-- <breadcrumb v-bind:items="breadcrumb" class="pt-2"></breadcrumb> -->
-            <section class="d-none" id="informacoes-basicas">
-              <div class="row">
-                <div class="col-md-12">
-                  <div id="organization-basic-info-card" class="">
-                    <div class="card-header d-none">
-                      <h4 class="card-title">Informações Básicas</h4>
-                    </div>
-                    <div class="card-content">
-                      <div class="card-body">
-                        <div v-bind:class="{ 'd-none': !alert.visible }" class="row">
-                          <div class="col-12">
-                            <div v-cloak v-bind:class="{ 
-                                  'bg-warning': alert.type == 'warning', 'bg-success': alert.type == 'success'
-                              }" class="alert alert-icon-left alert-dismissible mb-3 px-3" role="alert">
-                              {{ alert.message }}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="name-input">Nome</label>
-                              <input v-model="organization.name" id="name-input" class="form-control" name="first_name"
-                                type="text" />
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="last-name-input">CNPJ</label>
-                              <input v-model="organization.cnpj" id="last-name-input" class="form-control"
-                                name="last_name" type="text" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="email-input">Código no Sistema Contábil</label>
-                              <input v-model="organization.codigoERP" id="email-input" class="form-control" name="email"
-                                type="email" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-footer">
-                      <div class="row">
-                        <div class="offset-sm-2 offset-md-9 offset-lg-10 col-sm-1 col-md-3 col-lg-2">
-                          <button class="btn btn-primary w-100 m-0"
-                            v-on:click="updateOrganization(externalId, organization)">
-                            <i class="fad fa-save"></i>&nbsp;<span> Salvar </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section id="tabs">
-
-              <div class="row d-none ">
-                <div class="col-md-12">
-                  <div class="card p-0">
-                    <div class="card-content">
-                      <div class="card-body p-0">
-                        <ul class="nav nav-justified nav-tabs">
-                          <li class="nav-item">
-                            <a class="nav-link p-2" id="homeIcon-tab" data-toggle="tab" href="#homeIcon"
-                              aria-controls="homeIcon" aria-expanded="true">
-                              <i class="fad fa-info-circle"></i>&nbsp;&nbsp;Informações Básicas
-                            </a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link p-2 active" id="profileIcon-tab" data-toggle="tab" href="#profileIcon"
-                              aria-controls="profileIcon" aria-expanded="false">
-                              <i class="fad fa-user-shield"></i>&nbsp;&nbsp;Acesso
-                            </a>
-                          </li>
-                        </ul>
-                        <div class="tab-content p-0">
-                          <div role="tabpanel" class="tab-pane" id="homeIcon" aria-labelledby="homeIcon-tab"
-                            aria-expanded="true">
-                            <div id="organization-basic-info-card">
-                              <div class="card-content">
-                                <div class="card-body px-3 py-3 border-left border-right">
-                                  <div v-bind:class="{ 'd-none': !alert.visible }" class="row">
-                                    <div class="col-12">
-                                      <div v-cloak v-bind:class="{ 
-                                        'bg-warning': alert.type == 'warning', 'bg-success': alert.type == 'success'
-                                    }" class="alert alert-icon-left alert-dismissible mb-3 px-3" role="alert">
-                                        {{ alert.message }}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="form-group">
-                                        <label for="name-input">Nome</label>
-                                        <input v-model="organization.name" id="name-input" class="form-control"
-                                          name="first_name" type="text" />
-                                      </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                      <div class="form-group">
-                                        <label for="last-name-input">CNPJ</label>
-                                        <input v-model="organization.cnpj" id="last-name-input" class="form-control"
-                                          name="last_name" type="text" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="form-group">
-                                        <label for="email-input">Código no Sistema Contábil</label>
-                                        <input v-model="organization.codigoERP" id="email-input" class="form-control"
-                                          name="email" type="email" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="card-footer border">
-                                <div class="row">
-                                  <div class="offset-sm-2 offset-md-9 offset-lg-10 col-sm-1 col-md-3 col-lg-2">
-                                    <button class="btn btn-primary w-100 m-0"
-                                      v-on:click="updateOrganization(externalId, organization)">
-                                      <i class="fad fa-save"></i>&nbsp;<span> Salvar </span>
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="tab-pane active show" id="profileIcon" role="tabpanel"
-                            aria-labelledby="profileIcon-tab" aria-expanded="false">
-                            <p>Pudding candy canes sugar plum cookie chocolate cake powder croissant. Carrot cake
-                              tiramisu
-                              danish
-                              candy cake muffin croissant tart dessert. Tiramisu caramels candy canes chocolate cake
-                              sweet
-                              roll
-                              liquorice icing cupcake.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             <section id="horizontal-layout" class="d-">
               <div class="row">
                 <div class="col-12">
                   <form class="form form-horizontal ">
                     <div class="form-body">
-                      <h4 class="d-none form-section"><i class="ft-user"></i> Personal Info</h4>
-                      <div class="form-group row pt-3">
+                      <div class="form-group row pt-4">
                         <div class="col-md-3">
                           <h5 class="m-0"><i class="ft-user"></i> Informações Básicas</h5>
                         </div>
-                        <label class="col-md-3 label-control" for="projectinput1">Nome: </label>
-                        <div class="col-md-6">
-                          <input v-model="organization.name" type="text" id="projectinput1" class="form-control"
-                            name="fname">
+                        <label for="field-organization-name" class="col-md-3 label-control">Nome: </label>
+                        <div class="input-group col-md-6">
+                          <input id="field-organization-name" :readonly="editingField != 'name'"
+                            v-model="organization.name" class="form-control" type="text">
+                          <div v-if="editingField === 'name'" class="input-group-append">
+                            <button v-on:click="patchOrganization(organization.id, {'name': organization.name})"
+                              class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingField !== 'name'" v-on:click="editing('name')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
                       <div class="form-group row">
                         <div class="col-md-3"></div>
-                        <label class="col-md-3 label-control" for="projectinput2">CPF ou CNPJ: </label>
-                        <div class="col-md-6">
-                          <input v-model="organization.cnpj" type="text" id="projectinput2" class="form-control"
-                            name="lname">
+                        <label for="field-organization-cnpj" class="col-md-3 label-control">CPF ou CNPJ: </label>
+                        <div class="input-group col-md-6">
+                          <input id="field-organization-cnpj" v-model="organization.cnpj"
+                            :readonly="editingField != 'cnpj'" class="form-control" type="text">
+                          <div v-if="editingField === 'cnpj'" class="input-group-append">
+                            <button v-on:click="patchOrganization(organization.id, {'cnpj': organization.cnpj})"
+                              class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingField !== 'cnpj'" v-on:click="editing('cnpj')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
-
-                      <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Addon To Right"
-                          aria-describedby="basic-addon4">
-                        <div class="input-group-append">
-                          <!-- <div class="btn-group input-group-text" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-secondary"><i
-                                class="fa fa-star-o"></i></button>
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-primary"><i
-                                class="fa fa-user-o"></i></button>
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-success"><i
-                                class="fa fa-search"></i></button>
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-warning"><i
-                                class="fa fa-camera"></i></button>
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-info"><i
-                                class="fa fa-camera"></i></button>
-                            <button type="button" class="btn btn-raised btn-icon btn-outline-danger"><i
-                                class="fa fa-smile-o"></i></button>
-                          </div> -->
-                          <span class="input-group-text bg-transparent border-grey" id="basic-addon4"><i
-                              class="fa fa-save text-success"></i></span>
-                          <span class="input-group-text bg-transparent border-grey" id="basic-addon4"><i
-                              class="fa fa-times text-danger"></i></span>
-                        </div>
-                      </div>
-
                       <div class="form-group row">
                         <div class="col-md-3"></div>
-                        <label class="col-md-3 label-control" for="projectinput3">Código no Sistema Contábil: </label>
-                        <div class="col-md-6">
-                          <input v-model="organization.codigoERP" type="text" id="projectinput3" class="form-control"
-                            name="email">
+                        <label for="field-organization-codigoERP" class="col-md-3 label-control">Código no Sistema Contábil: </label>
+                        <div class="input-group col-md-6">
+                          <input id="field-organization-codigoERP" v-model="organization.codigoERP"
+                            :readonly="editingField != 'codigoERP'" class="form-control" type="text">
+                          <div v-if="editingField === 'codigoERP'" class="input-group-append">
+                            <button v-on:click="patchOrganization(organization.id, {'codigoERP': organization.codigoERP})"
+                              class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingField !== 'codigoERP'" v-on:click="editing('codigoERP')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
-
                     </div>
                   </form>
                 </div>
@@ -334,7 +198,7 @@
                                 width="25" height="25" v-bind:alt="customer.email">
                             </td>
                             <td>
-                              <a v-bind:href="'usuarios/' + customer.username">
+                              <a v-bind:href="'/usuarios/' + customer.username">
                                 {{ customer.firstName + ' ' + customer.lastName }}
                               </a>
                               <br>
@@ -365,7 +229,7 @@
   <!-- Font Awesome Kit -->
   <script src="https://kit.fontawesome.com/fba5ae40d6.js"></script>
 
-  <script th:src="@{/js/views/organization-details.js}" type="module"></script>
+  <script th:src="@{/js/views/organization.js}" type="module"></script>
 
 </body>
 

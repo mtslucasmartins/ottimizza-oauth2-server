@@ -107,25 +107,22 @@ public class OrganizationController {
         }
     }
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public HttpEntity<?> save(Organization organization, 
-                           Principal principal) {
+    //
+    @PostMapping
+    public HttpEntity<?> create(OrganizationDTO organizationDTO,  Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.save(organization, authorizedUser));
+            return ResponseEntity.ok(organizationService.create(organizationDTO, authorizedUser));
         } catch (OrganizationAlreadyRegisteredException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
         } catch (Exception ex) {
-            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
 
-
-
-    @PutMapping(value = { "/{id}" })
+    @PutMapping("/{id}")
     public HttpEntity<?> update(@PathVariable("id") BigInteger id, 
                                 @RequestBody OrganizationDTO organizationDTO, 
                                 Principal principal) {
@@ -148,7 +145,7 @@ public class OrganizationController {
         }
     }
 
-    @PatchMapping(value = { "/{id}" })
+    @PatchMapping("/{id}")
     public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
                                @RequestBody OrganizationDTO organizationDTO, 
                                Principal principal) {
@@ -174,6 +171,21 @@ public class OrganizationController {
     ///
     ///
     ///
+    // @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    // public HttpEntity<?> save(Organization organization, 
+    //                        Principal principal) {
+    //     try {
+    //         User authorizedUser = userService.findByUsername(principal.getName());
+    //         return ResponseEntity.ok(organizationService.save(organization, authorizedUser));
+    //     } catch (OrganizationAlreadyRegisteredException ex) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT)
+    //                 .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
+    //     } catch (Exception ex) {
+    //         ex.printStackTrace();
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+    //     }
+    // }
     ///
     // @PutMapping(value = "/{externalId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     // public HttpEntity<?> save(@PathVariable("externalId") String externalId, 
