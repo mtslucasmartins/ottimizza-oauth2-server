@@ -1,8 +1,11 @@
 package br.com.ottimizza.application.service;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -11,8 +14,11 @@ import javax.inject.Inject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import br.com.ottimizza.application.domain.Authorities;
+import br.com.ottimizza.application.domain.OrganizationTypes;
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
@@ -90,6 +96,84 @@ public class OrganizationService {
 
     //
     //
+    public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+        Organization organization = organizationDTO.toEntity();
+        organization.setExternalId(UUID.randomUUID().toString());
+        organization.setType(OrganizationTypes.CLIENT.getValue());
+
+        if (organizationDTO.getOrganizationId() == null) {
+            if (authorizedUser.getOrganization() != null 
+                && authorizedUser.getOrganization().getId() != null) {
+                organizationDTO.setOrganizationId(authorizedUser.getOrganization().getId());
+            }
+        }
+
+        checkIfOrganizationIsNotParentOfItself(organization);
+
+        checkIfOrganizationIsNotAlreadyRegistered(organization);
+
+        return OrganizationDTO.fromEntity(organizationRepository.save(organization));
+    }
+
+    public OrganizationDTO update(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+        Organization current = organizationDTO.patch(findById(id, authorizedUser));
+
+        Organization organization = organizationDTO.toEntity();
+        organization.setId(current.getId());
+        organization.setExternalId(current.getExternalId());
+        organization.setAvatar(current.getAvatar());
+        organization.setType(current.getType());
+        organization.setOrganization(current.getOrganization());
+
+        if (organizationDTO.getOrganizationId() == null) {
+            if (authorizedUser.getOrganization() != null 
+                && authorizedUser.getOrganization().getId() != null) {
+                organizationDTO.setOrganizationId(authorizedUser.getOrganization().getId());
+            }
+        }
+
+        checkIfOrganizationIsNotParentOfItself(organization);
+
+        checkIfOrganizationIsNotAlreadyRegistered(organization);
+
+        return OrganizationDTO.fromEntity(organizationRepository.save(organization));
+    }
+
+    public OrganizationDTO patch(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+        Organization current = organizationDTO.patch(findById(id, authorizedUser));
+
+        checkIfOrganizationIsNotAlreadyRegistered(current);
+
+        return OrganizationDTO.fromEntity(organizationRepository.save(current));
+    }
+
+    private boolean checkIfOrganizationIsNotAlreadyRegistered(Organization organization) 
+            throws OrganizationAlreadyRegisteredException {
+        BigInteger accountingId = organization.getOrganization() == null ? null : organization.getOrganization().getId();
+        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), organization.getId(), accountingId)) {
+            throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
+        }
+        return true;
+    }
+
+    private boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
+            throws Exception {
+        if (organization.getOrganization() != null) {
+            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
+                System.out.println("A organization cannot be a parent of itself.");
+                throw new Exception("A organization cannot be a parent of itself.");
+            }
+        }
+        return true;
+    }
+    //
+    //
+    //
+    //
+    @Deprecated
     public Organization save(Organization organization, User authorizedUser)
             throws OrganizationAlreadyRegisteredException, Exception {
         organization.setExternalId(UUID.randomUUID().toString());
@@ -122,6 +206,7 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
+    @Deprecated
     public Organization save(BigInteger id, Organization organization, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         // checking if organizations exists.
@@ -150,6 +235,7 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
+    @Deprecated
     public Organization save(String externalId, Organization organization, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         // checking if organizations exists.

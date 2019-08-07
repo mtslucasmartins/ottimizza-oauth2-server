@@ -3,6 +3,7 @@ package br.com.ottimizza.application.controllers;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.model.Organization;
@@ -119,15 +123,19 @@ public class OrganizationController {
         }
     }
 
-    @PutMapping(value = "/{externalId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpEntity<?> save(@PathVariable("externalId") String externalId, 
-                           @RequestBody Organization organization,
-                           Principal principal) {
-        try {
-            System.out.println(">>" + organization.getCnpj());
 
+
+    @PutMapping(value = { "/{id}" })
+    public HttpEntity<?> update(@PathVariable("id") BigInteger id, 
+                                @RequestBody OrganizationDTO organizationDTO, 
+                                Principal principal) {
+        try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.save(externalId, organization, authorizedUser));
+
+            OrganizationDTO updated = organizationService.update(id, organizationDTO, authorizedUser);
+
+            return ResponseEntity.ok(new GenericResponse<OrganizationDTO>( updated ));
+
         } catch (OrganizationNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("organization_not_found", ex.getMessage()));
@@ -139,5 +147,53 @@ public class OrganizationController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
+
+    @PatchMapping(value = { "/{id}" })
+    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
+                               @RequestBody OrganizationDTO organizationDTO, 
+                               Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+
+            OrganizationDTO patched = organizationService.patch(id, organizationDTO, authorizedUser);
+
+            return ResponseEntity.ok(new GenericResponse<OrganizationDTO>( patched ));
+
+        } catch (OrganizationNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
+        } catch (OrganizationAlreadyRegisteredException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
+    ///
+    ///
+    ///
+    ///
+    // @PutMapping(value = "/{externalId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    // public HttpEntity<?> save(@PathVariable("externalId") String externalId, 
+    //                        @RequestBody Organization organization,
+    //                        Principal principal) {
+    //     try {
+    //         System.out.println(">>" + organization.getCnpj());
+
+    //         User authorizedUser = userService.findByUsername(principal.getName());
+    //         return ResponseEntity.ok(organizationService.save(externalId, organization, authorizedUser));
+    //     } catch (OrganizationNotFoundException ex) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    //                 .body(new ErrorResponse("organization_not_found", ex.getMessage()));
+    //     } catch (OrganizationAlreadyRegisteredException ex) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT)
+    //                 .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
+    //     } catch (Exception ex) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+    //     }
+    // }
 
 }
