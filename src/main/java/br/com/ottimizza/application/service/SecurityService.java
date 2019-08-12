@@ -40,11 +40,12 @@ public class SecurityService {
     @Inject
     PasswordRecoveryRepository passwordRecoveryRepository;
 
-    private void validatePasswordResetTokenForUser(String username, PasswordResetToken passwordRecoveryToken)
+    protected boolean validatePasswordResetTokenForUser(String username, PasswordResetToken passwordRecoveryToken)
             throws PasswordResetTokenInvalidException {
-        if (passwordRecoveryToken.getUser().getUsername().equals(username) || passwordRecoveryToken == null) {
+        if (!passwordRecoveryToken.getUser().getUsername().equals(username) || passwordRecoveryToken == null) {
             throw new PasswordResetTokenInvalidException("invalid");
         }
+        return true;
     }
 
     private void validatePasswordResetTokenExpiryDate(PasswordResetToken passwordRecoveryToken)

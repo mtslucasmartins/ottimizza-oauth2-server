@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.repositories.users;
 
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 
 import java.util.Optional;
 import java.util.List;
@@ -17,9 +18,14 @@ public interface UsersRepository extends JpaRepository<User, String> {
 
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "
-            + "     ON (uo.username = u.username)                    "
+            + "     ON (uo.username = u.username)                 "
             + " WHERE uo.fk_organizations_id = :organizationId    ", nativeQuery = true)
     List<User> findCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId);
+
+    @Query(value = " SELECT uo FROM UserOrganizationInvite uo       "
+            + " WHERE uo.organization.id = :organizationId    ")
+    List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(
+            @Param("organizationId") BigInteger organizationId);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
     Optional<User> findByUsername(@Param("username") String username);

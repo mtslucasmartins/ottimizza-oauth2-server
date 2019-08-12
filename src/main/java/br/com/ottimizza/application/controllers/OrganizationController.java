@@ -160,7 +160,7 @@ public class OrganizationController {
     public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findUsersByOrganizationId(id, authorizedUser));
+            return ResponseEntity.ok(organizationService.findCustomersByOrganizationId(id, authorizedUser));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
@@ -171,18 +171,18 @@ public class OrganizationController {
     public HttpEntity<?> findCustomersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findUsersByOrganizationId(id, authorizedUser));
+            return ResponseEntity.ok(organizationService.findCustomersByOrganizationId(id, authorizedUser));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
 
-    @GetMapping("/{id}/custumers_pending_invites")
-    public HttpEntity<?> findCustomersPendingInvitesByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
+    @GetMapping("/{id}/custumers_invited")
+    public HttpEntity<?> findCustomersInvitedByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findUsersByOrganizationId(id, authorizedUser));
+            return ResponseEntity.ok(organizationService.findCustomersInvitedByOrganizationId(id, authorizedUser));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));

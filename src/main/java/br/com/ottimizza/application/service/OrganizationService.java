@@ -26,6 +26,7 @@ import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
@@ -78,7 +79,7 @@ public class OrganizationService {
     }
 
     //
-    public GenericResponse<UserDTO> findUsersByOrganizationId(BigInteger id, User authorizedUser) {
+    public GenericResponse<UserDTO> findCustomersByOrganizationId(BigInteger id, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
@@ -93,6 +94,19 @@ public class OrganizationService {
         }
         return new GenericResponse<UserDTO>(new ArrayList<>());
     }
+
+    public List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(BigInteger id, User authorizedUser) {
+        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
+            return authority.getName();
+        }).collect(Collectors.toList());
+        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+            return userRepository.findCustomersInvitedByOrganizationId(id);
+        }
+        return new ArrayList<UserOrganizationInvite>();
+    }
+
 
     //
     //
