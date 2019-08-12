@@ -1,15 +1,24 @@
 import {
   findOrganizationsByExternalId,
   findCustomersByOrganizationId,
+  findCustomersInvitedByOrganizationId,
   patchOrganization
 } from './../services/organizations.service.js';
+import {
+  findUserByEmail,
+} from './../services/users.service.js';
 import { BootstrapBreadcrumbComponent } from './../components/bootstrap-breadcrumb.component.js';
+
 
 var app = new Vue({
   el: '#app',
-  components: { 'breadcrumb': BootstrapBreadcrumbComponent },
+  components: {
+    'breadcrumb': BootstrapBreadcrumbComponent
+  },
   data() {
     return {
+      user: { email: '' },
+      userInputTimeout: null,
       alert: {
         icon: '',
         type: '',
@@ -24,7 +33,8 @@ var app = new Vue({
       editingField: null,
       externalId: '',
       organization: { id: null, name: '', cnpj: '', codigoERP: '' },
-      customers: []
+      customers: [],
+      customersInvited: []
     }
   },
   methods: {
@@ -36,11 +46,23 @@ var app = new Vue({
       this.alert.type = level;
       this.alert.message = message;
     },
+    findUserByEmail: function (email = '') {
+      console.log('find by email');
+
+      clearTimeout(userInputTimeout);
+      userInputTimeout = setTimeout(function () {
+        return findUserByEmail(email);
+      }, 1000);
+
+    },
     findOrganizationsByExternalId: function (externalId) {
       return findOrganizationsByExternalId(externalId);
     },
     findCustomersByOrganizationId: function (id) {
       return findCustomersByOrganizationId(id);
+    },
+    findCustomersInvitedByOrganizationId: function (id) {
+      return findCustomersInvitedByOrganizationId(id);
     },
     patchOrganization: async function (id, organization) {
       return patchOrganization(id, organization)
@@ -60,6 +82,9 @@ var app = new Vue({
     that.externalId = window.location.href.split('organizations/')[1].replace(/\?.*/, '');
     that.findOrganizationsByExternalId(that.externalId).then((response) => {
       that.organization = response;
+      that.findCustomersInvitedByOrganizationId(that.organization.id).then((response) => {
+        that.customersInvited = response.records;
+      });
       that.findCustomersByOrganizationId(that.organization.id).then((response) => {
         that.customers = response.records;
       });
@@ -69,5 +94,26 @@ var app = new Vue({
         { label: response.name, href: `/empresas/${that.externalId}`, active: true }
       ];
     });
+  }
+});
+
+
+var AddUserOrganizationSidebar = new Vue({
+  el: '#tab-add-user-content',
+  data: {
+    user: { email: '' },
+    timeout: null,
+    isLoading: false
+  },
+  methods: {
+    findUserByEmail: function (email = null) {
+      const that = this;
+      // if (!email == null && email != '') return;
+      clearTimeout(that.timeout);
+      that.timeout = null;
+      that.timeout = setTimeout(function () {
+        return findUserByEmail(email);
+      }, 1000);
+    }
   }
 });

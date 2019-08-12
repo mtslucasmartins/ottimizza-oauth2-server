@@ -9,7 +9,7 @@ export function findAllOrganizations(filter = '', pageIndex = 0, pageSize = 10) 
 
 export function findCustomersByOrganizationId(id) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/${id}/users`;
+    const url = `/api/organizations/${id}/customers`;
     $.ajax({
       url: url, type: 'get'
     }).done(function (response) {
@@ -19,6 +19,20 @@ export function findCustomersByOrganizationId(id) {
     });
   });
 };
+
+export function findCustomersInvitedByOrganizationId(id) {
+  return new Promise(function (resolve, reject) {
+    const url = `/api/organizations/${id}/customers_invited`;
+    $.ajax({
+      url: url, type: 'get'
+    }).done(function (response) {
+      resolve(response);
+    }).fail(function (jqXHR, textStatus, response) {
+      reject(response);
+    });
+  });
+};
+
 
 export function findOrganizationsByExternalId(externalId = '') {
   return new Promise(function (resolve, reject) {

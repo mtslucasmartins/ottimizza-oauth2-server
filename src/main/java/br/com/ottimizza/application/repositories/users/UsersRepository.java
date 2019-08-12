@@ -14,7 +14,23 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UsersRepository extends JpaRepository<User, String> {
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+// @formatter:off
+public interface UsersRepository extends PagingAndSortingRepository<User, String> {
+
+    // @formatter:off
+    @Query("SELECT                                "
+        + "   o                                   "
+        + " FROM User o                           "
+        + " WHERE o.email like :filter            "
+        + " AND o.organization.id = :accountingId ")
+    Page<User> findAllByAccountingId(@Param("filter") String filter, 
+                                     @Param("accountingId") BigInteger accountingId,
+                                     Pageable pageable);
+    // @formatter:on
 
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "

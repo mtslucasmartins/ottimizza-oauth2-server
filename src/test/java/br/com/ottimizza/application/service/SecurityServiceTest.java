@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -16,14 +17,20 @@ import br.com.ottimizza.application.model.user.User;
 
 class SecurityServiceTest {
 
-	SecurityService securityService = new SecurityService();
+	SecurityService securityService;
 
-	User user = new User("test@ottimizza.com.br", null, "test@ottimizza.com.br", "Lucas", "Martins", true, null, null,
-			null, null);
+	User user;
+
+	@BeforeAll
+	void setup() {
+		this.securityService = new SecurityService();
+
+		this.user = new User();
+		this.user.setUsername("test@ottimizza.com.br");
+	}
 
 	@Test
 	void whenTokenValidForUser() {
-
 		PasswordResetToken passwordResetToken = new PasswordResetToken(null, "token", user, new Date(2019, 2, 20));
 		try {
 			Assertions.assertTrue(

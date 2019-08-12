@@ -79,7 +79,7 @@ public class OrganizationService {
     }
 
     //
-    public GenericResponse<UserDTO> findCustomersByOrganizationId(BigInteger id, User authorizedUser) {
+    public List<UserDTO> findCustomersByOrganizationId(BigInteger id, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
@@ -87,12 +87,9 @@ public class OrganizationService {
          if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
-            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>(
-                UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(id))
-            );
-            return response;
+            return UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(id));
         }
-        return new GenericResponse<UserDTO>(new ArrayList<>());
+        return new ArrayList<UserDTO>();
     }
 
     public List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(BigInteger id, User authorizedUser) {

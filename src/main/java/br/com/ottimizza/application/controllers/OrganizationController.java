@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
+import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.service.OrganizationService;
 import br.com.ottimizza.application.service.UserService;
 
@@ -156,6 +158,7 @@ public class OrganizationController {
 
     //
     //
+    @Deprecated
     @GetMapping("/{id}/users")
     public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
@@ -167,22 +170,29 @@ public class OrganizationController {
         }
     }
 
-    @GetMapping("/{id}/custumers")
+    @GetMapping("/{id}/customers")
     public HttpEntity<?> findCustomersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findCustomersByOrganizationId(id, authorizedUser));
+
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>( 
+                organizationService.findCustomersByOrganizationId(id, authorizedUser) 
+            );
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
 
-    @GetMapping("/{id}/custumers_invited")
+    @GetMapping("/{id}/customers_invited")
     public HttpEntity<?> findCustomersInvitedByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findCustomersInvitedByOrganizationId(id, authorizedUser));
+            GenericResponse<UserOrganizationInvite> response = new GenericResponse<UserOrganizationInvite>( 
+                organizationService.findCustomersInvitedByOrganizationId(id, authorizedUser) 
+            );
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));

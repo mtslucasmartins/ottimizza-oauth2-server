@@ -4,8 +4,13 @@ import java.math.BigInteger;
 import java.security.Principal;
 
 import javax.inject.Inject;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import antlr.collections.List;
+import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
@@ -23,5 +28,14 @@ public class UserService {
     public User findByUsername(String username) throws UserNotFoundException, Exception {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
+
+    // @formatter:off
+    public Page<UserDTO> findAllByAccountingId(String filter, int pageIndex, int pageSize, Principal principal)
+            throws UserNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        return userRepository.findAllByAccountingId(
+            "%" + filter + "%", authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize)
+        ).map(UserDTO::fromEntity);
+    } // @formatter:on
 
 }
