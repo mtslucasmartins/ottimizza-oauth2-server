@@ -103,6 +103,34 @@ public class OrganizationService {
         }
         return new ArrayList<UserOrganizationInvite>();
     }
+    
+    public String inviteCustomer(BigInteger id, Map<String,String> args, User authorizedUser) 
+                throws OrganizationNotFoundException, Exception {
+        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
+            return authority.getName();
+        }).collect(Collectors.toList());
+        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+
+            String token = UUID.randomUUID().toString();
+            String email = args.getOrDefault("email", "");
+            Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+
+            if (email.equals("")) {
+                throw new IllegalArgumentException("Email cannot be blank.");
+            }
+
+            // saves the token to database.
+            organizationRepository.saveCustomerInviteToken(id, email, token);
+
+            // sends the token to the invited user.
+            // TODO
+            return token;
+        }
+        return "";
+    }
 
 
     //
@@ -185,7 +213,7 @@ public class OrganizationService {
     //
     //
     @Deprecated
-    public Organization save(Organization organization, User authorizedUser)
+    private Organization save(Organization organization, User authorizedUser)
             throws OrganizationAlreadyRegisteredException, Exception {
         organization.setExternalId(UUID.randomUUID().toString());
         // Checking if organization wont cause an loop
@@ -218,7 +246,7 @@ public class OrganizationService {
     }
 
     @Deprecated
-    public Organization save(BigInteger id, Organization organization, User authorizedUser)
+    private Organization save(BigInteger id, Organization organization, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         // checking if organizations exists.
         Organization current = findById(id, authorizedUser);
@@ -247,7 +275,7 @@ public class OrganizationService {
     }
 
     @Deprecated
-    public Organization save(String externalId, Organization organization, User authorizedUser)
+    private Organization save(String externalId, Organization organization, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         // checking if organizations exists.
         Organization current = findByExternalId(externalId, authorizedUser);

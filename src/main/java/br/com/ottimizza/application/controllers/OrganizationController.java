@@ -2,6 +2,7 @@ package br.com.ottimizza.application.controllers;
 
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -56,21 +57,6 @@ public class OrganizationController {
                     .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
-    }
-
-    @GetMapping("/uuid/{externalId}")
-    public HttpEntity<?> findByExternalId(@PathVariable("externalId") String externalId, 
-                               Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findByExternalId(externalId, authorizedUser));
-        } catch (OrganizationNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
-        } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
@@ -156,6 +142,21 @@ public class OrganizationController {
         }
     }
 
+    @GetMapping("/uuid/{externalId}")
+    public HttpEntity<?> findByExternalId(@PathVariable("externalId") String externalId, 
+                               Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+            return ResponseEntity.ok(organizationService.findByExternalId(externalId, authorizedUser));
+        } catch (OrganizationNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
     //
     //
     @Deprecated
@@ -198,5 +199,26 @@ public class OrganizationController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
+
+    @PostMapping("/{id}/customers/invite")
+    public HttpEntity<?> sendInviteCustomer(@PathVariable("id") BigInteger id,@RequestBody  Map<String, String> args, Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+            GenericResponse<String> response = new GenericResponse<String>( 
+                organizationService.inviteCustomer(id, args, authorizedUser) 
+            );
+            return ResponseEntity.ok(response);
+        } catch (OrganizationNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("illegal_arguments", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
 
 }

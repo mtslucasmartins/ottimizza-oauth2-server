@@ -8,8 +8,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+
+import javax.transaction.Transactional;
 
 public interface OrganizationRepository extends PagingAndSortingRepository<Organization, BigInteger> { // @formatter:off
 
@@ -56,5 +59,14 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
                                                       @Param("accountingId") BigInteger accountingId, 
                                                       @Param("username") String username, 
                                                       Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO users_organizations_invites      "
+            + "        (email, token, fk_organizations_id)       "
+            + "     VALUES (:email, :token, :organizationId)     ", nativeQuery = true)
+    void saveCustomerInviteToken(@Param("organizationId") BigInteger organizationId,
+                                 @Param("email") String email, 
+                                 @Param("token") String token);
 
 }

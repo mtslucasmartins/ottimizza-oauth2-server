@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 // @formatter:off
 public interface UsersRepository extends PagingAndSortingRepository<User, String> {
 
-    // @formatter:off
     @Query("SELECT                                "
         + "   o                                   "
         + " FROM User o                           "
@@ -30,8 +29,7 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
     Page<User> findAllByAccountingId(@Param("filter") String filter, 
                                      @Param("accountingId") BigInteger accountingId,
                                      Pageable pageable);
-    // @formatter:on
-
+ 
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "
             + "     ON (uo.username = u.username)                 "
@@ -42,6 +40,15 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
             + " WHERE uo.organization.id = :organizationId    ")
     List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(
             @Param("organizationId") BigInteger organizationId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO users_organizations      "
+            + "    (email, token, fk_organizations_id)   "
+            + " VALUES (:email, :token, :organizationId) ", nativeQuery = true)
+   void inviteCustomer(@Param("organizationId") BigInteger organizationId,
+                                                @Param("email") String email, 
+                                                @Param("token") String token);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
     Optional<User> findByUsername(@Param("username") String username);

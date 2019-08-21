@@ -8,6 +8,7 @@ import {
   findUserByEmail,
 } from './../services/users.service.js';
 import { BootstrapBreadcrumbComponent } from './../components/bootstrap-breadcrumb.component.js';
+import { AutocompleteWrapper, Autocomplete, AutocompleteOption } from '../components/autocomplete.component.js';
 
 
 var app = new Vue({
@@ -27,8 +28,8 @@ var app = new Vue({
         visible: false
       },
       breadcrumb: [
-        { label: 'Início', href: '/', active: false },
-        { label: 'Empresas', href: '/empresas', active: false }
+        { label: 'Início', icon: { 'fa': true, 'fa-user': true }, href: '/', active: false },
+        { label: 'Empresas', icon: { 'fa': true, 'fa-user': true }, href: '/empresas', active: false }
       ],
       editingField: null,
       externalId: '',
@@ -89,9 +90,9 @@ var app = new Vue({
         that.customers = response.records;
       });
       that.breadcrumb = [
-        { label: 'Início', href: '/', active: false },
-        { label: 'Empresas', href: '/empresas', active: false },
-        { label: response.name, href: `/empresas/${that.externalId}`, active: true }
+        { label: 'Início', icon: { 'fad': true, 'fa-home-alt': true }, href: '/', active: false },
+        { label: 'Empresas', icon: { 'fad': true, 'fa-industry-alt': true }, href: '/empresas', active: false },
+        { label: response.name, icon: null, href: `/empresas/${that.externalId}`, active: true }
       ];
     });
   }
@@ -100,20 +101,31 @@ var app = new Vue({
 
 var AddUserOrganizationSidebar = new Vue({
   el: '#tab-add-user-content',
+  components: {
+    'autocomplete-wrapper': AutocompleteWrapper,
+    'autocomplete': Autocomplete,
+    'autocomplete-option': AutocompleteOption
+  },
   data: {
     user: { email: '' },
+    users: [],
     timeout: null,
     isLoading: false
   },
   methods: {
     findUserByEmail: function (email = null) {
       const that = this;
-      // if (!email == null && email != '') return;
       clearTimeout(that.timeout);
       that.timeout = null;
-      that.timeout = setTimeout(function () {
-        return findUserByEmail(email);
-      }, 1000);
+      that.timeout = setTimeout(async function () {
+        findUserByEmail(email).then((response) => {
+          that.users = response.records;
+        });
+      }, 380);
+    },
+    onSelected: function (event) {
+      this.user = event.selected;
+      this.users = [];
     }
   }
 });

@@ -45,12 +45,16 @@ public class OrganizationDTO implements Serializable {
     public Organization toEntity() {
         Organization organization = new Organization();
 
+        Organization accounting = new Organization();
+        accounting.setId(this.organizationId);
+
         organization.setId(this.id);
         organization.setExternalId(this.externalId);
         organization.setName(this.name);
         organization.setCnpj(this.cnpj);
         organization.setCodigoERP(this.codigoERP);
         organization.setAvatar(this.avatar);
+        organization.setOrganization(accounting);
 
         return organization;
     }
