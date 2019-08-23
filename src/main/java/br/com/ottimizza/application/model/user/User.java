@@ -61,10 +61,6 @@ public class User implements Serializable {
     private Integer type;
 
     @Getter @Setter
-    @Column(name = "activationkey")
-    private String activationKey; 
-
-    @Getter @Setter
     @Column(name = "avatar")
     private String avatar; 
 
@@ -80,5 +76,10 @@ public class User implements Serializable {
     @ManyToOne
     @JoinColumn(name = "fk_accounting_id", nullable = true)
     private Organization organization;
+
+    public static class Type {
+        public static final Integer ACCOUNTANT = 1;
+        public static final Integer CUSTOMER = 2;
+    }
 
 }

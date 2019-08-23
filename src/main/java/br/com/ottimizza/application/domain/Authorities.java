@@ -3,6 +3,8 @@ package br.com.ottimizza.application.domain;
 public enum Authorities { // @formatter:off
 
     ADMIN("ADMIN"),
+    WRITE("WRITE"),
+    READ("READ"),
     CUSTOMER_READ("CUSTOMER_READ"),
     CUSTOMER_WRITE("CUSTOMER_WRITE"),
     ACCOUNTANT_READ("ACCOUNTANT_READ"),

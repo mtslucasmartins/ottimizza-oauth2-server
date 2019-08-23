@@ -46,10 +46,11 @@ public class SignUpController {
     }
 
     @PostMapping("/register")
-    public String signup(User user, Organization organization, Model model) {
+    public String signup(@RequestParam(name = "token", defaultValue = "") String token, User user,
+            Organization organization, Model model) {
         try {
             // registering user
-            user = signUpService.register(user, organization);
+            user = signUpService.register(user, organization, token);
 
             // if no exceptions was thrown adds a success attribute.
             model.addAttribute("success", "true");

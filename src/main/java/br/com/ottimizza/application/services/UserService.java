@@ -13,6 +13,7 @@ import antlr.collections.List;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
@@ -37,5 +38,13 @@ public class UserService {
             "%" + filter + "%", authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize)
         ).map(UserDTO::fromEntity);
     } // @formatter:on
+
+    public boolean checkIfEmailIsAlreadyRegistered(User user) throws UserAlreadyRegisteredException {
+        if (userRepository.emailIsAlreadyRegistered(user.getEmail())) {
+            System.out.println("A user with that email address is already registered.");
+            throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
+        }
+        return true;
+    }
 
 }

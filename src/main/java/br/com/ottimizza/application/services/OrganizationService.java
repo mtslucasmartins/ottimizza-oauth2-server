@@ -226,7 +226,7 @@ public class OrganizationService {
     /* ****************************************************************************************************************
      * VALIDATIONS
      * ************************************************************************************************************* */
-    private boolean checkIfOrganizationIsNotAlreadyRegistered(Organization organization) 
+    public boolean checkIfOrganizationIsNotAlreadyRegistered(Organization organization) 
             throws OrganizationAlreadyRegisteredException {
         BigInteger accountingId = organization.getOrganization() == null ? null : organization.getOrganization().getId();
         if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), organization.getId(), accountingId)) {
@@ -235,7 +235,7 @@ public class OrganizationService {
         return true;
     }
 
-    private boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
+    public boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
             throws Exception {
         if (organization.getOrganization() != null) {
             if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
