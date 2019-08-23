@@ -69,4 +69,10 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
                                  @Param("email") String email, 
                                  @Param("token") String token);
 
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO users_organizations (username, fk_organizations_id) VALUES (:username, :organizationId)", nativeQuery = true)
+    void addCustomer(@Param("username") String username, @Param("organizationId") BigInteger authority);
+
 }

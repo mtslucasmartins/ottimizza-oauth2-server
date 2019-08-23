@@ -1,4 +1,4 @@
-package br.com.ottimizza.application.service;
+package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
 import java.security.Principal;

@@ -85,11 +85,18 @@
                               class="alert bg-warning alert-icon-left alert-dismissible mb-3 px-3">
                               <strong>Oops!</strong> <span th:text="${error_message}"></span>
                             </div>
-                            <div th:object="${organization}">
+                            <div th:if="${organization.getId() == null}" th:object="${organization}">
                               <input id="name" th:value="${organization.name}" name="name"
                                 class="form-control text-dark mb-3" placeholder="Empresa" type="text" required />
                               <input id="cnpj" th:value="${organization.cnpj}" name="cnpj"
                                 class="form-control text-dark mb-3" placeholder="CNPJ" type="text" required />
+                            </div>
+                            <div th:if="${organization.getId() != null}" th:object="${organization}">
+                              <input id="name" th:value="${organization.name}" name="name"
+                                class="form-control text-dark mb-3" placeholder="Empresa" type="text" required
+                                disabled />
+                              <input id="cnpj" th:value="${organization.cnpj}" name="cnpj"
+                                class="form-control text-dark mb-3" placeholder="CNPJ" type="text" required disabled />
                             </div>
                             <div th:object="${user}">
                               <div class="row">
@@ -107,6 +114,7 @@
                                 </div>
                               </div>
                               <input id="email" th:value="${user.email}" name="email"
+                                th:readonly="${organization.getId() != null && user.email != null}"
                                 class="form-control mb-3 text-dark" placeholder="Email" type="email" required />
                               <div class="form-group">
                                 <div class="controls mb-1">

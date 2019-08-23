@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
-import br.com.ottimizza.application.service.impl.UserDetailsService;
+import br.com.ottimizza.application.services.impl.UserDetailsService;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

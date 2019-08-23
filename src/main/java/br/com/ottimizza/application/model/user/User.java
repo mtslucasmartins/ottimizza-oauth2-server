@@ -57,6 +57,10 @@ public class User implements Serializable {
     private boolean activated;
 
     @Getter @Setter
+    @Column(name = "type")
+    private Integer type;
+
+    @Getter @Setter
     @Column(name = "activationkey")
     private String activationKey; 
 

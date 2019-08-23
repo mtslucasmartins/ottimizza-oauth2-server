@@ -36,10 +36,10 @@ import br.com.ottimizza.application.model.user.User;
 // Repositories
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
-import br.com.ottimizza.application.service.MailContentBuilder;
 
 // Services
-import br.com.ottimizza.application.service.SecurityService;
+import br.com.ottimizza.application.services.SecurityService;
+import br.com.ottimizza.application.services.MailContentBuilder;
 
 @Controller
 public class PasswordRecoveryController {

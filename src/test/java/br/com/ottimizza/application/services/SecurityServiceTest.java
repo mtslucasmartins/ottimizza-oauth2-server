@@ -1,4 +1,4 @@
-package br.com.ottimizza.application.service;
+package br.com.ottimizza.application.services;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

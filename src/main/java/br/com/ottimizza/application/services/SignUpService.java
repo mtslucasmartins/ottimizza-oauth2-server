@@ -1,8 +1,6 @@
-package br.com.ottimizza.application.service;
+package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -11,11 +9,12 @@ import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
-import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.AuthorityRepository;
 import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
+import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
@@ -33,6 +32,9 @@ public class SignUpService {
 
     @Inject
     PasswordRecoveryRepository passwordRecoveryRepository;
+
+    @Inject
+    UserOrganizationInviteRepository userOrganizationInviteRepository;
 
     public User register(User user, Organization organization)
             throws OrganizationAlreadyRegisteredException, UserAlreadyRegisteredException, Exception {
@@ -72,6 +74,10 @@ public class SignUpService {
         userRepository.addAuthority(user.getUsername(), "ACCOUNTANT_ADMIN");
 
         return user;
+    }
+
+    public UserOrganizationInvite getInviteTokenDetails(String token) {
+        return userOrganizationInviteRepository.findByToken(token);
     }
 
 }

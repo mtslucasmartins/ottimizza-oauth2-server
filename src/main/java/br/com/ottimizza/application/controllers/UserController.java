@@ -15,8 +15,8 @@ import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.user.User;
 
-import br.com.ottimizza.application.service.SecurityService;
-import br.com.ottimizza.application.service.UserService;
+import br.com.ottimizza.application.services.SecurityService;
+import br.com.ottimizza.application.services.UserService;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

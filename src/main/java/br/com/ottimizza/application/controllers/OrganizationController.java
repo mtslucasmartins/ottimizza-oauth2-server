@@ -28,8 +28,8 @@ import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegiste
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
-import br.com.ottimizza.application.service.OrganizationService;
-import br.com.ottimizza.application.service.UserService;
+import br.com.ottimizza.application.services.OrganizationService;
+import br.com.ottimizza.application.services.UserService;
 
 @RestController // @formatter:off
 @RequestMapping(value = "/api/organizations")
@@ -62,10 +62,12 @@ public class OrganizationController {
         }
     }
 
-    //
-    //
+    /********************************************************************************************* **
+     * CREATE UPDATE PATCH
+     * ******************************************************************************************* */
     @PostMapping
-    public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,  Principal principal) {
+    public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,  
+            Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
             return ResponseEntity.ok(organizationService.create(organizationDTO, authorizedUser));
@@ -157,27 +159,17 @@ public class OrganizationController {
         }
     }
 
-    //
-    //
-    @Deprecated
-    @GetMapping("/{id}/users")
-    public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findCustomersByOrganizationId(id, authorizedUser));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
-    }
-
+    
+    /********************************************************************************************* **
+     * CUSTOMERS
+     * ******************************************************************************************* */
     @GetMapping("/{id}/customers")
-    public HttpEntity<?> findCustomersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
+    public HttpEntity<?> fetchCustomers(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
 
             GenericResponse<UserDTO> response = new GenericResponse<UserDTO>( 
-                organizationService.findCustomersByOrganizationId(id, authorizedUser) 
+                organizationService.fetchCustomers(id, authorizedUser) 
             );
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -186,12 +178,33 @@ public class OrganizationController {
         }
     }
 
-    @GetMapping("/{id}/customers_invited")
-    public HttpEntity<?> findCustomersInvitedByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
+    @PostMapping("/{id}/customers")
+    public HttpEntity<?> appendCustomer(@PathVariable("id") BigInteger id, 
+                                                       @RequestBody UserDTO userDTO,
+                                                       Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>( 
+                organizationService.appendCustomer(id, userDTO, authorizedUser) 
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+    
+    
+    /********************************************************************************************* **
+     * INVITED CUSTOMERS 
+     * ******************************************************************************************* */
+    @GetMapping("/{id}/customers/invited")
+    public HttpEntity<?> fetchInvitedCustomers(@PathVariable("id") BigInteger id, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
             GenericResponse<UserOrganizationInvite> response = new GenericResponse<UserOrganizationInvite>( 
-                organizationService.findCustomersInvitedByOrganizationId(id, authorizedUser) 
+                organizationService.fetchInvitedCustomers(id, authorizedUser) 
             );
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -201,10 +214,12 @@ public class OrganizationController {
     }
 
     @PostMapping("/{id}/customers/invite")
-    public HttpEntity<?> sendInviteCustomer(@PathVariable("id") BigInteger id,@RequestBody  Map<String, String> args, Principal principal) {
+    public HttpEntity<?> inviteCustomer(@PathVariable("id") BigInteger id,
+                                        @RequestBody  Map<String, String> args, 
+                                        Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            GenericResponse<String> response = new GenericResponse<String>( 
+            GenericResponse<Map<String, String>> response = new GenericResponse<Map<String, String>>( 
                 organizationService.inviteCustomer(id, args, authorizedUser) 
             );
             return ResponseEntity.ok(response);
@@ -220,5 +235,20 @@ public class OrganizationController {
         }
     }
 
+
+    /********************************************************************************************* **
+     * USERS
+     * ******************************************************************************************* */
+    @Deprecated
+    @GetMapping("/{id}/users")
+    public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+            return ResponseEntity.ok(organizationService.fetchCustomers(id, authorizedUser));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
 
 }

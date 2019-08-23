@@ -6,12 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
-import br.com.ottimizza.application.service.SignUpService;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
+import br.com.ottimizza.application.services.SignUpService;
 
 @Controller
 public class SignUpController {
@@ -20,9 +22,25 @@ public class SignUpController {
     SignUpService signUpService;
 
     @GetMapping("/register")
-    public String signupPage(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("organization", new Organization());
+    public String signupPage(@RequestParam(name = "token", defaultValue = "") String token, Model model) {
+
+        User user = new User();
+        Organization organization = new Organization();
+
+        if (!token.equals("")) {
+            System.out.println("User has token  " + token);
+
+            UserOrganizationInvite inviteTokenDetails = signUpService.getInviteTokenDetails(token);
+
+            //
+            user.setEmail(inviteTokenDetails.getEmail());
+            organization = inviteTokenDetails.getOrganization();
+
+            System.out.println(organization.getId());
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("organization", organization);
 
         return "signup.html";
     }

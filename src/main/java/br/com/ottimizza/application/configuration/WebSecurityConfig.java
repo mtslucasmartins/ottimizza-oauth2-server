@@ -1,6 +1,6 @@
 package br.com.ottimizza.application.configuration;
 
-import br.com.ottimizza.application.service.impl.UserDetailsService;
+import br.com.ottimizza.application.services.impl.UserDetailsService;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,34 +1,24 @@
 package br.com.ottimizza.application.controllers;
 
-import java.math.BigInteger;
 import java.security.Principal;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
-import br.com.ottimizza.application.model.OAuthClientDetails;
 import br.com.ottimizza.application.model.user.User;
-import br.com.ottimizza.application.service.OAuthService;
-import br.com.ottimizza.application.service.UserService;
+import br.com.ottimizza.application.services.OAuthService;
+import br.com.ottimizza.application.services.UserService;
 
 @RestController // @formatter:off
 @RequestMapping(value = "/api/oauth_clients")

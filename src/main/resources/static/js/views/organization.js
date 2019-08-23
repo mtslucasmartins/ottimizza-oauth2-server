@@ -2,7 +2,10 @@ import {
   findOrganizationsByExternalId,
   findCustomersByOrganizationId,
   findCustomersInvitedByOrganizationId,
-  patchOrganization
+  patchOrganization,
+  fetchInvitedCustomers,
+  appendCustomer,
+  inviteCustomer
 } from './../services/organizations.service.js';
 import {
   findUserByEmail,
@@ -10,6 +13,9 @@ import {
 import { BootstrapBreadcrumbComponent } from './../components/bootstrap-breadcrumb.component.js';
 import { AutocompleteWrapper, Autocomplete, AutocompleteOption } from '../components/autocomplete.component.js';
 
+
+
+let organization = {};
 
 var app = new Vue({
   el: '#app',
@@ -63,7 +69,7 @@ var app = new Vue({
       return findCustomersByOrganizationId(id);
     },
     findCustomersInvitedByOrganizationId: function (id) {
-      return findCustomersInvitedByOrganizationId(id);
+      return fetchInvitedCustomers(id);
     },
     patchOrganization: async function (id, organization) {
       return patchOrganization(id, organization)
@@ -83,6 +89,11 @@ var app = new Vue({
     that.externalId = window.location.href.split('organizations/')[1].replace(/\?.*/, '');
     that.findOrganizationsByExternalId(that.externalId).then((response) => {
       that.organization = response;
+      organization = response;
+
+      console.log(organization);
+      
+
       that.findCustomersInvitedByOrganizationId(that.organization.id).then((response) => {
         that.customersInvited = response.records;
       });
@@ -118,10 +129,32 @@ var AddUserOrganizationSidebar = new Vue({
       clearTimeout(that.timeout);
       that.timeout = null;
       that.timeout = setTimeout(async function () {
+        that.users = [];
         findUserByEmail(email).then((response) => {
-          that.users = response.records;
+          const records = response.records;
+          if (records.length == 0) {
+            console.log('Users not found.');
+          } else {
+            that.users = records;
+          }
         });
       }, 380);
+    },
+    appendCustomer: async function (user = {}) {
+      console.log('Appending...', user);
+      if (user.username) {
+        return appendCustomer(organization.id, user).then((response) => {
+          console.log(response);
+        });
+      } else {
+        return this.inviteCustomer(user.email);
+      }
+    },
+    inviteCustomer: async function (email) {
+      console.log('Inviting...', email);
+      return inviteCustomer(organization.id, email).then((response) => {
+          console.log(response);
+      });
     },
     onSelected: function (event) {
       this.user = event.selected;

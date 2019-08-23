@@ -1,4 +1,4 @@
-package br.com.ottimizza.application.service.impl;
+package br.com.ottimizza.application.services.impl;
 
 import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.user.User;

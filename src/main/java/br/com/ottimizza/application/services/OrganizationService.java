@@ -1,9 +1,7 @@
-package br.com.ottimizza.application.service;
+package br.com.ottimizza.application.services;
 
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +12,6 @@ import javax.inject.Inject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import br.com.ottimizza.application.domain.Authorities;
 import br.com.ottimizza.application.domain.OrganizationTypes;
@@ -22,11 +19,12 @@ import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
+import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
@@ -38,6 +36,12 @@ public class OrganizationService {
 
     @Inject
     OrganizationRepository organizationRepository;
+
+    @Inject
+    UserOrganizationInviteRepository userOrganizationInviteRepository;
+
+    @Inject
+    MailServices mailServices;
 
     public Organization findById(BigInteger id, User authorizedUser) throws OrganizationNotFoundException, Exception {
         return organizationRepository.findById(id)
@@ -78,8 +82,22 @@ public class OrganizationService {
         return new GenericPageableResponse<>();
     }
 
-    //
-    public List<UserDTO> findCustomersByOrganizationId(BigInteger id, User authorizedUser) {
+    /* ****************************************************************************************************************
+     * CUSTOMERS
+     * ************************************************************************************************************* */
+    public UserDTO appendCustomer(BigInteger id, UserDTO userDTO, User authorizedUser)
+            throws OrganizationNotFoundException, UserNotFoundException, Exception {
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+        User user = userRepository.findByUsername(userDTO.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("Organization not found."));
+
+        organizationRepository.addCustomer(user.getUsername(), organization.getId());
+
+        return UserDTO.fromEntity(user);
+    }
+
+    public List<UserDTO> fetchCustomers(BigInteger id, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
@@ -91,8 +109,12 @@ public class OrganizationService {
         }
         return new ArrayList<UserDTO>();
     }
-
-    public List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(BigInteger id, User authorizedUser) {
+    
+    
+    /* ****************************************************************************************************************
+     * INVITED CUSTOMERS
+     * ************************************************************************************************************* */
+    public List<UserOrganizationInvite> fetchInvitedCustomers(BigInteger id, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
@@ -104,7 +126,7 @@ public class OrganizationService {
         return new ArrayList<UserOrganizationInvite>();
     }
     
-    public String inviteCustomer(BigInteger id, Map<String,String> args, User authorizedUser) 
+    public Map<String,String> inviteCustomer(BigInteger id, Map<String,String> args, User authorizedUser) 
                 throws OrganizationNotFoundException, Exception {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
@@ -122,19 +144,30 @@ public class OrganizationService {
                 throw new IllegalArgumentException("Email cannot be blank.");
             }
 
+            UserOrganizationInvite invite = new UserOrganizationInvite();
+            invite.setEmail(email);
+            invite.setToken(token);
+            invite.setOrganization(organization);
+
             // saves the token to database.
-            organizationRepository.saveCustomerInviteToken(id, email, token);
+            invite = userOrganizationInviteRepository.save(invite);
+
+            mailServices.send(authorizedUser.getOrganization().getName(), 
+                                invite.getEmail(), 
+                                "Convite", 
+                                mailServices.inviteCustomerTemplate(authorizedUser, token));
 
             // sends the token to the invited user.
             // TODO
-            return token;
+            args.put("token", token);
         }
-        return "";
+        return args;
     }
 
 
-    //
-    //
+    /* ****************************************************************************************************************
+     * CREATE - UPDATE - PATCH
+     * ************************************************************************************************************* */
     public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         Organization organization = organizationDTO.toEntity();
@@ -189,6 +222,10 @@ public class OrganizationService {
         return OrganizationDTO.fromEntity(organizationRepository.save(current));
     }
 
+
+    /* ****************************************************************************************************************
+     * VALIDATIONS
+     * ************************************************************************************************************* */
     private boolean checkIfOrganizationIsNotAlreadyRegistered(Organization organization) 
             throws OrganizationAlreadyRegisteredException {
         BigInteger accountingId = organization.getOrganization() == null ? null : organization.getOrganization().getId();
@@ -207,103 +244,6 @@ public class OrganizationService {
             }
         }
         return true;
-    }
-    //
-    //
-    //
-    //
-    @Deprecated
-    private Organization save(Organization organization, User authorizedUser)
-            throws OrganizationAlreadyRegisteredException, Exception {
-        organization.setExternalId(UUID.randomUUID().toString());
-        // Checking if organization wont cause an loop
-        if (organization.getOrganization() != null) {
-            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
-                System.out.println("A organization cannot be a parent of itself.");
-                throw new Exception("A organization cannot be a parent of itself.");
-            }
-        } else {
-            if (authorizedUser.getOrganization() != null && authorizedUser.getOrganization().getId() != null) {
-                organization.setOrganization(authorizedUser.getOrganization());
-                if (organization.getId() != null
-                        && organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
-                    System.out.println("A organization cannot be a parent of itself.");
-                    throw new Exception("A organization cannot be a parent of itself.");
-                }
-            }
-        }
-
-        // Checking if organization is already registered.
-        BigInteger organizationId = organization.getOrganization() == null ? null
-                : organization.getOrganization().getId();
-        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), null, organizationId)) {
-            System.out.println("A organization with that cnpj is already registered.");
-            throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
-        }
-
-        // creates the organization.
-        return organizationRepository.save(organization);
-    }
-
-    @Deprecated
-    private Organization save(BigInteger id, Organization organization, User authorizedUser)
-            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-        // checking if organizations exists.
-        Organization current = findById(id, authorizedUser);
-
-        organization.setId(current.getId());
-        organization.setExternalId(current.getExternalId());
-
-        // Checking if organization wont cause an loop
-        if (organization.getOrganization() != null) {
-            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
-                System.out.println("A organization cannot be a parent of itself.");
-                throw new Exception("A organization cannot be a parent of itself.");
-            }
-        }
-
-        // Checking if organization is already registered.
-        BigInteger accountingId = organization.getOrganization() == null ? null
-                : organization.getOrganization().getId();
-        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), current.getId(), accountingId)) {
-            System.out.println("A organization with that cnpj is already registered.");
-            throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
-        }
-
-        // creates the organization.
-        return organizationRepository.save(organization);
-    }
-
-    @Deprecated
-    private Organization save(String externalId, Organization organization, User authorizedUser)
-            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-        // checking if organizations exists.
-        Organization current = findByExternalId(externalId, authorizedUser);
-
-        organization.setId(current.getId());
-        organization.setExternalId(current.getExternalId());
-        organization.setAvatar(current.getAvatar());
-        organization.setType(current.getType());
-        organization.setOrganization(current.getOrganization());
-
-        // Checking if organization wont cause an loop
-        if (organization.getOrganization() != null) {
-            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
-                System.out.println("A organization cannot be a parent of itself.");
-                throw new Exception("A organization cannot be a parent of itself.");
-            }
-        }
-
-        // Checking if organization is already registered.
-        BigInteger accountingId = organization.getOrganization() == null ? null
-                : organization.getOrganization().getId();
-        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), current.getId(), accountingId)) {
-            System.out.println("A organization with that cnpj is already registered.");
-            throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
-        }
-
-        // creates the organization.
-        return organizationRepository.save(organization);
     }
 
 }
