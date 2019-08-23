@@ -44,7 +44,7 @@ public class UserService {
             System.out.println("A user with that email address is already registered.");
             throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
         }
-        return true;
+        return true; 
     }
 
 }
