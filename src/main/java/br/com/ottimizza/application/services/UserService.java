@@ -39,12 +39,21 @@ public class UserService {
         ).map(UserDTO::fromEntity);
     } // @formatter:on
 
+    // @formatter:off
+    public Page<UserDTO> fetchCustomers(String email, int pageIndex, int pageSize, Principal principal)
+            throws UserNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        return userRepository.findAllByEmailAndTypeAndAccountingId(
+            "%" + email + "%", 2, authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize)
+        ).map(UserDTO::fromEntity);
+    } // @formatter:on
+
     public boolean checkIfEmailIsAlreadyRegistered(User user) throws UserAlreadyRegisteredException {
         if (userRepository.emailIsAlreadyRegistered(user.getEmail())) {
             System.out.println("A user with that email address is already registered.");
             throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
         }
-        return true;  
+        return true;
     }
 
 }

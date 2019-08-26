@@ -10,27 +10,33 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.user.User;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringbootOauth2ServerApplication.class)
 class SecurityServiceTest {
 
 	SecurityService securityService;
 
 	User user;
 
-	@BeforeAll
-	void setup() {
+	// @BeforeAll
+	// void setup() {
+	// }
+
+	@Test
+	void whenTokenValidForUser() {
 		this.securityService = new SecurityService();
 
 		this.user = new User();
 		this.user.setUsername("test@ottimizza.com.br");
-	}
-
-	@Test
-	void whenTokenValidForUser() {
 		PasswordResetToken passwordResetToken = new PasswordResetToken(null, "token", user, new Date(2019, 2, 20));
 		try {
 			Assertions.assertTrue(
@@ -42,6 +48,10 @@ class SecurityServiceTest {
 
 	@Test
 	void whenTokenInvalidForUser() {
+		this.securityService = new SecurityService();
+
+		this.user = new User();
+		this.user.setUsername("test@ottimizza.com.br");
 		PasswordResetToken passwordResetToken = new PasswordResetToken(null, "token", user, new Date(2019, 2, 20));
 
 		Assertions.assertThrows(PasswordResetTokenInvalidException.class, () -> {

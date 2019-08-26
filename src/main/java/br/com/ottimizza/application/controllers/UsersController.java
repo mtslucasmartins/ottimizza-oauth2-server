@@ -16,7 +16,7 @@ import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.user.User;
-
+import br.com.ottimizza.application.services.OrganizationService;
 import br.com.ottimizza.application.services.SecurityService;
 import br.com.ottimizza.application.services.UserService;
 
@@ -44,6 +44,9 @@ public class UsersController {
 
     @Inject
     UserService userService;
+
+    @Inject
+    OrganizationService organizationService;
 
     @RequestMapping("/{username}")
     public HttpEntity<?> findByUsername(@PathVariable("username") String username, Principal principal) {
@@ -77,6 +80,5 @@ public class UsersController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
-
-
+    
 }

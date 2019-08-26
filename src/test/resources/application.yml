@@ -1,0 +1,67 @@
+server:
+  port: ${PORT:9092}
+  servlet:
+    context-path: /
+
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+
+    tomcat:
+      initial-size: 2
+      # max-wait: 20000
+      # max-active: 2
+      # max-idle: 150
+      # min-idle: 8
+      # default-auto-commit: true
+      
+  #
+  # JPA properties.
+  # jpa:
+  #   database-platform: org.hibernate.dialect.PostgreSQLDialect
+  #   generate-ddl: true
+  #   hibernate:
+  #     ddl-auto: update
+  #     temp:
+  #       use_jdbc_metadata_defaults: false
+  #   show-sql: true
+  #   properties:
+  #     hibernate:
+  #       temp:
+  #         use_jdbc_metadata_defaults: false
+
+  #
+  # Spring-boot Mail properties
+  mail:
+    host: br510.hostgator.com.br # smtp.gmail.com | mail.ottimizza.com.br
+    port: 465 # 26 ? --- 587 comum --- 465  SSL (doesn't connect)
+    username: redefinicao@ottimizza.com.br
+    password: ottimizza
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+    test-connection: true
+
+  # #
+  # # Thymeleaf properties.
+  thymeleaf:
+    cache: false
+
+security:
+  basic:
+    enabled: false
+
+  oauth2:
+    resource:
+      filter_order: 3

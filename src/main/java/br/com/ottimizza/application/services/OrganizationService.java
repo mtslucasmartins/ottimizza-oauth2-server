@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,14 +91,26 @@ public class OrganizationService {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
         User user = userRepository.findByUsername(userDTO.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("Organization not found."));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
 
         organizationRepository.addCustomer(user.getUsername(), organization.getId());
 
         return UserDTO.fromEntity(user);
     }
-
-    public List<UserDTO> fetchCustomers(BigInteger id, User authorizedUser) {
+    
+    public List<UserDTO> fetchCustomers(User authorizedUser) {
+        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
+            return authority.getName();
+        }).collect(Collectors.toList());
+         if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
+                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+            return UserDTO.fromEntities(userRepository.findCustomersByAccountingId(authorizedUser.getOrganization().getId()));
+        }
+        return new ArrayList<UserDTO>();
+    }
+    
+    public List<UserDTO> fetchCustomers(BigInteger organizationId, User authorizedUser) {
         List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
             return authority.getName();
         }).collect(Collectors.toList());
@@ -105,12 +118,11 @@ public class OrganizationService {
          if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
                 || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
-            return UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(id));
+            return UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(organizationId));
         }
         return new ArrayList<UserDTO>();
     }
-    
-    
+
     /* ****************************************************************************************************************
      * INVITED CUSTOMERS
      * ************************************************************************************************************* */
@@ -137,33 +149,45 @@ public class OrganizationService {
 
             String token = UUID.randomUUID().toString();
             String email = args.getOrDefault("email", "");
-            Organization organization = organizationRepository.findById(id)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
 
             if (email.equals("")) {
                 throw new IllegalArgumentException("Email cannot be blank.");
             }
 
             UserOrganizationInvite invite = new UserOrganizationInvite();
-            invite.setEmail(email);
-            invite.setToken(token);
-            invite.setOrganization(organization);
+            List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(email, id);
 
-            // saves the token to database.
-            invite = userOrganizationInviteRepository.save(invite);
+            if (invites.size() == 0) {
+                Organization organization = organizationRepository.findById(id)
+                    .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
 
-            mailServices.send(authorizedUser.getOrganization().getName(), 
-                                invite.getEmail(), 
-                                "Convite", 
-                                mailServices.inviteCustomerTemplate(authorizedUser, token));
+                
+                invite.setEmail(email);
+                invite.setToken(token);
+                invite.setOrganization(organization);
+
+                // saves the token to database.
+                invite = userOrganizationInviteRepository.save(invite);
+            } else {
+                invite = invites.get(0);
+            }
 
             // sends the token to the invited user.
-            // TODO
+            sendInviteByEmail(invite, authorizedUser);
+
             args.put("token", token);
         }
         return args;
     }
 
+    private void sendInviteByEmail(UserOrganizationInvite invite, User authorizedUser) {
+        String accountingName = authorizedUser.getOrganization().getName();
+        String to = invite.getEmail();
+        String subject = MessageFormat.format("Conta {0}.", accountingName);
+        String template = mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken());
+
+        mailServices.send(accountingName, to, subject, template);
+    }
 
     /* ****************************************************************************************************************
      * CREATE - UPDATE - PATCH

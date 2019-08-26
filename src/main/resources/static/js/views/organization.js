@@ -8,7 +8,7 @@ import {
   inviteCustomer
 } from './../services/organizations.service.js';
 import {
-  findUserByEmail,
+  fetchCustomers,
 } from './../services/users.service.js';
 import { BootstrapBreadcrumbComponent } from './../components/bootstrap-breadcrumb.component.js';
 import { AutocompleteWrapper, Autocomplete, AutocompleteOption } from '../components/autocomplete.component.js';
@@ -58,7 +58,7 @@ var app = new Vue({
 
       clearTimeout(userInputTimeout);
       userInputTimeout = setTimeout(function () {
-        return findUserByEmail(email);
+        return fetchCustomers(email);
       }, 1000);
 
     },
@@ -92,7 +92,7 @@ var app = new Vue({
       organization = response;
 
       console.log(organization);
-      
+
 
       that.findCustomersInvitedByOrganizationId(that.organization.id).then((response) => {
         that.customersInvited = response.records;
@@ -118,6 +118,7 @@ var AddUserOrganizationSidebar = new Vue({
     'autocomplete-option': AutocompleteOption
   },
   data: {
+    requestStatus: '',
     user: { email: '' },
     users: [],
     timeout: null,
@@ -130,7 +131,7 @@ var AddUserOrganizationSidebar = new Vue({
       that.timeout = null;
       that.timeout = setTimeout(async function () {
         that.users = [];
-        findUserByEmail(email).then((response) => {
+        fetchCustomers(email).then((response) => {
           const records = response.records;
           if (records.length == 0) {
             console.log('Users not found.');
@@ -151,9 +152,10 @@ var AddUserOrganizationSidebar = new Vue({
       }
     },
     inviteCustomer: async function (email) {
-      console.log('Inviting...', email);
       return inviteCustomer(organization.id, email).then((response) => {
-          console.log(response);
+        if (response.record) {
+          this.requestStatus = 'invited';
+        }
       });
     },
     onSelected: function (event) {

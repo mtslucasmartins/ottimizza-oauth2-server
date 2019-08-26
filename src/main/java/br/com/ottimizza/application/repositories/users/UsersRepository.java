@@ -13,31 +13,39 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 // @formatter:off
+@Repository
 public interface UsersRepository extends PagingAndSortingRepository<User, String> {
 
-    @Query("SELECT                                "
-        + "   o                                   "
-        + " FROM User o                           "
-        + " WHERE o.email like :filter            "
-        + " AND o.organization.id = :accountingId ")
+    @Query("SELECT o FROM User o WHERE o.email like :filter AND o.organization.id = :accountingId")
     Page<User> findAllByAccountingId(@Param("filter") String filter, 
                                      @Param("accountingId") BigInteger accountingId,
                                      Pageable pageable);
- 
+    
+    @Query("SELECT u FROM User u WHERE u.email like :email AND u.type = :type AND u.organization.id = :accountingId")
+    Page<User> findAllByEmailAndTypeAndAccountingId(@Param("email") String email,
+                                                    @Param("type") Integer type, 
+                                                    @Param("accountingId") BigInteger accountingId,
+                                                    Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.organization.id = :accountingId AND u.type = 2")
+    List<User> findCustomersByAccountingId(@Param("accountingId") BigInteger accountingId);
+
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "
             + "     ON (uo.username = u.username)                 "
-            + " WHERE uo.fk_organizations_id = :organizationId    ", nativeQuery = true)
+            + " WHERE uo.fk_organizations_id = :organizationId    "
+            + " AND u.type = 2                                    ", nativeQuery = true)
     List<User> findCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId);
 
-    @Query(value = " SELECT uo FROM UserOrganizationInvite uo       "
-            + " WHERE uo.organization.id = :organizationId    ")
+
+
+    @Query("SELECT uo FROM UserOrganizationInvite uo WHERE uo.organization.id = :organizationId ")
     List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(
             @Param("organizationId") BigInteger organizationId);
 
@@ -71,8 +79,7 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
     @Query(value = "INSERT INTO users_organizations (username, fk_organizations_id) VALUES (:username, :organizationId)", nativeQuery = true)
     void addOrganization(@Param("username") String username, @Param("organizationId") BigInteger authority);
 
-    @Query("SELECT " + " CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END "
-            + " FROM User u WHERE LOWER(u.email) = LOWER(:email)")
+    @Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 
 }
