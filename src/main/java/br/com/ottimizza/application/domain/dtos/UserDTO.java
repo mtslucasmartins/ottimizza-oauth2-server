@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// @formatter:off
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO implements Serializable {
@@ -36,6 +37,10 @@ public class UserDTO implements Serializable {
 
     @Getter
     @Setter
+    private Integer type;
+
+    @Getter
+    @Setter
     private String avatar;
 
     @Getter
@@ -49,6 +54,7 @@ public class UserDTO implements Serializable {
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
             .withEmail(user.getEmail())
+            .withType(user.getType())
             .withAvatar(user.getAvatar())
             .withOrganizationId(user.getOrganization());
         // @formatter:on
@@ -59,6 +65,22 @@ public class UserDTO implements Serializable {
         return users.stream().map(user -> fromEntity(user)).collect(Collectors.toList());
     }
 
+    public User patch(User user) {
+        if (this.username != null && !this.username.equals(""))
+            user.setUsername(this.username);
+
+        if (this.email != null && !this.email.equals(""))
+            user.setEmail(this.email);
+
+        if (this.firstName != null && !this.firstName.equals(""))
+            user.setFirstName(this.firstName);
+
+        if (this.lastName != null && !this.lastName.equals(""))
+            user.setLastName(this.lastName);
+
+        return user;
+    }
+
     UserDTO withUsername(String username) {
         this.username = username;
         return this;
@@ -66,6 +88,11 @@ public class UserDTO implements Serializable {
 
     UserDTO withEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    UserDTO withType(Integer type) {
+        this.type = type;
         return this;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -195,7 +196,23 @@ public class OrganizationController {
         }
     }
     
-    
+    @DeleteMapping("/{id}/customers/${username}")
+    public HttpEntity<?> removeCustomers(@PathVariable("id") BigInteger id, 
+                                         @PathVariable("username") String username, 
+                                         Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>( 
+                organizationService.removeCustomer(id, username, authorizedUser) 
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }   
+    }
+
+
     /********************************************************************************************* **
      * INVITED CUSTOMERS 
      * ******************************************************************************************* */

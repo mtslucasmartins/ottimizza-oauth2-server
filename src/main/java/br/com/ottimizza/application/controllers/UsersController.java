@@ -1,45 +1,33 @@
 package br.com.ottimizza.application.controllers;
 
+import java.math.BigInteger;
 import java.security.Principal;
-import java.util.Locale;
-import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.model.PasswordResetToken;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.services.OrganizationService;
-import br.com.ottimizza.application.services.SecurityService;
 import br.com.ottimizza.application.services.UserService;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-// Repositories
-import br.com.ottimizza.application.repositories.PasswordRecoveryRepository;
-import br.com.ottimizza.application.repositories.users.UsersRepository;
 
 @RestController //@formatter:off 
-@RequestMapping(value = "/api/users")
+@RequestMapping(value = "/api/v1/users")
 public class UsersController {
 
     @Inject
@@ -62,16 +50,33 @@ public class UsersController {
         }
     }
 
-    @RequestMapping
-    public HttpEntity<?> findAllByAccountingId(@RequestParam(name = "filter", defaultValue = "") String filter,
+    @GetMapping
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
                                  @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                  @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                  Principal principal) {
         try {
             GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>( 
-                userService.findAllByAccountingId(filter, pageIndex, pageSize, principal)
+                userService.fetchAll(filter, pageIndex, pageSize, principal)
             );
             return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
+                               @RequestBody UserDTO userDTO, 
+                               Principal principal) {
+        try {
+            User authorizedUser = userService.findByUsername(principal.getName());
+
+            UserDTO patched = userService.patch(id, userDTO, authorizedUser);
+
+            return ResponseEntity.ok(new GenericResponse<UserDTO>( patched ));
+
         } catch (UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("user_not_found", ex.getMessage()));
@@ -80,5 +85,5 @@ public class UsersController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
-    
+
 }

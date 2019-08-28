@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 
 // @formatter:off
 @Repository
-public interface UsersRepository extends PagingAndSortingRepository<User, String> {
+public interface UsersRepository extends PagingAndSortingRepository<User, String>, UsersRepositoryCustom {
 
     @Query("SELECT o FROM User o WHERE o.email like :filter AND o.organization.id = :accountingId")
     Page<User> findAllByAccountingId(@Param("filter") String filter, 
@@ -38,25 +38,14 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
 
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "
-            + "     ON (uo.username = u.username)                 "
+            + "     ON (uo.fK-users_id = u.id)                    "
             + " WHERE uo.fk_organizations_id = :organizationId    "
             + " AND u.type = 2                                    ", nativeQuery = true)
     List<User> findCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId);
 
-
-
     @Query("SELECT uo FROM UserOrganizationInvite uo WHERE uo.organization.id = :organizationId ")
     List<UserOrganizationInvite> findCustomersInvitedByOrganizationId(
             @Param("organizationId") BigInteger organizationId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "INSERT INTO users_organizations      "
-            + "    (email, token, fk_organizations_id)   "
-            + " VALUES (:email, :token, :organizationId) ", nativeQuery = true)
-   void inviteCustomer(@Param("organizationId") BigInteger organizationId,
-                                                @Param("email") String email, 
-                                                @Param("token") String token);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
     Optional<User> findByUsername(@Param("username") String username);
@@ -69,16 +58,26 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
     @Query("UPDATE User u set u.password = :password WHERE LOWER(u.username) = LOWER(:username)")
     void updatePassword(@Param("password") String password, @Param("username") String username);
 
+
+    /* ****************************************************************************************************************
+     * USERS_AUTHORITIES
+     * ************************************************************************************************************* */
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO user_authority (username, authority) VALUES (:username, :authority)", nativeQuery = true)
+    @Query(value = "INSERT INTO users_authorities (fk_users_id, fk_authorities_id) VALUES (:username, :authority)", nativeQuery = true)
     void addAuthority(@Param("username") String username, @Param("authority") String authority);
 
+    /* ****************************************************************************************************************
+     * USERS_ORGANIZATIONS
+     * ************************************************************************************************************* */
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO users_organizations (username, fk_organizations_id) VALUES (:username, :organizationId)", nativeQuery = true)
-    void addOrganization(@Param("username") String username, @Param("organizationId") BigInteger authority);
+    @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:userId, :organizationId)", nativeQuery = true)
+    void addOrganization(@Param("userId") BigInteger userId, @Param("organizationId") BigInteger authority);
 
+    /* ****************************************************************************************************************
+     * VALIDATIONS
+     * ************************************************************************************************************* */
     @Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 
