@@ -123,7 +123,7 @@ public class SignUpService {
         List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(registeredUser.getEmail());
         for (UserOrganizationInvite invite : invites) {
             try {
-                userRepository.addOrganization(registeredUser.getUsername(), invite.getOrganization().getId());
+                userRepository.addOrganization(registeredUser.getId(), invite.getOrganization().getId());
                 userOrganizationInviteRepository.delete(invite);
             } catch (Exception ex) {
                 ex.printStackTrace();
