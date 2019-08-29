@@ -18,27 +18,69 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-// @formatter:off
+// @formatter:on
 @Repository
 public interface UsersRepository extends PagingAndSortingRepository<User, String>, UsersRepositoryCustom {
 
+    @Query(value = "                                                                   " // @formatter:off
+            + " WITH organizations AS (                                                " 
+            + " 	SELECT fk_organizations_id FROM users_organizations uo2            "
+            + " 	WHERE uo2.fk_users_id = :customerId                                "
+            + " )                                                                      "
+            + " SELECT * FROM users u                                                  "
+            + " WHERE u.id IN (                                                        "
+            + " 	SELECT fk_users_id FROM users_organizations uo1                    "
+            + " 	WHERE uo1.fk_organizations_id IN (                                 "
+            + " 		SELECT * FROM organizations                                    "
+            + " 	)                                                                  "
+            + " )                                                                      "
+            + " AND (u.type = 2)                                                       "
+            + " AND (:username is null OR u.username ILIKE CONCAT('%',:username,'%'))  "
+            + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))           "
+            + " AND (:firstName is null OR u.email ILIKE CONCAT('%',:firstName,'%'))   "
+            + " AND (:lastName is null OR u.email ILIKE CONCAT('%',:lastName,'%') )    "
+            + "                                                             ", nativeQuery = true)
+    Page<User> fetchCustomersByCustomerId(@Param("customerId") BigInteger customerId, 
+                                          @Param("username") String username,
+                                          @Param("email") String email,
+                                          @Param("firstName") String firstName,
+                                          @Param("lastName") String lastName,
+                                          Pageable pageable);
+
+    @Query(value = "                                                                   "
+            + " SELECT * FROM users u                                                  "
+            + " WHERE u.id IN (                                                        "
+            + " 	SELECT fk_users_id FROM users_organizations uo1                "
+            + " 	WHERE uo1.fk_organizations_id = :organizationId                "
+            + " )                                                                      "
+            + " AND (u.type = 2)                                                       "
+            + " AND (:username is null OR u.username ILIKE CONCAT('%',:username,'%'))  "
+            + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))           "
+            + " AND (:firstName is null OR u.email ILIKE CONCAT('%',:firstName,'%'))   "
+            + " AND (:lastName is null OR u.email ILIKE CONCAT('%',:lastName,'%') )    "
+            + "                                                             ", nativeQuery = true)
+    Page<User> fetchCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId, 
+                                          @Param("username") String username,
+                                          @Param("email") String email,
+                                          @Param("firstName") String firstName,
+                                          @Param("lastName") String lastName,
+                                          Pageable pageable);
+
+                                          
     @Query("SELECT o FROM User o WHERE o.email like :filter AND o.organization.id = :accountingId")
-    Page<User> findAllByAccountingId(@Param("filter") String filter, 
-                                     @Param("accountingId") BigInteger accountingId,
-                                     Pageable pageable);
-    
+    Page<User> findAllByAccountingId(@Param("filter") String filter, @Param("accountingId") BigInteger accountingId,
+            Pageable pageable);
+
     @Query("SELECT u FROM User u WHERE u.email like :email AND u.type = :type AND u.organization.id = :accountingId")
-    Page<User> findAllByEmailAndTypeAndAccountingId(@Param("email") String email,
-                                                    @Param("type") Integer type, 
-                                                    @Param("accountingId") BigInteger accountingId,
-                                                    Pageable pageable);
+    Page<User> findAllByEmailAndTypeAndAccountingId(@Param("email") String email, @Param("type") Integer type,
+            @Param("accountingId") BigInteger accountingId, Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.organization.id = :accountingId AND u.type = 2")
     List<User> findCustomersByAccountingId(@Param("accountingId") BigInteger accountingId);
 
     @Query(value = " SELECT u.* FROM users_organizations uo       "
             + "   INNER JOIN users u                              "
-            + "     ON (uo.fK-users_id = u.id)                    "
+            + "     ON (uo.fk_users_id = u.id)                    "
             + " WHERE uo.fk_organizations_id = :organizationId    "
             + " AND u.type = 2                                    ", nativeQuery = true)
     List<User> findCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId);
@@ -58,26 +100,31 @@ public interface UsersRepository extends PagingAndSortingRepository<User, String
     @Query("UPDATE User u set u.password = :password WHERE LOWER(u.username) = LOWER(:username)")
     void updatePassword(@Param("password") String password, @Param("username") String username);
 
-
-    /* ****************************************************************************************************************
-     * USERS_AUTHORITIES
-     * ************************************************************************************************************* */
+    /*
+     * *****************************************************************************
+     * *********************************** USERS_AUTHORITIES
+     * *****************************************************************************
+     */
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO users_authorities (fk_users_id, fk_authorities_id) VALUES (:username, :authority)", nativeQuery = true)
     void addAuthority(@Param("username") String username, @Param("authority") String authority);
 
-    /* ****************************************************************************************************************
-     * USERS_ORGANIZATIONS
-     * ************************************************************************************************************* */
+    /*
+     * *****************************************************************************
+     * *********************************** USERS_ORGANIZATIONS
+     * *****************************************************************************
+     */
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:userId, :organizationId)", nativeQuery = true)
     void addOrganization(@Param("userId") BigInteger userId, @Param("organizationId") BigInteger authority);
 
-    /* ****************************************************************************************************************
-     * VALIDATIONS
-     * ************************************************************************************************************* */
+    /*
+     * *****************************************************************************
+     * *********************************** VALIDATIONS
+     * *****************************************************************************
+     */
     @Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 

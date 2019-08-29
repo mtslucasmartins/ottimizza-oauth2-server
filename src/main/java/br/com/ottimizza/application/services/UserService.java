@@ -34,6 +34,18 @@ public class UserService {
     public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
+
+        
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
+            // se usuario for do tipo cliente, visualiza apenas usuarios
+            // vinculados as empresas da qual pertence.
+            return userRepository.fetchCustomersByCustomerId(
+                filter.getId(), filter.getUsername(), filter.getEmail(), 
+                filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize)
+            ).map(UserDTO::fromEntity);
+        }
+        
+
         return userRepository.fetchAll(
             filter, PageRequest.of(pageIndex, pageSize), authorizedUser
         ).map(UserDTO::fromEntity);

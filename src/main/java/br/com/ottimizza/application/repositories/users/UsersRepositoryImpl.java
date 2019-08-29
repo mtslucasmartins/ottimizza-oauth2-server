@@ -7,6 +7,7 @@ import br.com.ottimizza.application.model.user.QUser;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.querydsl.core.QueryFactory;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Page;
@@ -70,6 +71,9 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         if (filter.getType() != null && filter.getType() > 0) {
             query.where(user.type.eq(filter.getType()));
         }
+
+        query.where(user.organization.eq(authorizedUser.getOrganization()));
+
         totalElements = query.fetchCount();
         query.limit(pageable.getPageSize());
         query.offset(pageable.getPageSize() * pageable.getPageNumber());

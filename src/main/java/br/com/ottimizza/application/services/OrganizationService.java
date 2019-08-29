@@ -183,7 +183,7 @@ public class OrganizationService {
         if (organizationDTO.getOrganizationId() == null) {
             if (authorizedUser.getOrganization() != null 
                 && authorizedUser.getOrganization().getId() != null) {
-                organizationDTO.setOrganizationId(authorizedUser.getOrganization().getId());
+                organization.setOrganization(authorizedUser.getOrganization());
             }
         }
 
@@ -243,8 +243,9 @@ public class OrganizationService {
 
     public boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
             throws Exception {
-        if (organization.getOrganization() != null) {
-            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
+        if (organization != null && organization.getOrganization() != null) {
+            if (organization.getId() != null && organization.getOrganization().getId() != null
+                && organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
                 System.out.println("A organization cannot be a parent of itself.");
                 throw new Exception("A organization cannot be a parent of itself.");
             }

@@ -11,5 +11,4 @@ public interface UsersRepositoryCustom {
 
     Page<User> fetchAll(UserDTO filter, Pageable pageable, User authorizedUser);
 
-
 }

@@ -21,6 +21,10 @@ public class UserDTO implements Serializable {
 
     @Getter
     @Setter
+    private BigInteger id;
+
+    @Getter
+    @Setter
     private String username;
 
     @Getter
@@ -50,6 +54,7 @@ public class UserDTO implements Serializable {
     public static UserDTO fromEntity(User user) {
         // @formatter:off
         UserDTO dto = new UserDTO()
+            .withId(user.getId())
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
@@ -79,6 +84,11 @@ public class UserDTO implements Serializable {
             user.setLastName(this.lastName);
 
         return user;
+    }
+
+    UserDTO withId(BigInteger id) {
+        this.id = id;
+        return this;
     }
 
     UserDTO withUsername(String username) {
