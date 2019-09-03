@@ -127,6 +127,7 @@ var AddUserOrganizationSidebar = new Vue({
   methods: {
     findUserByEmail: function (email = null) {
       const that = this;
+      that.user = { email: email };
       clearTimeout(that.timeout);
       that.timeout = null;
       that.timeout = setTimeout(async function () {
@@ -159,6 +160,7 @@ var AddUserOrganizationSidebar = new Vue({
       });
     },
     onSelected: function (event) {
+      this.user = {};
       this.user = event.selected;
       this.users = [];
     }

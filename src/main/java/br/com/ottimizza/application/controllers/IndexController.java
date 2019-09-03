@@ -28,12 +28,45 @@ public class IndexController {
         return "index.html";
     }
 
+    /**
+     * ******************************************************************************************
+     * ** EMPRESAS
+     * *******************************************************************************************
+     */
     @GetMapping(value = { "/empresas", "/organizations" })
     public String organizations(Principal principal, Model model) {
         model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
         return "organizations/organizations.html";
     }
 
+    @GetMapping("/organizations/{externalId}")
+    public String organization(@PathVariable("externalId") String externalId, Principal principal, Model model) {
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+        return "organizations/organization.html";
+    }
+
+    /**
+     * ********************************************************************************
+     * ** USUARIOS
+     * *********************************************************************************
+     */
+    @GetMapping(value = { "/usuarios", "/users" })
+    public String users(Principal principal, Model model) {
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+        return "users/users.html";
+    }
+
+    @GetMapping(value = { "/usuarios/{id}", "/users/{id}" })
+    public String user(@PathVariable("id") String externalId, Principal principal, Model model) {
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+        return "users/user.html";
+    }
+
+    /**
+     * ********************************************************************************
+     * ** USUARIOS
+     * *********************************************************************************
+     */
     @GetMapping("/profile")
     public String profile(Principal principal, Model model) {
         // find user by username.
@@ -48,12 +81,6 @@ public class IndexController {
         model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
 
         return "profile/security.html";
-    }
-
-    @GetMapping("/organizations/{externalId}")
-    public String organization(@PathVariable("externalId") String externalId, Principal principal, Model model) {
-        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
-        return "organizations/organization.html";
     }
 
 }

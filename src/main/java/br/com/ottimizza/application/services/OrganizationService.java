@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.Authorities;
@@ -59,21 +60,18 @@ public class OrganizationService {
     public GenericPageableResponse<Organization> findAll(String filter, Pageable pageRequest, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         filter = "%" + filter + "%";
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
+        // List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
+        //     return authority.getName();
+        // }).collect(Collectors.toList());
 
-        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             Page<Organization> page =  organizationRepository.findAllByAccountingId(
                     filter, authorizedUser.getOrganization().getId(), pageRequest
             );
             return new GenericPageableResponse<Organization>(page);
         }
 
-        if (authorities.contains(Authorities.CUSTOMER_READ.getName())
-                || authorities.contains(Authorities.CUSTOMER_WRITE.getName())) {
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             Page<Organization> page =  organizationRepository.findAllByAccountingIdAndUsername(
                     filter, authorizedUser.getOrganization().getId(), authorizedUser.getUsername(), pageRequest
             );
@@ -98,26 +96,28 @@ public class OrganizationService {
         return UserDTO.fromEntity(user);
     }
     
+    public UserDTO removeCustomer(BigInteger id, String username, User authorizedUser)
+            throws OrganizationNotFoundException, UserNotFoundException, Exception {
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        organizationRepository.removeCustomer(user.getUsername(), organization.getId());
+
+        return UserDTO.fromEntity(user);
+    }
+    
+
     public List<UserDTO> fetchCustomers(User authorizedUser) {
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
-         if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             return UserDTO.fromEntities(userRepository.findCustomersByAccountingId(authorizedUser.getOrganization().getId()));
         }
         return new ArrayList<UserDTO>();
     }
     
     public List<UserDTO> fetchCustomers(BigInteger organizationId, User authorizedUser) {
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
-        
-         if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             return UserDTO.fromEntities(userRepository.findCustomersByOrganizationId(organizationId));
         }
         return new ArrayList<UserDTO>();
@@ -127,12 +127,7 @@ public class OrganizationService {
      * INVITED CUSTOMERS
      * ************************************************************************************************************* */
     public List<UserOrganizationInvite> fetchInvitedCustomers(BigInteger id, User authorizedUser) {
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
-        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             return userRepository.findCustomersInvitedByOrganizationId(id);
         }
         return new ArrayList<UserOrganizationInvite>();
@@ -140,46 +135,33 @@ public class OrganizationService {
     
     public Map<String,String> inviteCustomer(BigInteger id, Map<String,String> args, User authorizedUser) 
                 throws OrganizationNotFoundException, Exception {
-        List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-            return authority.getName();
-        }).collect(Collectors.toList());
-        if (authorities.contains(Authorities.ACCOUNTANT_READ.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_WRITE.getName())
-                || authorities.contains(Authorities.ACCOUNTANT_ADMIN.getName())) {
-
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             String token = UUID.randomUUID().toString();
             String email = args.getOrDefault("email", "");
-
             if (email.equals("")) {
                 throw new IllegalArgumentException("Email cannot be blank.");
             }
-
             UserOrganizationInvite invite = new UserOrganizationInvite();
             List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(email, id);
-
             if (invites.size() == 0) {
                 Organization organization = organizationRepository.findById(id)
                     .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
-
-                
                 invite.setEmail(email);
                 invite.setToken(token);
                 invite.setOrganization(organization);
-
                 // saves the token to database.
                 invite = userOrganizationInviteRepository.save(invite);
             } else {
                 invite = invites.get(0);
             }
-
             // sends the token to the invited user.
             sendInviteByEmail(invite, authorizedUser);
-
             args.put("token", token);
         }
         return args;
     }
 
+    @Async
     private void sendInviteByEmail(UserOrganizationInvite invite, User authorizedUser) {
         String accountingName = authorizedUser.getOrganization().getName();
         String to = invite.getEmail();
@@ -201,7 +183,7 @@ public class OrganizationService {
         if (organizationDTO.getOrganizationId() == null) {
             if (authorizedUser.getOrganization() != null 
                 && authorizedUser.getOrganization().getId() != null) {
-                organizationDTO.setOrganizationId(authorizedUser.getOrganization().getId());
+                organization.setOrganization(authorizedUser.getOrganization());
             }
         }
 
@@ -261,8 +243,9 @@ public class OrganizationService {
 
     public boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
             throws Exception {
-        if (organization.getOrganization() != null) {
-            if (organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
+        if (organization != null && organization.getOrganization() != null) {
+            if (organization.getId() != null && organization.getOrganization().getId() != null
+                && organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
                 System.out.println("A organization cannot be a parent of itself.");
                 throw new Exception("A organization cannot be a parent of itself.");
             }

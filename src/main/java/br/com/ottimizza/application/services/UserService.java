@@ -31,6 +31,38 @@ public class UserService {
     }
 
     // @formatter:off
+    public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
+            throws UserNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+
+        
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
+            // se usuario for do tipo cliente, visualiza apenas usuarios
+            // vinculados as empresas da qual pertence.
+            return userRepository.fetchCustomersByCustomerId(
+                filter.getId(), filter.getUsername(), filter.getEmail(), 
+                filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize)
+            ).map(UserDTO::fromEntity);
+        }
+        
+
+        return userRepository.fetchAll(
+            filter, PageRequest.of(pageIndex, pageSize), authorizedUser
+        ).map(UserDTO::fromEntity);
+    } // @formatter:on
+
+    public UserDTO patch(BigInteger id, UserDTO userDTO, User authorizedUser)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+
+        // User current = userDTO.patch(user);
+
+        // checkIfEmailIsAlreadyRegistered(current);
+
+        // return UserDTO.fromEntity(userRepository.save(current));
+        return userDTO;
+    }
+
+    // @formatter:off
     public Page<UserDTO> findAllByAccountingId(String filter, int pageIndex, int pageSize, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());

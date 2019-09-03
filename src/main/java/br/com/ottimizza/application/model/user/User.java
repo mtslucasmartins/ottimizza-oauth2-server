@@ -1,10 +1,13 @@
 package br.com.ottimizza.application.model.user;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -32,7 +35,12 @@ public class User implements Serializable {
 
     @Id
     @Getter @Setter
-    @Column(name = "username", updatable = false, nullable = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private BigInteger id;
+
+    @Getter @Setter
+    @Column(name = "username", unique = true, updatable = false, nullable = false)
     private String username;
 
     @Getter @Setter
@@ -67,9 +75,9 @@ public class User implements Serializable {
     @Getter @Setter
     @ManyToMany
     @JoinTable(
-        name = "user_authority", 
-        joinColumns = @JoinColumn(name = "username"), 
-        inverseJoinColumns = @JoinColumn(name = "authority"))
+        name = "users_authorities", 
+        joinColumns = @JoinColumn(name = "fk_users_id"), 
+        inverseJoinColumns = @JoinColumn(name = "fk_authorities_id"))
     private Set<Authority> authorities;
 
     @Getter @Setter
