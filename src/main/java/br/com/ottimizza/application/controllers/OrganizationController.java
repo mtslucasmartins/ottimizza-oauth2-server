@@ -196,7 +196,7 @@ public class OrganizationController {
         }
     }
     
-    @DeleteMapping("/{id}/customers/${username}")
+    @DeleteMapping("/{id}/customers/{username}")
     public HttpEntity<?> removeCustomers(@PathVariable("id") BigInteger id, 
                                          @PathVariable("username") String username, 
                                          Principal principal) {
