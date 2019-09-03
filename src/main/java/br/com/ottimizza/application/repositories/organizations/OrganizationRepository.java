@@ -52,12 +52,12 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
   @Query(value = " SELECT o.* FROM users_organizations uo                 " 
       + "     INNER JOIN organizations o                                  " 
       + "         on o.id = uo.fk_organizations_id                        " 
-      + "  WHERE uo.username = :username                                  "
+      + "  WHERE uo.fk_users_id = :userId                                  "
       + "  AND o.fk_organizations_id = :accountingId                      "
       + "  AND LOWER(o.name) like LOWER(:filter)                          ", nativeQuery = true)
-  Page<Organization> findAllByAccountingIdAndUsername(@Param("filter") String filter, 
+  Page<Organization> findAllByAccountingIdAndUserId(@Param("filter") String filter, 
                                                       @Param("accountingId") BigInteger accountingId, 
-                                                      @Param("username") String username, 
+                                                      @Param("userId") BigInteger userId, 
                                                       Pageable pageable);
 
     @Modifying

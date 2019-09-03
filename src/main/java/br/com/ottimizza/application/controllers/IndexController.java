@@ -24,8 +24,7 @@ public class IndexController {
         model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
 
         model.addAttribute("organization", new Organization());
-
-        return "index.html";
+        return "organizations/organizations.html";
     }
 
     /**

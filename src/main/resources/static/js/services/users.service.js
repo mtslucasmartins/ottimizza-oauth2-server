@@ -25,3 +25,28 @@ export function fetchUsers(email = '', pageIndex = 0, pageSize = 10) {
     });
   });
 };
+
+export function fetchUserById(id) {
+  return new Promise(function (resolve, reject) {
+    const url = `/api/v1/users/${id}`;
+    $.get(url, (response) => {
+      resolve(response);
+    });
+  });
+};
+
+export function patchUser(id, user = {}) {
+  return new Promise(function (resolve, reject) {
+    const url = `/api/v1/users/${id}`;
+    $.ajax({
+      url: url, type: 'patch',
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(user)
+    }).done(function (response) {
+      resolve(response);
+    }).fail(function (jqXHR, textStatus, response) {
+      reject(jqXHR);
+    });
+  });
+};

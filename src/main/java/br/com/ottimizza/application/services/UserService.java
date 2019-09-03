@@ -26,6 +26,10 @@ public class UserService {
     @Inject
     UsersRepository userRepository;
 
+    public User findById(BigInteger id) throws UserNotFoundException, Exception {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
+    }
+
     public User findByUsername(String username) throws UserNotFoundException, Exception {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
@@ -40,7 +44,7 @@ public class UserService {
             // se usuario for do tipo cliente, visualiza apenas usuarios
             // vinculados as empresas da qual pertence.
             return userRepository.fetchCustomersByCustomerId(
-                filter.getId(), filter.getUsername(), filter.getEmail(), 
+                authorizedUser.getId(), filter.getUsername(), filter.getEmail(), 
                 filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize)
             ).map(UserDTO::fromEntity);
         }

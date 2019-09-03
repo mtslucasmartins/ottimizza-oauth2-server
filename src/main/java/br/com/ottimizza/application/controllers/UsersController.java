@@ -36,19 +36,6 @@ public class UsersController {
     @Inject
     OrganizationService organizationService;
 
-    @RequestMapping("/{username}")
-    public HttpEntity<?> findByUsername(@PathVariable("username") String username, Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(userService.findByUsername(username));
-        } catch (UserNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("user_not_found", ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
-    }
 
     @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
@@ -60,6 +47,19 @@ public class UsersController {
                 userService.fetchAll(filter, pageIndex, pageSize, principal)
             );
             return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) {
+        try {
+            return ResponseEntity.ok(userService.findById(id));
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("user_not_found", ex.getMessage()));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));

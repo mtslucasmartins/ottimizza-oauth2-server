@@ -72,8 +72,8 @@ public class OrganizationService {
         }
 
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            Page<Organization> page =  organizationRepository.findAllByAccountingIdAndUsername(
-                    filter, authorizedUser.getOrganization().getId(), authorizedUser.getUsername(), pageRequest
+            Page<Organization> page =  organizationRepository.findAllByAccountingIdAndUserId(
+                    filter, authorizedUser.getOrganization().getId(), authorizedUser.getId(), pageRequest
             );
             return new GenericPageableResponse<Organization>(page);
         }
