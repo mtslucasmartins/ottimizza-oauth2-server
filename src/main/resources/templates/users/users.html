@@ -41,8 +41,7 @@
           <div class="container">
             <ul class="nav nav-pills flex-row-reverse">
               <li class="nav-item notification-sidebar-toggle">
-                <a class="nav-link py-1 px-2 btn-primary active">
-                  <i class="fad fa-plus-square"></i> <span class="ml-2"> Nova Empresa </span>
+                <a class="nav-link py-1 px-2 btn-primary active">Novo Usuário </span>
                 </a>
               </li>
             </ul>
@@ -57,21 +56,27 @@
                   <table class="table table-striped">
                     <thead>
                       <tr>
-                        <th class="w-50 border-0">Nome</th>
-                        <th class="w-50 border-0">E-mail</th>
+                        <th class="w-auto border-0">Nome</th>
+                        <th class="w-auto border-0">E-mail</th>
+                        <th class="w-auto border-0">Tipo</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-cloak v-if="!loading" v-for="organization in organizations">
-                        <td class="w-50">
-                          <a v-bind:href="'usuarios/' + organization.id"
-                            class="text-blue">{{ organization.firstName + ' ' +  organization.lastName}}</a>
+                        <td class="w-auto">
+                          <a v-bind:href="'usuarios/' + organization.id" class="text-blue">
+                            {{ organization.firstName + ' ' +  organization.lastName}}
+                          </a>
                         </td>
-                        <td class="w-50">{{ organization.email }}</td>
+                        <td class="w-auto">{{ organization.email }}</td>
+                        <td class="w-auto">{{ organization.type == 1 ? 'Contabilidade' : 'Cliente' }}</td>
                       </tr>
                       <!--  v-if="loading" -->
                       <tr v-if="loading" class="js-table-row-loader bg-white">
                         <td class="p-2 ">
+                          <suspension-points-animation></suspension-points-animation>
+                        </td>
+                        <td class="p-2">
                           <suspension-points-animation></suspension-points-animation>
                         </td>
                         <td class="p-2">
