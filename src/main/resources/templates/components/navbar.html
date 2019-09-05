@@ -29,7 +29,7 @@
               </a>
               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right text-left p-0"
                 aria-labelledby="user-info-dropdown" ngbdropdownmenu="">
-                <a th:href="${'/profile'}" class="dropdown-header dropdown-item text-center mt-0 pt-3">
+                <a th:href="${'/usuarios/' + authorizedUser.id}" class="dropdown-header dropdown-item text-center mt-0 pt-3">
                   <h6 th:text="${authorizedUser.firstName + ' ' + authorizedUser.lastName}" class="text-dark m-0">
                   </h6>
                   <small th:text="${authorizedUser.email}" class="text-muted text-lowercase">

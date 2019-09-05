@@ -124,7 +124,17 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
      * *********************************** VALIDATIONS
      * *****************************************************************************
      */
-    @Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
+    @Query("SELECT CASE WHEN (COUNT(u.id) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 
+    @Query(" SELECT                              "
+        + "     CASE                             "
+        + "         WHEN (COUNT(u.id) > 0)       "
+        + "             THEN TRUE                "
+        + "         ELSE FALSE                   "
+        + "     END                              "
+        + " FROM User u                          "
+        + " WHERE LOWER(u.email) = LOWER(:email) "
+        + " AND u.id != :userId                  "
+    )boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
 }

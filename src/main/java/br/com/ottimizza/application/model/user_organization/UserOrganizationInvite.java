@@ -35,7 +35,7 @@ public class UserOrganizationInvite implements Serializable {
 
     @Getter
     @Setter
-    @Column(name = "token")
+    @Column(name = "token", nullable = false)
     private String token;
 
     @Getter
@@ -45,8 +45,13 @@ public class UserOrganizationInvite implements Serializable {
 
     @Getter
     @Setter
-    @OneToOne(targetEntity = Organization.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = Organization.class)
     @JoinColumn(name = "fk_organizations_id", nullable = false)
     private Organization organization;
+
+    @Getter
+    @Setter
+    @Column(name = "type")
+    private Integer type;
 
 }

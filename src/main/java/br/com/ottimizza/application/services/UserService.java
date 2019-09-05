@@ -58,12 +58,13 @@ public class UserService {
     public UserDTO patch(BigInteger id, UserDTO userDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
 
-        // User current = userDTO.patch(user);
+        User current = findById(id);
 
-        // checkIfEmailIsAlreadyRegistered(current);
+        current = userDTO.patch(current);
 
-        // return UserDTO.fromEntity(userRepository.save(current));
-        return userDTO;
+        checkIfEmailIsAlreadyRegistered(current.getEmail(), current);
+
+        return UserDTO.fromEntity(userRepository.save(current));
     }
 
     // @formatter:off
@@ -84,8 +85,25 @@ public class UserService {
         ).map(UserDTO::fromEntity);
     } // @formatter:on
 
+    //
+    ///
+    //
+
+
+    //
+    //
+    //
+    //
     public boolean checkIfEmailIsAlreadyRegistered(User user) throws UserAlreadyRegisteredException {
         if (userRepository.emailIsAlreadyRegistered(user.getEmail())) {
+            System.out.println("A user with that email address is already registered.");
+            throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
+        }
+        return true;
+    }
+
+    public boolean checkIfEmailIsAlreadyRegistered(String email, User user) throws UserAlreadyRegisteredException {
+        if (userRepository.emailIsAlreadyRegistered(email, user.getId())) {
             System.out.println("A user with that email address is already registered.");
             throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
         }

@@ -22,7 +22,7 @@ public class SignUpController {
     SignUpService signUpService;
 
     @GetMapping("/register")
-    public String signupPage(@RequestParam(name = "token", defaultValue = "") String token, Model model) {
+    public String signupPage(@RequestParam(name = "token", defaultValue = "", required = false) String token, Model model) {
 
         User user = new User();
         Organization organization = new Organization();
