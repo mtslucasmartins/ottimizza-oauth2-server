@@ -148,6 +148,7 @@ public class OrganizationService {
                     .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
                 invite.setEmail(email);
                 invite.setToken(token);
+                invite.setType(User.Type.CUSTOMER);
                 invite.setOrganization(organization);
                 // saves the token to database.
                 invite = userOrganizationInviteRepository.save(invite);

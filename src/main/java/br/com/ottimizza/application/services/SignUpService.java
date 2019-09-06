@@ -87,9 +87,14 @@ public class SignUpService {
 
         user.setUsername(inviteTokenDetails.getEmail());
         user.setEmail(inviteTokenDetails.getEmail());
-        user.setType(User.Type.CUSTOMER);
+
+        user.setType(inviteTokenDetails.getType());
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        user.setOrganization(inviteTokenDetails.getOrganization().getOrganization());
+        if (inviteTokenDetails.getType().equals(User.Type.ACCOUNTANT)) {
+            user.setOrganization(inviteTokenDetails.getOrganization());
+        } else {
+            user.setOrganization(inviteTokenDetails.getOrganization().getOrganization());
+        }
 
         // Checking if email is already registered.
         userService.checkIfEmailIsAlreadyRegistered(user);
@@ -97,8 +102,10 @@ public class SignUpService {
         // creates the userF.
         user = userRepository.save(user);
 
-        // Adiciona organizações ao usuário.
-        migrateUsersOrganizationsFromInvitesByUser(user);
+        if (inviteTokenDetails.getType().equals(User.Type.CUSTOMER)) {
+            // Adiciona organizações ao usuário.
+            migrateUsersOrganizationsFromInvitesByUser(user);
+        }
 
         // Adiciona autoridades ao usuário.
         userRepository.addAuthority(user.getUsername(), Authorities.ADMIN.getName());

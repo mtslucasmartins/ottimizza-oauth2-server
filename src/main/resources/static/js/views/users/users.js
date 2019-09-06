@@ -1,6 +1,6 @@
 import { findAllOrganizations, saveOrganization } from './../../services/organizations.service.js';
 import { BootstrapBreadcrumbComponent, BootstrapPaginationComponent } from './../../components/bootstrap-breadcrumb.component.js';
-import { fetchUsers } from '../../services/users.service.js';
+import { fetchUsers, invite } from '../../services/users.service.js';
 
 
 Vue.component('suspension-points-animation', {
@@ -111,3 +111,21 @@ $('.organization-create-sidebar-cancel').on('click', function () {
   $('.notification-sidebar').removeClass('open');
 });
 
+
+
+var AddUserOrganizationSidebar = new Vue({
+  el: '#tab-invite-user',
+  data: {
+    email: '',
+    requestStatus: '',
+    isLoading: false
+  },
+  methods: {
+    invite: async function (email) {
+      this.isLoading = true;
+      return invite(email).then((response) => {
+        if (response.record) this.requestStatus = 'invited';
+      }).then(() => this.isLoading = false);
+    }
+  }
+});
