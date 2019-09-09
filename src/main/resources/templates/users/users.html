@@ -41,7 +41,7 @@
           <div class="container">
             <div class="row m-0">
               <div class="col-6 p-0">
-                <ul class="nav nav-tabs">
+                <ul th:if="${authorizedUser.getType() == 1}" class="nav nav-tabs">
                   <li class="nav-item">
                     <a class="nav-link active" id="base-tab1" data-toggle="tab" aria-controls="tab1" href="#tab1"
                       aria-expanded="false">
@@ -115,7 +115,7 @@
                   </div>
                 </section>
               </div>
-              <div class="tab-pane " id="tab2" aria-labelledby="base-tab2">
+              <div th:if="${authorizedUser.getType() == 1}"  class="tab-pane " id="tab2" aria-labelledby="base-tab2">
                 <section id="striped-light" class="pt-4">
                   <div class="row">
                     <table-invited-users v-bind:users="invitedUsers" v-bind:loading="loading"></table-invited-users>
