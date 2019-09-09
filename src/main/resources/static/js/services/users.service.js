@@ -75,24 +75,24 @@ export function invite(email = '') {
 };
 
 
-export var UserService = (function() {
-
+export var UserService = (function () {
   const BASE_URL = `api/v1/users`;
-
-  var privateMethod = function() {
-    console.log('Inside a private method!');
-  }
-
-  var methodToExpose = function() {
-    console.log('This is a method I want to expose!');
-  }
-
-  var otherMethodIWantToExpose = function() {
-    privateMethod();
+  let fetchAllInvitedUsers = function (email = null, pageIndex = 0, pageSize = 10) {
+    const url = email === null ? `${BASE_URL}/invited` : `${BASE_URL}/invited?email=${email}`;
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: url,
+        type: 'get',
+        contentType: 'application/json; charset=utf-8'
+      }).done(function (response) {
+        resolve(response);
+      }).fail(function (jqXHR, textStatus, response) {
+        reject(response);
+      });
+    });
   }
 
   return {
-      first: methodToExpose,
-      second: otherMethodIWantToExpose
+    fetchAllInvitedUsers: fetchAllInvitedUsers
   };
 })();

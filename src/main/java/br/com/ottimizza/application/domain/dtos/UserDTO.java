@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import lombok.AllArgsConstructor;
@@ -49,7 +51,13 @@ public class UserDTO implements Serializable {
 
     @Getter
     @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BigInteger organizationId;
+
+    @Getter
+    @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private OrganizationDTO organization;
 
     public static UserDTO fromEntity(User user) {
         // @formatter:off
@@ -65,6 +73,22 @@ public class UserDTO implements Serializable {
         // @formatter:on
         return dto;
     }
+
+    public static UserDTO fromEntityWithOrganization(User user) {
+        // @formatter:off
+        UserDTO dto = new UserDTO()
+            .withId(user.getId())
+            .withUsername(user.getUsername())
+            .withFirstName(user.getFirstName())
+            .withLastName(user.getLastName())
+            .withEmail(user.getEmail())
+            .withType(user.getType())
+            .withAvatar(user.getAvatar())
+            .withOrganization(OrganizationDTO.fromEntity(user.getOrganization()));
+        // @formatter:on
+        return dto;
+    }
+
 
     public static List<UserDTO> fromEntities(List<User> users) {
         return users.stream().map(user -> fromEntity(user)).collect(Collectors.toList());
@@ -118,6 +142,11 @@ public class UserDTO implements Serializable {
 
     UserDTO withAvatar(String avatar) {
         this.avatar = avatar;
+        return this;
+    }
+
+    UserDTO withOrganization(OrganizationDTO organization) {
+        this.organization = organization;
         return this;
     }
 

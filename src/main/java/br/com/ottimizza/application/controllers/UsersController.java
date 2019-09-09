@@ -14,6 +14,7 @@ import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.services.OrganizationService;
 import br.com.ottimizza.application.services.UserService;
 
@@ -83,6 +84,23 @@ public class UsersController {
         } catch (UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("user_not_found", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
+
+    @GetMapping("/invited")
+    public HttpEntity<?> fetchAllInvitedUsers(@ModelAttribute UserDTO filter,
+                                 @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+                                 @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
+                                 Principal principal) {
+        try {
+            GenericPageableResponse<UserOrganizationInvite> response = new GenericPageableResponse<UserOrganizationInvite>( 
+                userService.fetchInvitedUsers(filter.getEmail(), pageIndex, pageSize, principal)
+            );
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));

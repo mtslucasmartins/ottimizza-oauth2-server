@@ -39,59 +39,90 @@
         <breadcrumb v-bind:items="breadcrumb"></breadcrumb>
         <div class="content-wrapper full-width-nav-tabs py-2">
           <div class="container">
-            <ul class="nav nav-pills flex-row-reverse">
-              <li class="nav-item notification-sidebar-toggle">
-                <a class="nav-link py-1 px-2 btn-primary active">Novo Usuário </span>
-                </a>
-              </li>
-            </ul>
+            <div class="row m-0">
+              <div class="col-6 p-0">
+                <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="base-tab1" data-toggle="tab" aria-controls="tab1" href="#tab1"
+                      aria-expanded="false">
+                      Cadastrados
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link " id="base-tab2" data-toggle="tab" aria-controls="tab2" href="#tab2"
+                      aria-expanded="true">
+                      Pendentes
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul class="nav nav-pills flex-row-reverse">
+                  <li class="nav-item notification-sidebar-toggle">
+                    <a class="nav-link py-1 px-2 btn-primary active">Novo Usuário </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="content-wrapper">
           <div class="container">
-            <section id="striped-light" class="pt-4">
-              <div class="row">
-                <div class="col-sm-12">
-                  <!-- style="border: 1px solid rgb(222, 226, 230);" -->
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th class="w-auto border-0">Nome</th>
-                        <th class="w-auto border-0">E-mail</th>
-                        <th class="w-auto border-0">Tipo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-cloak v-if="!loading" v-for="organization in organizations">
-                        <td class="w-auto">
-                          <a v-bind:href="'usuarios/' + organization.id" class="text-blue">
-                            {{ organization.firstName + ' ' +  organization.lastName}}
-                          </a>
-                        </td>
-                        <td class="w-auto">{{ organization.email }}</td>
-                        <td class="w-auto">{{ organization.type == 1 ? 'Contabilidade' : 'Cliente' }}</td>
-                      </tr>
-                      <!--  v-if="loading" -->
-                      <tr v-if="loading" class="js-table-row-loader bg-white">
-                        <td class="p-2 ">
-                          <suspension-points-animation></suspension-points-animation>
-                        </td>
-                        <td class="p-2">
-                          <suspension-points-animation></suspension-points-animation>
-                        </td>
-                        <td class="p-2">
-                          <suspension-points-animation></suspension-points-animation>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div class="col">
-                    <bootstrap-pagination v-bind:page-info="pageInfo" @change="onPageChange($event)">
-                    </bootstrap-pagination>
+            <div class="tab-content px-1 pt-1">
+              <div role="tabpanel" class="tab-pane active" id="tab1" aria-expanded="true" aria-labelledby="base-tab1">
+                <section id="striped-light" class="pt-4">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <!-- style="border: 1px solid rgb(222, 226, 230);" -->
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="w-auto border-0">Nome</th>
+                            <th class="w-auto border-0">E-mail</th>
+                            <th class="w-auto border-0">Tipo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-cloak v-if="!loading" v-for="organization in organizations">
+                            <td class="w-auto">
+                              <a v-bind:href="'usuarios/' + organization.id" class="text-blue">
+                                {{ organization.firstName + ' ' +  organization.lastName}}
+                              </a>
+                            </td>
+                            <td class="w-auto">{{ organization.email }}</td>
+                            <td class="w-auto">{{ organization.type == 1 ? 'Contabilidade' : 'Cliente' }}</td>
+                          </tr>
+                          <!--  v-if="loading" -->
+                          <tr v-if="loading" class="js-table-row-loader bg-white">
+                            <td class="p-2 ">
+                              <suspension-points-animation></suspension-points-animation>
+                            </td>
+                            <td class="p-2">
+                              <suspension-points-animation></suspension-points-animation>
+                            </td>
+                            <td class="p-2">
+                              <suspension-points-animation></suspension-points-animation>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="col">
+                        <bootstrap-pagination v-bind:page-info="pageInfo" @change="onPageChange($event)">
+                        </bootstrap-pagination>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </section>
               </div>
-            </section>
+              <div class="tab-pane " id="tab2" aria-labelledby="base-tab2">
+                <section id="striped-light" class="pt-4">
+                  <div class="row">
+                    <table-invited-users v-bind:users="invitedUsers" v-bind:loading="loading"></table-invited-users>
+                  </div>
+                </section>
+              </div>
+            </div>
           </div>
         </div>
       </div>

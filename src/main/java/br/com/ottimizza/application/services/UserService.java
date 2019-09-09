@@ -50,7 +50,6 @@ public class UserService {
     public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
-
         
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             // se usuario for do tipo cliente, visualiza apenas usuarios
@@ -61,7 +60,6 @@ public class UserService {
             ).map(UserDTO::fromEntity);
         }
         
-
         return userRepository.fetchAll(
             filter, PageRequest.of(pageIndex, pageSize), authorizedUser
         ).map(UserDTO::fromEntity);
@@ -137,6 +135,13 @@ public class UserService {
 
         mailServices.send(accountingName, to, subject, template);
     }
+
+    public Page<UserOrganizationInvite> fetchInvitedUsers(String email, int pageIndex, int pageSize,
+            Principal principal) throws UserNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        return userOrganizationInviteRepository.fetchInvitedUsersByAccountingId(email,
+                authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
+    } // @formatter:on
 
     //
     //
