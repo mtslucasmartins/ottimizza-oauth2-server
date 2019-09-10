@@ -34,10 +34,10 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
             + " 	)                                                                  \n"
             + " )                                                                          \n"
             + " AND (u.type = 2)                                                           \n"
-            + " AND (:username is null OR u.username ILIKE :username)                      \n"
-            + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))               \n"
-            + " AND (:firstName is null OR u.first_name ILIKE CONCAT('%',:firstName,'%'))  \n"
-            + " AND (:lastName is null OR u.last_name ILIKE CONCAT('%',:lastName,'%') )    \n"
+            + " AND (u.username = :username OR :username is null)                          \n"
+            + " AND (u.email ILIKE CONCAT('%',:email,'%') OR :email is null)               \n"
+            + " AND (u.first_name ILIKE CONCAT('%',:firstName,'%') OR :firstName is null)  \n"
+            + " AND (u.last_name ILIKE CONCAT('%',:lastName,'%') OR :lastName is null)     \n"
             + "                                                                       ", nativeQuery = true)
     Page<User> fetchCustomersByCustomerId(@Param("customerId") BigInteger customerId, 
                                           @Param("username") String username,
