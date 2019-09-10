@@ -56,10 +56,13 @@ public class UsersController {
             @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
             @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
         try {
+            System.out.println("\n\nTeste");
             GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>(
                     userService.fetchAll(filter, pageIndex, pageSize, principal));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            System.out.println("\n\nError");
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
