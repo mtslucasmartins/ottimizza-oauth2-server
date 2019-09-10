@@ -67,10 +67,10 @@ public class UserService {
             return userRepository
                     .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
                             filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize))
-                    .map(UserDTO::fromEntity);
+                    .map(UserDTO::fromEntityWithOrganization);
         }
         return userRepository.fetchAll(filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
-                .map(UserDTO::fromEntity);
+                .map(UserDTO::fromEntityWithOrganization);
     }
 
     public UserDTO create(UserDTO userDTO, Principal principal)

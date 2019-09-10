@@ -34,7 +34,7 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
             + " 	)                                                             \n"
             + " )                                                                     \n"
             + " AND (u.type = 2)                                                      \n"
-            + " AND (:username is null OR u.username ILIKE CONCAT('%',:username,'%')) \n"
+            + " AND (:username is null OR u.username = :username)                     \n"
             + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))          \n"
             + " AND (:firstName is null OR u.email ILIKE CONCAT('%',:firstName,'%'))  \n"
             + " AND (:lastName is null OR u.email ILIKE CONCAT('%',:lastName,'%') )   \n"
