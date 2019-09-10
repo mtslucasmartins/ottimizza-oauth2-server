@@ -21,30 +21,25 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface UsersRepository extends PagingAndSortingRepository<User, BigInteger>, UsersRepositoryCustom {
 
-    @Query(value = "                                                                       \n" // @formatter:off
-            + " WITH organizations AS (                                                    \n" 
-            + " 	SELECT fk_organizations_id FROM users_organizations uo2            \n"
-            + " 	WHERE uo2.fk_users_id = :customerId                                \n"
+    @Query(value = " WITH organizations AS (                                               \n"
+            + " 	SELECT fk_organizations_id FROM users_organizations uo2                \n"
+            + " 	WHERE uo2.fk_users_id = :customerId                                    \n"
             + " )                                                                          \n"
             + " SELECT u.* FROM users u                                                    \n"
             + " WHERE u.id IN (                                                            \n"
-            + " 	SELECT fk_users_id FROM users_organizations uo1                    \n"
-            + " 	WHERE uo1.fk_organizations_id IN (                                 \n"
-            + " 		SELECT fk_organizations_id FROM organizations              \n"
-            + " 	)                                                                  \n"
+            + " 	SELECT fk_users_id FROM users_organizations uo1                        \n"
+            + " 	WHERE uo1.fk_organizations_id IN (                                     \n"
+            + " 		SELECT fk_organizations_id FROM organizations                      \n"
+            + " 	)                                                                      \n"
             + " )                                                                          \n"
             + " AND (u.type = 2)                                                           \n"
             + " AND (u.username = :username OR :username is null)                          \n"
             + " AND (u.email ILIKE CONCAT('%',:email,'%') OR :email is null)               \n"
             + " AND (u.first_name ILIKE CONCAT('%',:firstName,'%') OR :firstName is null)  \n"
-            + " AND (u.last_name ILIKE CONCAT('%',:lastName,'%') OR :lastName is null)     \n"
-            + "                                                                       ", nativeQuery = true)
-    Page<User> fetchCustomersByCustomerId(@Param("customerId") BigInteger customerId, 
-                                          @Param("username") String username,
-                                          @Param("email") String email,
-                                          @Param("firstName") String firstName,
-                                          @Param("lastName") String lastName,
-                                          Pageable pageable);
+            + " AND (u.last_name ILIKE CONCAT('%',:lastName,'%') OR :lastName is null)     \n", nativeQuery = true)
+    Page<User> fetchCustomersByCustomerId(@Param("customerId") BigInteger customerId,
+            @Param("username") String username, @Param("email") String email, @Param("firstName") String firstName,
+            @Param("lastName") String lastName, Pageable pageable);
 
     @Query(value = "                                                                   "
             + " SELECT * FROM users u                                                  "
@@ -58,14 +53,10 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
             + " AND (:firstName is null OR u.email ILIKE CONCAT('%',:firstName,'%'))   "
             + " AND (:lastName is null OR u.email ILIKE CONCAT('%',:lastName,'%') )    "
             + "                                                             ", nativeQuery = true)
-    Page<User> fetchCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId, 
-                                          @Param("username") String username,
-                                          @Param("email") String email,
-                                          @Param("firstName") String firstName,
-                                          @Param("lastName") String lastName,
-                                          Pageable pageable);
+    Page<User> fetchCustomersByOrganizationId(@Param("organizationId") BigInteger organizationId,
+            @Param("username") String username, @Param("email") String email, @Param("firstName") String firstName,
+            @Param("lastName") String lastName, Pageable pageable);
 
-                                          
     @Query("SELECT o FROM User o WHERE o.email like :filter AND o.organization.id = :accountingId")
     Page<User> findAllByAccountingId(@Param("filter") String filter, @Param("accountingId") BigInteger accountingId,
             Pageable pageable);
@@ -127,14 +118,10 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
     @Query("SELECT CASE WHEN (COUNT(u.id) > 0) THEN TRUE ELSE FALSE END FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 
-    @Query(" SELECT                              "
-        + "     CASE                             "
-        + "         WHEN (COUNT(u.id) > 0)       "
-        + "             THEN TRUE                "
-        + "         ELSE FALSE                   "
-        + "     END                              "
-        + " FROM User u                          "
-        + " WHERE LOWER(u.email) = LOWER(:email) "
-        + " AND u.id != :userId                  "
-    )boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
+    @Query(" SELECT                              " + "     CASE                             "
+            + "         WHEN (COUNT(u.id) > 0)       " + "             THEN TRUE                "
+            + "         ELSE FALSE                   " + "     END                              "
+            + " FROM User u                          " + " WHERE LOWER(u.email) = LOWER(:email) "
+            + " AND u.id != :userId                  ")
+    boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
 }
