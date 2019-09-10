@@ -117,14 +117,6 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
-
-        // Encrypts the Password
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-
-        // Persists the User.
-        user = userRepository.save(user);
-
-        return ResponseEntity.ok(user);
     }
 
     /**

@@ -153,6 +153,7 @@
             <artifactId>sentry-spring</artifactId>
             <version>1.7.27</version>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
