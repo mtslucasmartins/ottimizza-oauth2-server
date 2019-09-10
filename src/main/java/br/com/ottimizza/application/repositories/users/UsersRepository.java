@@ -21,23 +21,23 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface UsersRepository extends PagingAndSortingRepository<User, BigInteger>, UsersRepositoryCustom {
 
-    @Query(value = "                                                                  \n" // @formatter:off
-            + " WITH organizations AS (                                               \n" 
-            + " 	SELECT fk_organizations_id FROM users_organizations uo2       \n"
-            + " 	WHERE uo2.fk_users_id = :customerId                           \n"
-            + " )                                                                     \n"
-            + " SELECT u.* FROM users u                                               \n"
-            + " WHERE u.id IN (                                                       \n"
-            + " 	SELECT fk_users_id FROM users_organizations uo1               \n"
-            + " 	WHERE uo1.fk_organizations_id IN (                            \n"
-            + " 		SELECT fk_organizations_id FROM organizations         \n"
-            + " 	)                                                             \n"
-            + " )                                                                     \n"
-            + " AND (u.type = 2)                                                      \n"
-            + " AND (:username is null OR u.username = :username)                     \n"
-            + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))          \n"
-            + " AND (:firstName is null OR u.email ILIKE CONCAT('%',:firstName,'%'))  \n"
-            + " AND (:lastName is null OR u.email ILIKE CONCAT('%',:lastName,'%') )   \n"
+    @Query(value = "                                                                       \n" // @formatter:off
+            + " WITH organizations AS (                                                    \n" 
+            + " 	SELECT fk_organizations_id FROM users_organizations uo2            \n"
+            + " 	WHERE uo2.fk_users_id = :customerId                                \n"
+            + " )                                                                          \n"
+            + " SELECT u.* FROM users u                                                    \n"
+            + " WHERE u.id IN (                                                            \n"
+            + " 	SELECT fk_users_id FROM users_organizations uo1                    \n"
+            + " 	WHERE uo1.fk_organizations_id IN (                                 \n"
+            + " 		SELECT fk_organizations_id FROM organizations              \n"
+            + " 	)                                                                  \n"
+            + " )                                                                          \n"
+            + " AND (u.type = 2)                                                           \n"
+            + " AND (:username is null OR u.username ILIKE :username)                      \n"
+            + " AND (:email is null OR u.email ILIKE CONCAT('%',:email,'%'))               \n"
+            + " AND (:firstName is null OR u.first_name ILIKE CONCAT('%',:firstName,'%'))  \n"
+            + " AND (:lastName is null OR u.last_name ILIKE CONCAT('%',:lastName,'%') )    \n"
             + "                                                                       ", nativeQuery = true)
     Page<User> fetchCustomersByCustomerId(@Param("customerId") BigInteger customerId, 
                                           @Param("username") String username,
