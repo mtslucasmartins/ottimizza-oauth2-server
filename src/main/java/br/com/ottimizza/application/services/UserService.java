@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.dtos.UserDTO;
@@ -46,34 +47,47 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    // @formatter:off
+    /**
+     * Método para listar usuários com base no usuário logado e no filtro
+     * especificado. Realiza paginação por padrão, página 1 com 10 itens por página.
+     * 
+     * @param filter    | Filtro - Classe com campos para filtro de usuário.
+     * @param pageIndex | Paginação - Indíce da página atual.
+     * @param pageSize  | Paginação - Quantidade de items por página.
+     * @param principal | Segurança - Informações do usuário logado.
+     * 
+     * @return Objeto contendo informações de página e lista de usuarios.
+     */
     public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
-        
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            // se usuario for do tipo cliente, visualiza apenas usuarios
-            // vinculados as empresas da qual pertence.
-            return userRepository.fetchCustomersByCustomerId(
-                authorizedUser.getId(), filter.getUsername(), filter.getEmail(), 
-                filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize)
-            ).map(UserDTO::fromEntity);
+            // se usuario for do tipo cliente, visualiza apenas usuarios vinculados as
+            // empresas da qual pertence.
+            return userRepository
+                    .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
+                            filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize))
+                    .map(UserDTO::fromEntity);
         }
-        
-        return userRepository.fetchAll(
-            filter, PageRequest.of(pageIndex, pageSize), authorizedUser
-        ).map(UserDTO::fromEntity);
-    } // @formatter:on
+        return userRepository.fetchAll(filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
+                .map(UserDTO::fromEntity);
+    }
+
+    public UserDTO create(UserDTO userDTO, Principal principal)
+            throws OrganizationNotFoundException, UserAlreadyRegisteredException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        User user = userDTO.toEntity();
+        user.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        user.setOrganization(authorizedUser.getOrganization());
+        checkIfEmailIsAlreadyRegistered(user);
+        return UserDTO.fromEntity(userRepository.save(user));
+    }
 
     public UserDTO patch(BigInteger id, UserDTO userDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-
         User current = findById(id);
-
         current = userDTO.patch(current);
-
         checkIfEmailIsAlreadyRegistered(current.getEmail(), current);
-
         return UserDTO.fromEntity(userRepository.save(current));
     }
 

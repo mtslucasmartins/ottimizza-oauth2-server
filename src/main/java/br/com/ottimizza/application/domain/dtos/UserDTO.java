@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
@@ -29,8 +31,11 @@ public class UserDTO implements Serializable {
     @Setter
     private String username;
 
-    @Getter
-    @Setter
+    @Getter @Setter
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String password;
+
+    @Getter @Setter
     private String email;
 
     @Getter
@@ -58,6 +63,26 @@ public class UserDTO implements Serializable {
     @Setter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private OrganizationDTO organization;
+
+    public User toEntity() {
+        User user = new User();
+
+        Organization accounting = new Organization();
+        accounting.setId(this.organizationId);
+
+        user.setId(this.id);
+        user.setUsername(this.username);
+        user.setPassword(this.password);
+        user.setEmail(this.email);
+        user.setType(this.type);
+        user.setFirstName(this.firstName);
+        user.setLastName(this.lastName);
+        
+        user.setAvatar(this.avatar);
+        user.setOrganization(accounting);
+
+        return user;
+    }
 
     public static UserDTO fromEntity(User user) {
         // @formatter:off
@@ -88,7 +113,6 @@ public class UserDTO implements Serializable {
         // @formatter:on
         return dto;
     }
-
 
     public static List<UserDTO> fromEntities(List<User> users) {
         return users.stream().map(user -> fromEntity(user)).collect(Collectors.toList());

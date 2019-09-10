@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController //@formatter:off 
+@RestController //@formatter:on 
 @RequestMapping(value = "/api/v1/users")
 public class UsersController {
 
@@ -40,16 +40,24 @@ public class UsersController {
     @Inject
     OrganizationService organizationService;
 
-
+    /**
+     * Método GET para listar usuários com base no usuário logado e no filtro
+     * especificado. Realiza paginação por padrão, página 1 com 10 itens por página.
+     * 
+     * @param filter    | Filtro - Classe com campos para filtro de usuário.
+     * @param pageIndex | Paginação - Indíce da página atual.
+     * @param pageSize  | Paginação - Quantidade de items por página.
+     * @param principal | Segurança - Informações do usuário logado.
+     * 
+     * @return Objeto contendo informações de página e lista de usuarios.
+     */
     @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
-                                 @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-                                 @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
-                                 Principal principal) {
+            @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+            @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
         try {
-            GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>( 
-                userService.fetchAll(filter, pageIndex, pageSize, principal)
-            );
+            GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>(
+                    userService.fetchAll(filter, pageIndex, pageSize, principal));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -57,10 +65,19 @@ public class UsersController {
         }
     }
 
+    /**
+     * Método GET para buscar um usuário específico com base no usuário logado.
+     * 
+     * @param id        | ID do usuário
+     * @param principal | Segurança - Informações do usuário logado.
+     * @return
+     */
     @GetMapping("/{id}")
     public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) {
         try {
-            return ResponseEntity.ok(userService.findById(id));
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>(
+                    UserDTO.fromEntityWithOrganization(userService.findById(id)));
+            return ResponseEntity.ok(response);
         } catch (UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("user_not_found", ex.getMessage()));
@@ -71,15 +88,13 @@ public class UsersController {
     }
 
     @PatchMapping("/{id}")
-    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
-                               @RequestBody UserDTO userDTO, 
-                               Principal principal) {
+    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, @RequestBody UserDTO userDTO, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
 
             UserDTO patched = userService.patch(id, userDTO, authorizedUser);
 
-            return ResponseEntity.ok(new GenericResponse<UserDTO>( patched ));
+            return ResponseEntity.ok(new GenericResponse<UserDTO>(patched));
 
         } catch (UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -90,16 +105,47 @@ public class UsersController {
         }
     }
 
+    @PostMapping
+    public HttpEntity<?> create(@RequestBody UserDTO userDTO, Principal principal) {
+        try {
+            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>(userService.create(userDTO, principal));
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("user_not_found", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
 
+        // Encrypts the Password
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        // Persists the User.
+        user = userRepository.save(user);
+
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
     @GetMapping("/invited")
     public HttpEntity<?> fetchAllInvitedUsers(@ModelAttribute UserDTO filter,
-                                 @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-                                 @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
-                                 Principal principal) {
+            @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+            @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
         try {
-            GenericPageableResponse<UserOrganizationInvite> response = new GenericPageableResponse<UserOrganizationInvite>( 
-                userService.fetchInvitedUsers(filter.getEmail(), pageIndex, pageSize, principal)
-            );
+            GenericPageableResponse<UserOrganizationInvite> response = new GenericPageableResponse<UserOrganizationInvite>(
+                    userService.fetchInvitedUsers(filter.getEmail(), pageIndex, pageSize, principal));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -107,15 +153,12 @@ public class UsersController {
         }
     }
 
-
     @PostMapping("/invite")
-    public HttpEntity<?> invite(@RequestBody  Map<String, String> args, 
-                                        Principal principal) {
+    public HttpEntity<?> invite(@RequestBody Map<String, String> args, Principal principal) {
         try {
             User authorizedUser = userService.findByUsername(principal.getName());
-            GenericResponse<Map<String, String>> response = new GenericResponse<Map<String, String>>( 
-                userService.invite(args, authorizedUser) 
-            );
+            GenericResponse<Map<String, String>> response = new GenericResponse<Map<String, String>>(
+                    userService.invite(args, authorizedUser));
             return ResponseEntity.ok(response);
         } catch (OrganizationNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
