@@ -66,7 +66,7 @@ public class UserService {
             // empresas da qual pertence.
             System.out.println("");
             System.out.println(">> " + filter.getUsername());
-            System.out.println(">> " + filter.getUsername() == null);
+            System.out.println(">> " + (filter.getUsername() == null));
             System.out.println("");
             System.out.println("");
 
