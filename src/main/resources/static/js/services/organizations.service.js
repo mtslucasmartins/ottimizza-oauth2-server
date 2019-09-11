@@ -12,7 +12,7 @@ export function findAllOrganizations(filter = '', pageIndex = 0, pageSize = 10) 
 
 export function findCustomersByOrganizationId(id) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/${id}/customers`;
+    const url = `${BASE_URL}/${id}/customers`;
     $.ajax({
       url: url, type: 'get'
     }).done(function (response) {
@@ -25,7 +25,7 @@ export function findCustomersByOrganizationId(id) {
 
 export function findCustomersInvitedByOrganizationId(id) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/${id}/customers_invited`;
+    const url = `${BASE_URL}/${id}/customers_invited`;
     $.ajax({
       url: url, type: 'get'
     }).done(function (response) {
@@ -107,7 +107,7 @@ export function inviteCustomer(id, email = '') {
 
 export function findOrganizationsByExternalId(externalId = '') {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/uuid/${externalId}`;
+    const url = `${BASE_URL}/uuid/${externalId}`;
     $.ajax({
       url: url, type: 'get'
     }).done(function (response) {
@@ -120,7 +120,7 @@ export function findOrganizationsByExternalId(externalId = '') {
 
 export function saveOrganization(organization = {}) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations`;
+    const url = `${BASE_URL}`;
     $.ajax({
       url: url,
       type: 'post',
@@ -137,7 +137,7 @@ export function saveOrganization(organization = {}) {
 
 export function updateOrganization(externalId, organization = {}) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/${externalId}`;
+    const url = `${BASE_URL}/${externalId}`;
     $.ajax({
       url: url,
       dataType: 'json',
@@ -154,7 +154,7 @@ export function updateOrganization(externalId, organization = {}) {
 
 export function patchOrganization(id, organization = {}) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/organizations/${id}`;
+    const url = `${BASE_URL}/${id}`;
     $.ajax({
       url: url, type: 'patch',
       dataType: 'json',
