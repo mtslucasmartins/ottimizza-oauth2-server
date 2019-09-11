@@ -1,4 +1,4 @@
-const BASE_URL = '/api/organizations';
+const BASE_URL = '/api/v1/organizations';
 
 
 export function findAllOrganizations(filter = '', pageIndex = 0, pageSize = 10) {

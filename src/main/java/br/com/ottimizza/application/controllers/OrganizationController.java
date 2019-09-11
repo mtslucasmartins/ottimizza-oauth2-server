@@ -33,7 +33,7 @@ import br.com.ottimizza.application.services.OrganizationService;
 import br.com.ottimizza.application.services.UserService;
 
 @RestController // @formatter:off
-@RequestMapping(value = "/api/organizations")
+@RequestMapping(value = "/api/v1/organizations")
 public class OrganizationController {
 
     @Inject
