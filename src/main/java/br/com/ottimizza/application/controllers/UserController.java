@@ -72,7 +72,7 @@ public class UserController {
         return user;
     }
 
-    @RequestMapping(value = "/info/username", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/info/username", method = RequestMethod.GET)
     public ResponseEntity<String> save(Principal principal) {
         return ResponseEntity.ok(principal.getName());
     }
