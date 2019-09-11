@@ -80,6 +80,12 @@ public class UserController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     public ResponseEntity<User> save(@RequestBody User user, Principal principal) {
 
+        User current = userRepository.findByUsername(user.getUsername()).orElse(null);
+
+        if (current != null) {
+            user.setId(current.getId());
+        }
+
         // Encrypts the Password
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
