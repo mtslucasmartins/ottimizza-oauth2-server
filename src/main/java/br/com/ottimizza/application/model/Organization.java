@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import br.com.ottimizza.application.domain.OrganizationTypes;
@@ -31,7 +32,8 @@ public class Organization implements Serializable {
     @Id
     @Getter @Setter
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "organizations_sequence", sequenceName = "organizations_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organizations_sequence")
     private BigInteger id;
 
     @Getter @Setter
