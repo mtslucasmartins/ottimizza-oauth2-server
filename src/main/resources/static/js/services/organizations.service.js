@@ -167,3 +167,25 @@ export function patchOrganization(id, organization = {}) {
     });
   });
 };
+
+export var OrganizationService = (function () {
+  const BASE_URL = `api/v1/organizations`;
+  let fetchAllInvitedUsers = function (email = null, pageIndex = 0, pageSize = 10) {
+    const url = email === null ? `${BASE_URL}/invited` : `${BASE_URL}/invited?email=${email}`;
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: url,
+        type: 'get',
+        contentType: 'application/json; charset=utf-8'
+      }).done(function (response) {
+        resolve(response);
+      }).fail(function (jqXHR, textStatus, response) {
+        reject(response);
+      });
+    });
+  }
+
+  return {
+    fetchAllInvitedUsers: fetchAllInvitedUsers
+  };
+})();

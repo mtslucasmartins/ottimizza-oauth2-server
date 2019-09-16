@@ -70,7 +70,7 @@ var app = new Vue({
     const that = this;
     that.id = window.location.href.split('usuarios/')[1].replace(/\?.*/, '');
     that.fetchUserById(that.id).then((response) => {
-      that.user = response;
+      that.user = response.record;
       organization = that.user;
       that.breadcrumb = [
         { label: 'Início', icon: { 'fad': true, 'fa-home-alt': true }, href: '/', active: false },

@@ -9,7 +9,7 @@
   <meta name="keywords" content="ottimizza,ottimizza gerenciamento de conta,gerenciamento de conta,ottimizza conta,">
   <meta name="author" content="Ottimizza">
   <title>Empresas - Ottimizza Gerenciamento de Conta</title>
-  
+
   <link rel="apple-touch-icon" sizes="60x60" th:href="@{/assets/img/ico/apple-icon-60.png}">
   <link rel="apple-touch-icon" sizes="76x76" th:href="@{/assets/img/ico/apple-icon-76.png}">
   <link rel="apple-touch-icon" sizes="120x120" th:href="@{/assets/img/ico/apple-icon-120.png}">
@@ -87,7 +87,8 @@
                         <div class="input-group col-md-6">
                           <input id="field-organization-name" :readonly="editingField != 'name'"
                             v-model="organization.name" class="form-control" type="text">
-                          <div v-if="editingField === 'name'" class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField === 'name'"
+                            class="input-group-append">
                             <button v-on:click="patchOrganization(organization.id, {'name': organization.name})"
                               class="btn" style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fa fa-save text-success"></i></span>
@@ -97,7 +98,8 @@
                               <i class="fa fa-times text-danger"></i>
                             </button>
                           </div>
-                          <div v-if="editingField !== 'name'" v-on:click="editing('name')" class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField !== 'name'"
+                            v-on:click="editing('name')" class="input-group-append">
                             <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fas fa-pencil"></i>
                             </button>
@@ -110,7 +112,8 @@
                         <div class="input-group col-md-6">
                           <input id="field-organization-cnpj" v-model="organization.cnpj"
                             :readonly="editingField != 'cnpj'" class="form-control" type="text">
-                          <div v-if="editingField === 'cnpj'" class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField === 'cnpj'"
+                            class="input-group-append">
                             <button v-on:click="patchOrganization(organization.id, {'cnpj': organization.cnpj})"
                               class="btn" style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fa fa-save text-success"></i></span>
@@ -120,7 +123,8 @@
                               <i class="fa fa-times text-danger"></i>
                             </button>
                           </div>
-                          <div v-if="editingField !== 'cnpj'" v-on:click="editing('cnpj')" class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField !== 'cnpj'"
+                            v-on:click="editing('cnpj')" class="input-group-append">
                             <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fas fa-pencil"></i>
                             </button>
@@ -134,7 +138,8 @@
                         <div class="input-group col-md-6">
                           <input id="field-organization-codigoERP" v-model="organization.codigoERP"
                             :readonly="editingField != 'codigoERP'" class="form-control" type="text">
-                          <div v-if="editingField === 'codigoERP'" class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField === 'codigoERP'"
+                            class="input-group-append">
                             <button
                               v-on:click="patchOrganization(organization.id, {'codigoERP': organization.codigoERP})"
                               class="btn" style="border: solid 1px #9E9E9E;" type="button">
@@ -145,8 +150,8 @@
                               <i class="fa fa-times text-danger"></i>
                             </button>
                           </div>
-                          <div v-if="editingField !== 'codigoERP'" v-on:click="editing('codigoERP')"
-                            class="input-group-append">
+                          <div th:if="${authorizedUser.getType()} == 1" v-if="editingField !== 'codigoERP'"
+                            v-on:click="editing('codigoERP')" class="input-group-append">
                             <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fas fa-pencil"></i>
                             </button>
@@ -160,7 +165,7 @@
             </section>
 
             <hr>
-            <section id="horizontal-layout-2" class="d-">
+            <section th:if="${authorizedUser.getType()} == 1" id="horizontal-layout-2" class="d-">
               <div class="row">
                 <div class="col-12">
                   <div class="row">

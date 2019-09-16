@@ -20,7 +20,7 @@
           <ul class="navbar-nav">
             <li class="dropdown nav-item">
               <a id="user-info-dropdown" href="#" data-toggle="dropdown" class="nav-link position-relative p-0">
-                <img th:if="${authorizedUser.avatar == null}" src="assets/img/portrait/avatars/avatar-01.png"
+                <img th:if="${authorizedUser.avatar == null}" th:src="${/assets/img/portrait/avatars/avatar.png}"
                   class="img-thumbnail rounded-circle" width="45"
                   th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
                 <img th:if="${authorizedUser.avatar != null}" th:src="${authorizedUser.avatar}"
@@ -29,14 +29,15 @@
               </a>
               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right text-left p-0"
                 aria-labelledby="user-info-dropdown" ngbdropdownmenu="">
-                <a th:href="${'/usuarios/' + authorizedUser.id}" class="dropdown-header dropdown-item text-center mt-0 pt-3">
+                <a th:href="${'/usuarios/' + authorizedUser.id}"
+                  class="dropdown-header dropdown-item text-center mt-0 pt-3">
                   <h6 th:text="${authorizedUser.firstName + ' ' + authorizedUser.lastName}" class="text-dark m-0">
                   </h6>
                   <small th:text="${authorizedUser.email}" class="text-muted text-lowercase">
                   </small>
                 </a>
                 <div class="dropdown-divider m-0"></div>
-                <a th:href="${'/profile'}" class="dropdown-item py-1">
+                <a th:href="${'/usuarios/' + authorizedUser.id}" class="dropdown-item py-1">
                   <i class="fas fa-user-cog"></i> <span class="ml-1">Configurações da Conta</span>
                 </a>
                 <div class="dropdown-divider m-0"></div>

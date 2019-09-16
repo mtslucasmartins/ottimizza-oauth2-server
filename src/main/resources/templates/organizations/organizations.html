@@ -265,18 +265,13 @@
         <div class="content-wrapper full-width-nav-tabs py-2">
           <div class="container">
             <ul class="nav nav-pills flex-row-reverse">
-              <li class="nav-item notification-sidebar-toggle">
+              <li th:if="${authorizedUser.getType()} == 1"
+                  class="nav-item notification-sidebar-toggle">
                 <a class="nav-link py-1 px-2 btn-primary active">
                   <i class="fad fa-plus-square"></i> <span class="ml-2"> Nova Empresa </span>
                 </a>
               </li>
             </ul>
-            <!-- <div class="d-none offset-sm-9 offset-md-8 offset-lg-9 col-sm-3 col-md-4 col-lg-3" sec:authorize="hasAuthority('ACCOUNTANT_ADMIN') 
-                                                                   or hasAuthority('ACCOUNTANT_WRITE')">
-              <button class="btn btn-raised btn-primary notification-sidebar-toggle w-100 m-0" href="javascript:;">
-                <i class="fad fa-plus-square"></i> <span class="ml-2"> Nova Empresa </span>
-              </button>
-            </div> -->
           </div>
         </div>
         <div class="content-wrapper">
