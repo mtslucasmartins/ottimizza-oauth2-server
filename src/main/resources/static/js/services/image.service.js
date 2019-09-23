@@ -36,11 +36,11 @@ export var ImageCompressionService = (function () {
     return new File([blob], blob.name, { type: blob.type });;
   }
 
-  let compress = function (file, size = 460) {
+  let compress = function (file, size = 460, removeTransparency = true) {
     let formData = new FormData();
     formData.append('file', file);
 
-    return HttpClient.post(`${BASE_URL}?size=${size}&remove_transparency=true`, formData, {}, { responseType: 'blob' });
+    return HttpClient.post(`${BASE_URL}?size=${size}&remove_transparency=${removeTransparency}`, formData, {}, { responseType: 'blob' });
   };
 
   return {

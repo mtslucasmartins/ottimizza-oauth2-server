@@ -1,18 +1,17 @@
 import { OrganizationService } from './../../services/organizations.service.js';
-// import { StorageService } from '../../services/storage.service.js';
 
-
-
-
-import { BootstrapBreadcrumbComponent } from '../../components/bootstrap-breadcrumb.component.js';
 import { URIService } from '../../services/uri.service.js';
 import { StorageService } from '../../services/storage.service.js';
 import { ImageCompressionService } from '../../services/image.service.js';
 
 
+// Vue.js Components
+import { BootstrapBreadcrumbComponent } from '../../components/bootstrap-breadcrumb.component.js';
+import { ButtonComponent } from '../../components/buttons/Button.vue.js';
+
+
 const BREADCRUMB = [
-  { label: 'Início', icon: { 'fa': true, 'fa-user': true }, href: '/', active: false },
-  { label: 'Empresas', icon: { 'fa': true, 'fa-user': true }, href: '/empresas', active: false }
+  { label: 'Início', icon: { 'fad': true, 'fa-home': true }, href: '/', active: false }
 ]
 
 var gAccounting = {};
@@ -79,9 +78,11 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
                 </button>
               </div>
               <div class="col-6">
-                <button type="button" class="btn btn-primary w-100" v-on:click="crop(callback)" :disabled="image.uploaded === null">
+                <v-button class="btn-primary w-100" 
+                        v-on:click.native="crop(callback)" 
+                        :disabled="image.uploaded === null">
                   Cortar & Salvar
-                </button>
+                </v-button>
               </div>
             </div>
           </div>
@@ -142,7 +143,7 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
           .catch(() => e);
       }
     },
-    crop(callback) {
+    crop: function (callback) {
       const that = this;
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         if (callback) {
@@ -178,7 +179,8 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
 const aside = new Vue({
   el: '#aside', components: {
     'breadcrumb': BootstrapBreadcrumbComponent,
-    'bootstrap-modal': BootstrapModal
+    'bootstrap-modal': BootstrapModal,
+    'v-button': ButtonComponent
   },
   data() {
     return {
@@ -248,12 +250,13 @@ const app = new Vue({
 
 
   created() {
-    const externalId = URIService.getLocationPathnameParams('contabilidade/:externalId').externalId;
-    OrganizationService.fetchOrganizationByExternalId(externalId).subscribe().then((response) => {
+    OrganizationService.fetchOrganizationByExternalId(
+      URIService.getLocationPathnameParams('contabilidade/:externalId').externalId
+    ).subscribe().then((response) => {
       gAccounting = response;
       this.breadcrumb = [
-        { label: 'Início', icon: { 'fa': true, 'fa-user': true }, href: '/', active: false },
-        { label: gAccounting.name, icon: { 'fa': true, 'fa-user': true }, href: '', active: true }
+        { label: 'Início', icon: { 'fad': true, 'fa-home': true }, href: '/', active: false },
+        { label: gAccounting.name, icon: null, href: '', active: true }
       ]
     }).then(() => {
       this.accounting = gAccounting;

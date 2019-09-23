@@ -12,8 +12,12 @@ export let BootstrapBreadcrumbComponent = Vue.component('bootstrap-breadcrumb', 
                 <span class="d-sm-inline-block d-md-none">
                   <i v-bind:class="item.icon"></i>
                 </span>
-                <span v-if="item.icon !== null" class="d-none d-md-inline-block">{{ item.label }}</span>
-                <span v-if="item.icon === null">{{ item.label }}</span>
+                <span v-if="item.icon !== null" class="d-none d-md-inline-block">
+                  {{ item.label }}
+                </span>
+                <span v-if="item.icon === null">
+                  {{ item.label }}
+                </span>
               </a>
             </li>
           </ol>
