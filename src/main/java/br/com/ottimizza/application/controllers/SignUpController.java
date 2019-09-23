@@ -22,7 +22,8 @@ public class SignUpController {
     SignUpService signUpService;
 
     @GetMapping("/register")
-    public String signupPage(@RequestParam(name = "token", defaultValue = "", required = false) String token, Model model) {
+    public String signupPage(@RequestParam(name = "token", defaultValue = "", required = false) String token,
+            Model model) {
 
         User user = new User();
         Organization organization = new Organization();
@@ -49,8 +50,9 @@ public class SignUpController {
     public String signup(@RequestParam(name = "token", defaultValue = "") String token, User user,
             Organization organization, Model model) {
         try {
-            // registering user
+            System.out.println("Registering new user...");
             user = signUpService.register(user, organization, token);
+            System.out.println("User is registered...");
 
             // if no exceptions was thrown adds a success attribute.
             model.addAttribute("success", "true");

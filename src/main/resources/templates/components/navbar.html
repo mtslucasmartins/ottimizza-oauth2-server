@@ -20,10 +20,10 @@
           <ul class="navbar-nav">
             <li class="dropdown nav-item">
               <a id="user-info-dropdown" href="#" data-toggle="dropdown" class="nav-link position-relative p-0">
-                <img th:if="${authorizedUser.avatar == null}" th:src="${/assets/img/portrait/avatars/avatar.png}"
+                <img th:if="${authorizedUser.avatar} == null" th:src="@{/assets/img/portrait/avatars/avatar.png}"
                   class="img-thumbnail rounded-circle" width="45"
                   th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
-                <img th:if="${authorizedUser.avatar != null}" th:src="${authorizedUser.avatar}"
+                <img th:if="${authorizedUser.avatar} != null" th:src="${authorizedUser.avatar}"
                   class="img-thumbnail rounded-circle" width="45"
                   th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
               </a>
@@ -36,10 +36,20 @@
                   <small th:text="${authorizedUser.email}" class="text-muted text-lowercase">
                   </small>
                 </a>
+
+                <!-- CONFIGURAÇÕES DA CONTA -->
                 <div class="dropdown-divider m-0"></div>
                 <a th:href="${'/usuarios/' + authorizedUser.id}" class="dropdown-item py-1">
                   <i class="fas fa-user-cog"></i> <span class="ml-1">Configurações da Conta</span>
                 </a>
+
+                <!-- CONFIGURAÇÕES DA CONTABILIDADE -->
+                <div class="dropdown-divider m-0"></div>
+                <a th:href="${'/contabilidade/' + authorizedUser.organization.externalId}" class="dropdown-item py-1">
+                  <i class="fas fa-money-check-edit-alt"></i> <span class="ml-1">Configurações da Contabilidade</span>
+                </a>
+
+                <!-- Sair -->
                 <div class="dropdown-divider m-0"></div>
                 <a th:href="${'/logout'}" class="dropdown-item py-1">
                   <i class="fas fa-sign-out-alt"></i><span class="ml-2">Sair</span>

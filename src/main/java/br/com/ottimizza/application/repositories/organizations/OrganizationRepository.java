@@ -14,61 +14,49 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 
-public interface OrganizationRepository extends PagingAndSortingRepository<Organization, BigInteger> { // @formatter:off
+public interface OrganizationRepository extends PagingAndSortingRepository<Organization, BigInteger> { // @formatter:
 
-  @Query("SELECT " 
-      + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              " 
-      + " FROM Organization o                                              " 
-      + " WHERE o.cnpj = :cnpj                                             "
-      + " AND (:organizationId is null OR o.id != :organizationId)         " 
-      + " AND (:accountingId is null OR o.organization.id = :accountingId) ")
-  boolean cnpjIsAlreadyRegistered(@Param("cnpj") String cnpj, 
-                                  @Param("organizationId") BigInteger organizationId, 
-                                  @Param("accountingId") BigInteger accountingId);
-  
+    @Query("SELECT o FROM Organization o WHERE o.id = :id AND o.type = 1")
+    Organization fetchAccountingById(@Param("id") BigInteger id);
 
+    @Query("SELECT " + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              "
+            + " FROM Organization o                                              "
+            + " WHERE o.cnpj = :cnpj                                             "
+            + " AND (:organizationId is null OR o.id != :organizationId)         "
+            + " AND (:accountingId is null OR o.organization.id = :accountingId) ")
+    boolean cnpjIsAlreadyRegistered(@Param("cnpj") String cnpj, @Param("organizationId") BigInteger organizationId,
+            @Param("accountingId") BigInteger accountingId);
 
-  @Query("SELECT o FROM Organization o WHERE o.externalId = :externalId ")
-  Optional<Organization> findByExternalId(@Param("externalId") String externalId);
+    @Query("SELECT o FROM Organization o WHERE o.externalId = :externalId ")
+    Optional<Organization> findByExternalId(@Param("externalId") String externalId);
 
+    @Query("SELECT o FROM Organization o WHERE LOWER(o.name) like LOWER(:filter) ")
+    Page<Organization> findAll(@Param("filter") String filter, Pageable pageable);
 
+    @Query("SELECT                                                          "
+            + "   o                                                             "
+            + " FROM Organization o                                             "
+            + " WHERE o.name like :filter                                       "
+            + " AND o.organization.id = :accountingId                           ")
+    Page<Organization> findAllByAccountingId(@Param("filter") String filter,
+            @Param("accountingId") BigInteger accountingId, Pageable pageable);
 
-  @Query("SELECT o FROM Organization o WHERE LOWER(o.name) like LOWER(:filter) ")
-  Page<Organization> findAll(@Param("filter") String filter, Pageable pageable);
-
-
-
-  @Query("SELECT                                                          " 
-      + "   o                                                             " 
-      + " FROM Organization o                                             " 
-      + " WHERE o.name like :filter                                       "
-      + " AND o.organization.id = :accountingId                           ")
-  Page<Organization> findAllByAccountingId(@Param("filter") String filter, 
-                                           @Param("accountingId") BigInteger accountingId, 
-                                           Pageable pageable);
-    
-
-
-  @Query(value = " SELECT o.* FROM users_organizations uo                 " 
-      + "     INNER JOIN organizations o                                  " 
-      + "         on o.id = uo.fk_organizations_id                        " 
-      + "  WHERE uo.fk_users_id = :userId                                  "
-      + "  AND o.fk_organizations_id = :accountingId                      "
-      + "  AND LOWER(o.name) like LOWER(:filter)                          ", nativeQuery = true)
-  Page<Organization> findAllByAccountingIdAndUserId(@Param("filter") String filter, 
-                                                      @Param("accountingId") BigInteger accountingId, 
-                                                      @Param("userId") BigInteger userId, 
-                                                      Pageable pageable);
+    @Query(value = " SELECT o.* FROM users_organizations uo                 "
+            + "     INNER JOIN organizations o                                  "
+            + "         on o.id = uo.fk_organizations_id                        "
+            + "  WHERE uo.fk_users_id = :userId                                  "
+            + "  AND o.fk_organizations_id = :accountingId                      "
+            + "  AND LOWER(o.name) like LOWER(:filter)                          ", nativeQuery = true)
+    Page<Organization> findAllByAccountingIdAndUserId(@Param("filter") String filter,
+            @Param("accountingId") BigInteger accountingId, @Param("userId") BigInteger userId, Pageable pageable);
 
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO users_organizations_invites      "
             + "        (email, token, fk_organizations_id)       "
             + "     VALUES (:email, :token, :organizationId)     ", nativeQuery = true)
-    void saveCustomerInviteToken(@Param("organizationId") BigInteger organizationId,
-                                 @Param("email") String email, 
-                                 @Param("token") String token);
-
+    void saveCustomerInviteToken(@Param("organizationId") BigInteger organizationId, @Param("email") String email,
+            @Param("token") String token);
 
     @Modifying
     @Transactional

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.springframework.boot.actuate.trace.http.HttpTrace.Principal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -32,6 +33,9 @@ import br.com.ottimizza.application.repositories.users.UsersRepository;
 
 @Service
 public class OrganizationService {
+
+    @Inject
+    UserService userService;
 
     @Inject
     UsersRepository userRepository;

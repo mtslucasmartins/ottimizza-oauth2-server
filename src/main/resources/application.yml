@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /
 
+  http2:
+    enabled: true
 # logging:
 #   level:
 #     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

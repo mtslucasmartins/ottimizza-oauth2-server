@@ -64,12 +64,6 @@ public class UserService {
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             // se usuario for do tipo cliente, visualiza apenas usuarios vinculados as
             // empresas da qual pertence.
-            System.out.println("");
-            System.out.println(">> " + filter.getUsername());
-            System.out.println(">> " + (filter.getUsername() == null));
-            System.out.println("");
-            System.out.println("");
-
             return userRepository
                     .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
                             filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize))

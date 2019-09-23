@@ -1,3 +1,5 @@
+import { HttpClient } from './http.service.js';
+
 const BASE_URL = '/api/v1/organizations';
 
 
@@ -168,24 +170,70 @@ export function patchOrganization(id, organization = {}) {
   });
 };
 
+
+
+
+
+// export var OrganizationService = (function () {
+//   const CONTENT_TYPE = 'application/json; charset=utf-8';
+//   const DATA_TYPE = 'json';
+
+//   const BASE_URL = `/api/v1/organizations`;
+
+//   let fetchOrganizationByExternalId = function (externalId = '') {
+//     return new Promise(function (resolve, reject) {
+//       const url = `${BASE_URL}/uuid/${externalId}`;
+//       $.ajax({
+//         url: url, type: 'get',
+//       }).done(function (response) {
+//         resolve(response);
+//       }).fail(function (jqXHR, textStatus, response) {
+//         reject(response);
+//       });
+//     });
+//   };
+
+//   let patch = function (id, organization = {}) {
+//     return new Promise(function (resolve, reject) {
+//       const url = `${BASE_URL}/${id}`;
+//       $.ajax({
+//         url: url, type: 'patch',
+//         dataType: 'json',
+//         contentType: 'application/json; charset=utf-8',
+//         data: JSON.stringify(organization)
+//       }).done(function (response) {
+//         resolve(response);
+//       }).fail(function (jqXHR, textStatus, response) {
+//         reject(jqXHR);
+//       });
+//     });
+//   };
+
+//   return {
+//     fetchOrganizationByExternalId: fetchOrganizationByExternalId,
+//     patch: patch
+//   };
+// })();
+
+
 export var OrganizationService = (function () {
-  const BASE_URL = `api/v1/organizations`;
-  let fetchAllInvitedUsers = function (email = null, pageIndex = 0, pageSize = 10) {
-    const url = email === null ? `${BASE_URL}/invited` : `${BASE_URL}/invited?email=${email}`;
-    return new Promise(function (resolve, reject) {
-      $.ajax({
-        url: url,
-        type: 'get',
-        contentType: 'application/json; charset=utf-8'
-      }).done(function (response) {
-        resolve(response);
-      }).fail(function (jqXHR, textStatus, response) {
-        reject(response);
-      });
-    });
-  }
+
+  const CONTENT_TYPE = 'application/json; charset=utf-8';
+  const DATA_TYPE = 'json';
+
+  const BASE_URL = `/api/v1/organizations`;
+
+  let fetchOrganizationByExternalId = function (externalId = '') {
+    return HttpClient.get(`${BASE_URL}/uuid/${externalId}`, {}, { responseType: 'json' });
+  };
+
+  let patch = function (id, data) {
+    console.log(data);
+    return HttpClient.patch(`${BASE_URL}/${id}`, data, { 'Content-Type': 'application/json' }, { responseType: 'json' });
+  };
 
   return {
-    fetchAllInvitedUsers: fetchAllInvitedUsers
+    fetchOrganizationByExternalId: fetchOrganizationByExternalId,
+    patch: patch
   };
 })();

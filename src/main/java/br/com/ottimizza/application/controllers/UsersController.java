@@ -40,41 +40,21 @@ public class UsersController {
     @Inject
     OrganizationService organizationService;
 
-    /**
-     * Método GET para listar usuários com base no usuário logado e no filtro
-     * especificado. Realiza paginação por padrão, página 1 com 10 itens por página.
-     * 
-     * @param filter    | Filtro - Classe com campos para filtro de usuário.
-     * @param pageIndex | Paginação - Indíce da página atual.
-     * @param pageSize  | Paginação - Quantidade de items por página.
-     * @param principal | Segurança - Informações do usuário logado.
-     * 
-     * @return Objeto contendo informações de página e lista de usuarios.
-     */
     @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
             @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
             @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
         try {
-            System.out.println("\n\nTeste");
             GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>(
                     userService.fetchAll(filter, pageIndex, pageSize, principal));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
-            System.out.println("\n\nError");
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
 
-    /**
-     * Método GET para buscar um usuário específico com base no usuário logado.
-     * 
-     * @param id        | ID do usuário
-     * @param principal | Segurança - Informações do usuário logado.
-     * @return
-     */
     @GetMapping("/{id}")
     public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) {
         try {

@@ -97,8 +97,8 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
      */
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO users_authorities (fk_users_id, fk_authorities_id) VALUES (:username, :authority)", nativeQuery = true)
-    void addAuthority(@Param("username") String username, @Param("authority") String authority);
+    @Query(value = "INSERT INTO users_authorities (fk_users_id, fk_authorities_id) VALUES (:userId, :authority)", nativeQuery = true)
+    void addAuthority(@Param("userId") BigInteger userId, @Param("authority") String authority);
 
     /*
      * *****************************************************************************

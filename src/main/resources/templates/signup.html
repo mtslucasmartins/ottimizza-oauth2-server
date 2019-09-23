@@ -76,7 +76,7 @@
                             <p class="card-text mb-3">
                               Preencha os campos abaixo para criar uma nova conta.
                             </p>
-                            <div th:if="${success}" role="alert"
+                            <div th:if="${success == 'true'}" role="alert"
                               class="alert bg-primary alert-icon-left alert-dismissible mb-3 px-3">
                               <strong>Sucesso!</strong>
                               Clique <a href="login" class="text-light">aqui</a> para acessar o sistema.
@@ -115,11 +115,11 @@
                               </div>
                               <input id="email" th:value="${user.email}" name="email"
                                 th:readonly="${organization.getId() != null && user.email != null}"
-                                class="form-control mb-3 text-dark" placeholder="Email" type="email" required />
+                                class="form-control mb-3 text-dark" placeholder="E-mail" type="email" required />
                               <div class="form-group">
                                 <div class="controls mb-1">
                                   <input id="password-input" th:value="${user.password}" name="password"
-                                    data-validation-required-message="Este campo é obrigatório"
+                                    data-validation-required-message="Este campo é obrigatório" placeholder="Senha"
                                     class="form-control text-dark" aria-invalid="false" type="password" required />
                                   <div class="help-block"></div>
                                 </div>
@@ -127,7 +127,7 @@
                               <div class="form-group">
                                 <div class="controls mb-1">
                                   <input id="password-check-input" name="password_check"
-                                    data-validation-match-message="As senhas não coincidem!"
+                                    data-validation-match-message="As senhas não coincidem!" placeholder="Confirmar Senha"
                                     data-validation-match-match="password" class="form-control" aria-invalid="false"
                                     type="password" />
                                   <div class="help-block"></div>

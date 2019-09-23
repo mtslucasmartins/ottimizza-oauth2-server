@@ -44,6 +44,12 @@ public class IndexController {
         return "organizations/organization.html";
     }
 
+    @GetMapping(value = { "/accounting/{externalId}", "/contabilidade/{externalId}" })
+    public String accounting(@PathVariable("externalId") String externalId, Principal principal, Model model) {
+        model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
+        return "accounting/accounting.html";
+    }
+
     /**
      * ********************************************************************************
      * ** USUARIOS

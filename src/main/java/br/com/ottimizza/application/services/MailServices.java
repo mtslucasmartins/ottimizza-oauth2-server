@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -75,7 +76,25 @@ public class MailServices {
     public void send(String name, String to, String subject, String content) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setFrom("redefinicao@depaula.com.br", name);
+            messageHelper.setFrom("redefinicao@ottimizza.com.br", name);
+            messageHelper.setReplyTo("lucas@ottimizza.com.br");
+            messageHelper.setTo(to);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(content, true);
+        };
+        mailSender.send(messagePreparator);
+    }
+
+    public void send(String from, String name, String to, String subject, String content) {
+        MimeMessagePreparator messagePreparator = mimeMessage -> {
+            String userDomain = from;
+
+            if (from.indexOf("@") >= 0) { 
+                userDomain = from.substring(from.lastIndexOf("@") + 1); 
+            }
+
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setFrom(MessageFormat.format(MessageFormat.format("account@{0}", userDomain), from), name);
             messageHelper.setReplyTo("lucas@ottimizza.com.br");
             messageHelper.setTo(to);
             messageHelper.setSubject(subject);

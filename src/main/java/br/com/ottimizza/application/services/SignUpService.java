@@ -71,7 +71,7 @@ public class SignUpService {
         user.setOrganization(organization);
         user = userRepository.save(user);
 
-        userRepository.addAuthority(user.getUsername(), "ADMIN");
+        userRepository.addAuthority(user.getId(), "ADMIN");
 
         return user;
     }
@@ -80,7 +80,7 @@ public class SignUpService {
             throws OrganizationAlreadyRegisteredException, UserAlreadyRegisteredException, Exception {
 
         if (token.equals("")) {
-            this.register(user, organization);
+            return this.register(user, organization);
         }
 
         UserOrganizationInvite inviteTokenDetails = getInviteTokenDetails(token);
@@ -102,15 +102,12 @@ public class SignUpService {
         // creates the userF.
         user = userRepository.save(user);
 
-        if (inviteTokenDetails.getType().equals(User.Type.CUSTOMER)) {
-            // Adiciona organizações ao usuário.
-            migrateUsersOrganizationsFromInvitesByUser(user);
-        }
+        migrateUsersOrganizationsFromInvitesByUser(user);
 
         // Adiciona autoridades ao usuário.
-        userRepository.addAuthority(user.getUsername(), Authorities.ADMIN.getName());
-        userRepository.addAuthority(user.getUsername(), Authorities.WRITE.getName());
-        userRepository.addAuthority(user.getUsername(), Authorities.READ.getName());
+        userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
+        userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
+        userRepository.addAuthority(user.getId(), Authorities.READ.getName());
 
         return user;
     }
@@ -130,7 +127,9 @@ public class SignUpService {
         List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(registeredUser.getEmail());
         for (UserOrganizationInvite invite : invites) {
             try {
-                userRepository.addOrganization(registeredUser.getId(), invite.getOrganization().getId());
+                if (registeredUser.getType().equals(User.Type.CUSTOMER)) {
+                    userRepository.addOrganization(registeredUser.getId(), invite.getOrganization().getId());
+                }
                 userOrganizationInviteRepository.delete(invite);
             } catch (Exception ex) {
                 ex.printStackTrace();

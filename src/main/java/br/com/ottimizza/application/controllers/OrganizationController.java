@@ -268,4 +268,19 @@ public class OrganizationController {
         }
     }
 
+
+    // /********************************************************************************************* **
+    //  * RECEITA WS
+    //  * ******************************************************************************************* */
+    // @GetMapping("/{id}/users")
+    // public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
+    //     try {
+    //         User authorizedUser = userService.findByUsername(principal.getName());
+    //         return ResponseEntity.ok(organizationService.fetchCustomers(id, authorizedUser));
+    //     } catch (Exception ex) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+    //     }
+    // }
+ 
 }

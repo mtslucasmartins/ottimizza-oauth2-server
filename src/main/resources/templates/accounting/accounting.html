@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" class="loading" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description" content="Ottimizza - Gerenciamento de Conta.">
+  <meta name="keywords" content="ottimizza,ottimizza gerenciamento de conta,gerenciamento de conta,ottimizza conta,">
+  <meta name="author" content="Ottimizza">
+  <title>Empresas - Ottimizza Gerenciamento de Conta</title>
+  <link rel="apple-touch-icon" sizes="60x60" th:href="@{/assets/img/ico/apple-icon-60.png}">
+  <link rel="apple-touch-icon" sizes="76x76" th:href="@{/assets/img/ico/apple-icon-76.png}">
+  <link rel="apple-touch-icon" sizes="120x120" th:href="@{/assets/img/ico/apple-icon-120.png}">
+  <link rel="apple-touch-icon" sizes="152x152" th:href="@{/assets/img/ico/apple-icon-152.png}">
+  <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/img/ico/favicon.ico}">
+  <link rel="shortcut icon" type="image/png" th:href="@{/assets/img/ico/favicon-32.png}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900"
+    rel="stylesheet">
+
+  <!-- Styles Vendors -->
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/css/perfect-scrollbar.min.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/css/prism.min.css}">
+
+  <!-- Styles App -->
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/css/app.css}">
+
+  <!-- Styles Custom -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/overwritten.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/users/user.css}">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/cropperjs/cropper.css}">
+  <style>
+    img {
+      max-width: 100%;
+    }
+
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+  </style>
+
+</head>
+
+<body data-col="2-columns" class="bg-white 2-columns ">
+  <div class="wrapper">
+    <div th:replace="components/sidebar.html :: sidebar"> </div>
+    <nav th:replace="components/navbar.html :: navbar"> </nav>
+
+
+    <!-- App -->
+    <div id="app" class="main-panel">
+      <div class="main-content">
+
+        <!-- Breadcrumb -->
+        <breadcrumb v-bind:items="breadcrumb"></breadcrumb>
+
+        <!-- Tab Navigation -->
+        <div class="full-width-nav-tabs content-wrapper pt-2">
+          <div class="container">
+            <ul class="nav nav-justified-not nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link p-2 active" id="homeIcon-tab" data-toggle="tab" href="#homeIcon"
+                  aria-controls="homeIcon" aria-expanded="true">
+                  <i class="fad fa-cog"></i>&nbsp;&nbsp;Básico
+                </a>
+              </li>
+              <li th:if="${authorizedUser.getId()} == ${id}" class="nav-item">
+                <a class="nav-link p-2" id="profileIcon-tab" data-toggle="tab" href="#profileIcon"
+                  aria-controls="profileIcon" aria-expanded="false">
+                  <i class="fad fa-user-shield"></i>&nbsp;&nbsp;Segurança
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- App Content -->
+        <div class="content-wrapper">
+          <div class="container">
+            <section id="horizontal-layout" class="d-">
+              <div class="row">
+                <div class="col-12">
+                  <form class="form form-horizontal ">
+                    <div class="form-body">
+
+
+                      <!-- Avatar -->
+                      <div class="form-group row pt-4 pb-2">
+                        <div class="col-md-3">
+                          <h5 class="m-0"><i class="ft-user"></i> Avatar</h5>
+                        </div>
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6 text-center">
+                          <div class="container">
+                            <div class="row">
+                              <div class="col-12">
+                                <a class="position-relative p-0">
+                                  <img v-cloak v-if="accounting.avatar == null"
+                                    th:src="@{/assets/img/portrait/avatars/avatar.png}"
+                                    class="img-thumbnail rounded-circle" width="150"
+                                    th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
+                                  <img v-cloak v-if="accounting.avatar != null" :src="accounting.avatar"
+                                    class="img-thumbnail rounded-circle" width="150" :alt="accounting.name">
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row justify-content-center mt-2">
+                              <button type="button" class="btn btn-link" data-toggle="modal"
+                                data-target="#modal-image-cropper">
+                                <i class="fad fa-pencil-alt"></i><span>&nbsp;&nbsp;Editar</span>
+                              </button>
+                              <button type="button" class="btn btn-link">
+                                <i class="fas fa-times"></i><span>&nbsp;&nbsp;Remover</span>
+                              </button>
+                            </div>
+                          </div>
+
+
+                        </div>
+                      </div>
+                      <!-- /Avatar -->
+
+
+                      <div class="form-group row">
+                        <div class="col-md-3">
+                          <h5 class="m-0"><i class="ft-user"></i> Informações Básicas</h5>
+                        </div>
+                        <label for="f-name" class="col-md-3 label-control">Nome: </label>
+                        <div class="input-group col-md-6">
+                          <input id="f-name" v-model="accounting.name" :readonly="editingId != 'f-name'"
+                            class="form-control" type="text">
+                          <div v-if="editingId === 'f-name'" class="input-group-append">
+                            <button v-on:click="patch(accounting.id, {'name': accounting.name})" class="btn"
+                              style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingId !== 'f-name'" v-on:click="editing('f-name')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label for="f-cnpj" class="col-md-3 label-control">CNPJ: </label>
+                        <div class="input-group col-md-6">
+                          <input id="f-cnpj" v-model="accounting.cnpj" :readonly="editingId != 'f-cnpj'"
+                            class="form-control" type="text">
+                          <div v-if="editingId === 'f-cnpj'" class="input-group-append">
+                            <button v-on:click="patch(accounting.id, {'cnpj': accounting.cnpj})" class="btn"
+                              style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingId !== 'f-cnpj'" v-on:click="editing('f-cnpj')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!--
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label for="field-user-lastname" class="col-md-3 label-control">Sobrenome: </label>
+                        <div class="input-group col-md-6">
+                          <input id="field-user-lastname" v-model="user.lastName" :readonly="editingField != 'lastname'"
+                            class="form-control" type="text">
+                          <div th:if="${authorizedUser.getId()} == ${id}" v-if="editingField === 'lastname'"
+                            class="input-group-append">
+                            <button v-on:click="patchUser(user.id, {'lastName': user.lastName})" class="btn"
+                              style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div th:if="${authorizedUser.getId()} == ${id}" v-if="editingField !== 'lastname'"
+                            v-on:click="editing('lastname')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label for="field-user-lastname" class="col-md-3 label-control">E-mail: </label>
+                        <div class="input-group col-md-6">
+                          <input id="field-user-email" v-model="user.email" readonly class="form-control" type="text">
+                        </div>
+                      </div>
+                      -->
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <footer th:replace="components/footer.html :: footer"> </footer>
+    </div>
+
+  </div>
+
+  <div id="aside">
+    <bootstrap-modal @cropped="onImageCropped" v-bind:callback="onImageCropped"
+      v-bind:onUploadCallback="onImageUploaded">
+    </bootstrap-modal>
+  </div>
+
+  <!-- Modals -->
+
+
+
+  <!-- Imports -->
+  <div th:insert="profile/head.html :: foot"> </div>
+
+  <!-- Vue.js Development -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- Font Awesome Kit -->
+  <script src="https://kit.fontawesome.com/fba5ae40d6.js"></script>
+
+  <script th:src="@{/js/views/accounting/accounting.vue.js}" type="module"></script>
+  <script th:src="@{/js/views/accounting/accounting.vue.js}" type="module"></script>
+
+  <script th:src="@{/assets/vendors/cropperjs/cropper.js}"></script>
+</body>
+
+</html>
