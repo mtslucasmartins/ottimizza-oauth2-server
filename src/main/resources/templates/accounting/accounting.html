@@ -230,6 +230,41 @@
     <bootstrap-modal @cropped="onImageCropped" v-bind:callback="onImageCropped"
       v-bind:onUploadCallback="onImageUploaded">
     </bootstrap-modal>
+
+
+    <v-modal v-if="showModal" @close="showModal = false">
+      <div slot="header" class="w-100">
+        <button type="button" class="close" aria-label="Fechar" v-on:click="showModal = false">
+          <i class="far fa-times"></i>
+        </button>
+        <h5 id="exampleModalLabel" class="modal-title">
+          Alterar Logo da Contabilidade
+        </h5>
+      </div>
+      <div slot="body" class="w-100">
+        <button type="button" class="close" aria-label="Fechar" v-on:click="showModal = false">
+          <i class="far fa-times"></i>
+        </button>
+        <h5 id="exampleModalLabel" class="modal-title">
+          Alterar Logo da Contabilidade
+        </h5>
+      </div>
+      <div slot="footer" class="container">
+        <div class="row">
+          <div class="col-6">
+            <v-button class="btn-danger w-100" v-on:click="showModal = false">
+              Cancelar
+            </v-button>
+          </div>
+          <div class="col-6">
+            <v-button class="btn-primary w-100">
+              Cortar & Salvar
+            </v-button>
+          </div>
+        </div>
+      </div>
+
+    </v-modal>
   </div>
 
   <!-- Modals -->

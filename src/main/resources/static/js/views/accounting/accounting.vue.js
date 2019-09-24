@@ -8,6 +8,8 @@ import { ImageCompressionService } from '../../services/image.service.js';
 // Vue.js Components
 import { BootstrapBreadcrumbComponent } from '../../components/bootstrap-breadcrumb.component.js';
 import { ButtonComponent } from '../../components/buttons/Button.vue.js';
+import { ModalComponent } from '../../components/modals/Modal.vue.js';
+
 
 
 const BREADCRUMB = [
@@ -33,63 +35,63 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
   template: `
     <div id="modal-image-cropper" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 id="exampleModalLabel" class="modal-title">
-            Alterar Logo da Contabilidade
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" v-on:click="dismiss">
-            <i class="far fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="container">
-            <div class="row">
-              <div class="col justify-content-center text-center">
-               <div v-if="status === 'success'"
-                  class="alert bg-success alert-icon-left alert-dismissible mb-3" role="alert">
-                  {{ feedbacks.success }}
-                </div>
-                <div v-if="status === 'failed'"
-                  class="alert bg-danger alert-icon-left alert-dismissible mb-3" role="alert">
-                  {{ feedbacks.failed }}
-                </div>
-                <label for="inputGroupFile01" class="btn btn-outline-primary">
-                  Escolher Arquivo
-                </label>
-                <input id="inputGroupFile01" type="file" class="m-0 p-0 d-none" @change="onUpload" aria-describedby="inputGroupFileAddon01">
-                <div class="w-100">
-                  <img id="image" v-bind:src="image.uploaded" class="cropper-hidden">
-                  <div id="result">
-                    <img src="" />
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 id="exampleModalLabel" class="modal-title">
+              Alterar Logo da Contabilidade
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" v-on:click="dismiss">
+              <i class="far fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row">
+                <div class="col justify-content-center text-center">
+                <div v-if="status === 'success'"
+                    class="alert bg-success alert-icon-left alert-dismissible mb-3" role="alert">
+                    {{ feedbacks.success }}
+                  </div>
+                  <div v-if="status === 'failed'"
+                    class="alert bg-danger alert-icon-left alert-dismissible mb-3" role="alert">
+                    {{ feedbacks.failed }}
+                  </div>
+                  <label for="inputGroupFile01" class="btn btn-outline-primary">
+                    Escolher Arquivo
+                  </label>
+                  <input id="inputGroupFile01" type="file" class="m-0 p-0 d-none" @change="onUpload" aria-describedby="inputGroupFileAddon01">
+                  <div class="w-100">
+                    <img id="image" v-bind:src="image.uploaded" class="cropper-hidden">
+                    <div id="result">
+                      <img src="" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <div class="container">
-            <div class="row">
-              <div class="col-6">
-                <button type="button" class="btn btn-danger w-100" data-dismiss="modal">
-                  Cancelar
-                </button>
-              </div>
-              <div class="col-6">
-                <v-button class="btn-primary w-100" 
-                        v-on:click.native="crop(callback)" 
-                        :disabled="image.uploaded === null">
-                  Cortar & Salvar
-                </v-button>
+          <div class="modal-footer">
+            <div class="container">
+              <div class="row">
+                <div class="col-6">
+                  <button type="button" class="btn btn-danger w-100" data-dismiss="modal">
+                    Cancelar
+                  </button>
+                </div>
+                <div class="col-6">
+                  <v-button class="btn-primary w-100" 
+                          v-on:click.native="crop(callback)" 
+                          :disabled="image.uploaded === null">
+                    Cortar & Salvar
+                  </v-button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   `,
   data: function () {
     return {
@@ -180,10 +182,12 @@ const aside = new Vue({
   el: '#aside', components: {
     'breadcrumb': BootstrapBreadcrumbComponent,
     'bootstrap-modal': BootstrapModal,
-    'v-button': ButtonComponent
+    'v-button': ButtonComponent,
+    'v-modal': ModalComponent
   },
   data() {
     return {
+      showModal: true,
       accounting: gAccounting,
       breadcrumb: BREADCRUMB,
       editingId: null
