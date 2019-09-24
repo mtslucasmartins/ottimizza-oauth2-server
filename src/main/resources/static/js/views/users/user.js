@@ -8,6 +8,7 @@ import { URIService } from '../../services/uri.service.js';
 import { UserService } from '../../services/api/users.service.js';
 import { ImageCompressionService } from '../../services/image.service.js';
 import { StorageService } from '../../services/storage.service.js';
+import { EventBus } from '../../services/event-bus.js';
 
 var gUser = {};
 
@@ -51,6 +52,7 @@ var app = new Vue({
         .then((response) => this.update(response.record));
     },
     patch: async function (id = this.user.id, data) {
+      EventBus.$emit('i-got-clicked', 12);
       return UserService.patch(id, data).subscribe()
         .then((response) => this.update(response.record));
     }
@@ -101,7 +103,7 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
                   <label for="inputGroupFile01" class="btn btn-outline-primary">
                     Escolher Arquivo
                   </label>
-                  <input id="inputGroupFile01" type="file" class="m-0 p-0 d-none" @change="onUpload" aria-describedby="inputGroupFileAddon01">
+                  <input ref="fileInput" id="inputGroupFile01" type="file" class="m-0 p-0 d-none" @change="onUpload" aria-describedby="inputGroupFileAddon01">
                   <div class="w-100">
                     <img id="image" v-bind:src="image.uploaded" class="cropper-hidden">
                     <div id="result">
@@ -156,6 +158,11 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
     }
   },
   methods: {
+    resetInput: function () {
+      const input = this.$refs.fileInput;
+      input.type = 'text';
+      input.type = 'file';
+    },
     init() {
       this.status = '';
       this.image = { name: '', status: '', value: '' };
@@ -165,7 +172,10 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
       this.status = '';
       this.image = { name: '', state: '', uploaded: null, resized: null, cropped: null, };
     },
-    reset() { this.cropper.reset(); },
+    reset() {
+      this.resetInput();
+      this.cropper.reset();
+    },
     update(src) { this.cropper.reset(); this.cropper.replace(src); },
     dismiss() { this.destroy(); },
     onUpload(event) {
@@ -183,7 +193,18 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
           .then((response) => {
             reader.readAsDataURL(response);
           })
-          .catch(() => e);
+          .catch(() => e).then(() => {
+            var image = document.getElementById('image');
+            var croppable = false;
+            that.cropper = new Cropper(image, {
+              zoomable: false,
+              aspectRatio: 1,
+              viewMode: 1,
+              ready: function () {
+                croppable = true;
+              },
+            });
+          });
       }
     },
     crop: function (callback) {
@@ -201,11 +222,17 @@ export const BootstrapModal = Vue.component('bootstrap-modal', {
     }
   },
   mounted() {
-    if (this.cropper) this.reset();
     const that = this;
+    // Quando Modal é Aberto...
     $("#modal-image-cropper").on('shown.bs.modal', function () {
+
+      // Reseta input para poder enviar a mesma imagem novamente.
+      that.resetInput();
+      if (that.cropper) that.update('');
       var image = document.getElementById('image');
+      console.log(image);
       image.classList.add("cropper-hidden");
+
       var croppable = false;
       that.cropper = new Cropper(image, {
         zoomable: false,
@@ -250,5 +277,13 @@ const aside = new Vue({
         })
         .catch(() => false);
     }
+  }, created() {
+
+
+
+
+    EventBus.$on('i-got-clicked', clickCount => {
+      console.log(`Oh, that's nice. It's gotten ${clickCount} clicks! :)`)
+    });
   }
 });

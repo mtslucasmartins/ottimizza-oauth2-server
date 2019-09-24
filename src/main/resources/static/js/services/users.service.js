@@ -84,7 +84,7 @@ export var UserService = (function () {
       const url = email === null ? `${endpoint}/invited` : `${endpoint}/invited?email=${email}`;
       const headers = { 'Content-Type': 'application/json' };
       const options = { responseType: 'json' };
-      return HttpClient.get(url, data, headers, options);
+      return HttpClient.get(url, headers, options);
     },
 
     patch(id, data) {

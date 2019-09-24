@@ -160,7 +160,7 @@ let organizationsTable = new Vue({
       this.pageInfo = response.pageInfo;
       console.log(this.pageInfo);
     });
-    this.fetchAllInvitedUsers().then((response) => {
+    this.fetchAllInvitedUsers().subscribe().then((response) => {
       this.invitedUsers = response.records;
       console.log(response);
     });
