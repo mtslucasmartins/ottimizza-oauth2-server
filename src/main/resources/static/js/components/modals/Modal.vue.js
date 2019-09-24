@@ -31,7 +31,4 @@ export let ModalComponent = Vue.component('v-modal', {
       </div>
     </transition>
   `,
-  methods: {
-
-  }
 });

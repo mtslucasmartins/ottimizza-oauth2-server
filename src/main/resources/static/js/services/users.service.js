@@ -1,3 +1,4 @@
+import { HttpClient } from './http.service.js';
 
 const BASE_URL = '/api/v1/users';
 
@@ -76,23 +77,65 @@ export function invite(email = '') {
 
 
 export var UserService = (function () {
-  const BASE_URL = `api/v1/users`;
-  let fetchAllInvitedUsers = function (email = null, pageIndex = 0, pageSize = 10) {
-    const url = email === null ? `${BASE_URL}/invited` : `${BASE_URL}/invited?email=${email}`;
-    return new Promise(function (resolve, reject) {
-      $.ajax({
-        url: url,
-        type: 'get',
-        contentType: 'application/json; charset=utf-8'
-      }).done(function (response) {
-        resolve(response);
-      }).fail(function (jqXHR, textStatus, response) {
-        reject(response);
-      });
-    });
+  var endpoint = '/api/v1/users'
+  const controller = {
+
+    fetchAllInvitedUsers(email = null, pageIndex = 0, pageSize = 10) {
+      const url = email === null ? `${endpoint}/invited` : `${endpoint}/invited?email=${email}`;
+      const headers = { 'Content-Type': 'application/json' };
+      const options = { responseType: 'json' };
+      return HttpClient.get(url, data, headers, options);
+    },
+
+    patch(id, data) {
+      const headers = { 'Content-Type': 'application/json' };
+      const options = { responseType: 'json' };
+      return HttpClient.patch(`${endpoint}/${id}`, data, headers, options);
+    }
   }
 
-  return {
-    fetchAllInvitedUsers: fetchAllInvitedUsers
-  };
+  return controller
+})();
+
+
+
+const UserAPIService = (() => {
+  // Private methods and variables can be defined isolated in the scope of the Service/Store
+  var endpoint = '/api/v1/users'
+
+  // All public methods and variables are available in the controller
+  const controller = {
+    fetchById(id) {
+      return new Promise((resolve, reject) => {
+        fetch(`${endpoint}/${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          data: JSON.stringify(data)
+        }).then((response) => {
+          return response.json()
+        }).then((json) => {
+          resolve(json)
+        })
+      })
+    },
+    patch(id, data = {}) {
+      return new Promise((resolve, reject) => {
+        fetch(`${endpoint}/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          data: JSON.stringify(data)
+        }).then((response) => {
+          return response.json()
+        }).then((json) => {
+          resolve(json)
+        })
+      })
+    }
+  }
+
+  return controller
 })();

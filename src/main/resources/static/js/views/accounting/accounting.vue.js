@@ -18,7 +18,6 @@ const BREADCRUMB = [
 
 var gAccounting = {};
 
-
 export const BootstrapModal = Vue.component('bootstrap-modal', {
   props: {
     callback: { type: Function, default: {} },
@@ -223,12 +222,9 @@ const aside = new Vue({
 
 const app = new Vue({
   el: '#app',
-
-
   components: {
     'breadcrumb': BootstrapBreadcrumbComponent
   },
-
   data() {
     return {
       accounting: gAccounting,
@@ -236,8 +232,6 @@ const app = new Vue({
       editingId: null
     }
   },
-
-
   methods: {
     editing: function (field) {
       this.editingId = field;
@@ -251,8 +245,6 @@ const app = new Vue({
       });
     }
   },
-
-
   created() {
     OrganizationService.fetchOrganizationByExternalId(
       URIService.getLocationPathnameParams('contabilidade/:externalId').externalId

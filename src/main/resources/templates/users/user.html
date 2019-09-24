@@ -27,6 +27,9 @@
   <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/css/perfect-scrollbar.min.css}">
   <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/css/prism.min.css}">
 
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/vendors/cropperjs/cropper.css}">
+  <script th:src="@{/assets/vendors/cropperjs/cropper.js}"></script>
+
   <!-- Styles App -->
   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/app.css}">
 
@@ -74,16 +77,33 @@
                         </div>
                         <div class="col-md-3"></div>
                         <div class="col-md-6 text-center">
-                          <a class="position-relative p-0">
-                            <img v-cloak v-if="user.avatar == null" th:src="@{/assets/img/portrait/avatars/avatar.png}"
-                              class="img-thumbnail rounded-circle" width="150"
-                              th:alt="${authorizedUser.firstName + ' ' + authorizedUser.lastName}">
-                            <img v-cloak v-if="user.avatar != null" :src="user.avatar"
-                              class="img-thumbnail rounded-circle" width="150"
-                              :alt="user.firstName + ' ' + user.lastName">
-                          </a>
+                          <div class="container">
+                            <div class="row">
+                              <div class="col-12">
+                                <a class="position-relative p-0">
+                                  <img v-cloak v-if="user.avatar == null"
+                                    th:src="@{/assets/img/portrait/avatars/avatar.png}"
+                                    class="img-thumbnail rounded-circle" width="150"
+                                    :alt="user.firstName + ' ' + user.lastName">
+                                  <img v-cloak v-if="user.avatar != null" :src="user.avatar"
+                                    class="img-thumbnail rounded-circle" width="150"
+                                    :alt="user.firstName + ' ' + user.lastName">
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row justify-content-center mt-2">
+                              <button type="button" class="btn btn-link" data-toggle="modal"
+                                data-target="#modal-image-cropper">
+                                <i class="fad fa-pencil-alt"></i><span>&nbsp;&nbsp;Editar</span>
+                              </button>
+                              <button type="button" class="btn btn-link">
+                                <i class="fas fa-times"></i><span>&nbsp;&nbsp;Remover</span>
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
+
                       <div class="form-group row">
                         <div class="col-md-3">
                           <h5 class="m-0"><i class="ft-user"></i> Informações Básicas</h5>
@@ -94,7 +114,7 @@
                             v-model="user.firstName" class="form-control" type="text">
                           <div th:if="${authorizedUser.getId()} == ${id}" v-if="editingField === 'firstname'"
                             class=" input-group-append">
-                            <button v-on:click="patchUser(user.id, {'firstName': user.firstName})" class="btn"
+                            <button v-on:click="patch(user.id, {'firstName': user.firstName})" class="btn"
                               style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fa fa-save text-success"></i></span>
                             </button>
@@ -119,7 +139,7 @@
                             class="form-control" type="text">
                           <div th:if="${authorizedUser.getId()} == ${id}" v-if="editingField === 'lastname'"
                             class="input-group-append">
-                            <button v-on:click="patchUser(user.id, {'lastName': user.lastName})" class="btn"
+                            <button v-on:click="patch(user.id, {'lastName': user.lastName})" class="btn"
                               style="border: solid 1px #9E9E9E;" type="button">
                               <i class="fa fa-save text-success"></i></span>
                             </button>
@@ -150,9 +170,22 @@
           </div>
         </div>
       </div>
+
       <footer th:replace="components/footer.html :: footer"> </footer>
     </div>
   </div>
+
+  <div id="aside">
+    <bootstrap-modal @cropped="onImageCropped" v-bind:callback="onImageCropped"
+      v-bind:onUploadCallback="onImageUploaded">
+    </bootstrap-modal>
+  </div>
+
+  <cropper-modal v-if="showCropperModal"></cropper-modal>
+
+
+
+
   <!-- <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"
     style="display: none;">
     <div class="modal-dialog" role="document">

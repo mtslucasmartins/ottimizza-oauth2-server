@@ -4,6 +4,12 @@ export var URIService = (function () {
     return url.replace(/^(\/*)/, '');
   }
 
+  function encodeData(data) {
+    return Object.keys(data).map(function (key) {
+      return [key, data[key]].map(encodeURIComponent).join("=");
+    }).join("&");
+  }
+
   function getPathParams(url, pattern) {
     url = removeTrailingSlash(url);
     pattern = removeTrailingSlash(pattern);
@@ -57,6 +63,7 @@ export var URIService = (function () {
   }
 
   return {
+    encodeData: encodeData,
     getPathParams: getPathParams,
     getLocationPathnameParams: getLocationPathnameParams
   };

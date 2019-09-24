@@ -131,6 +131,9 @@ public class UserDTO implements Serializable {
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
 
+        if (this.avatar != null && !this.avatar.equals(""))
+            user.setAvatar(this.avatar);
+
         return user;
     }
 

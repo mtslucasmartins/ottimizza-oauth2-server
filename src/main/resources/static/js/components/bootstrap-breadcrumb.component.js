@@ -1,3 +1,39 @@
+export function BreadcrumItemModel() {
+  this.label = '';
+  this.href = '';
+  this.icon = null;
+  this.active = false;
+
+  this.isActive = function (active) {
+    this.active = active;
+    return this;
+  }
+
+  this.withLabel = function (label) {
+    this.label = label;
+    return this;
+  }
+
+  this.withHref = function (href) {
+    this.href = href;
+    return this;
+  }
+
+  this.withIcon = function (icon) {
+    this.icon = {};
+    let classes = icon.split(' ');
+    for (let cls of classes) {
+      this.icon[`${cls}`] = true;
+    }
+    return this;
+  }
+
+  this.build = function () {
+    return {
+      label: this.label, icon: this.icon, href: this.href, active: this.active
+    }
+  }
+};
 
 export let BootstrapBreadcrumbComponent = Vue.component('bootstrap-breadcrumb', {
   props: ['items'],
