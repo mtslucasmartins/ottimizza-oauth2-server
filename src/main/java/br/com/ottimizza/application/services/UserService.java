@@ -143,11 +143,12 @@ public class UserService {
     @Async
     private void sendInviteByEmail(UserOrganizationInvite invite, User authorizedUser) {
         String accountingName = authorizedUser.getOrganization().getName();
-        String to = invite.getEmail();
-        String subject = MessageFormat.format("Conta {0}.", accountingName);
-        String template = mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken());
+        MailServices.Builder messageBuilder = new MailServices.Builder().withName(accountingName)
+                .withTo(invite.getEmail()).withCc(authorizedUser.getOrganization().getEmail())
+                .withSubject(MessageFormat.format("Conta {0}.", accountingName))
+                .withHtml(mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken()));
 
-        mailServices.send(accountingName, to, subject, template);
+        mailServices.send(messageBuilder);
     }
 
     public Page<UserOrganizationInvite> fetchInvitedUsers(String email, int pageIndex, int pageSize,
