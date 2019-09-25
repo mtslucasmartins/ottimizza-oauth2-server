@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
+import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.springframework.boot.actuate.trace.http.HttpTrace.Principal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -64,10 +64,7 @@ public class OrganizationService {
     public GenericPageableResponse<Organization> findAll(String filter, Pageable pageRequest, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         filter = "%" + filter + "%";
-        // List<String> authorities = authorizedUser.getAuthorities().stream().map((authority) -> {
-        //     return authority.getName();
-        // }).collect(Collectors.toList());
-
+        
         if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             Page<Organization> page =  organizationRepository.findAllByAccountingId(
                     filter, authorizedUser.getOrganization().getId(), pageRequest
@@ -83,6 +80,26 @@ public class OrganizationService {
         }
 
         return new GenericPageableResponse<>();
+    }
+
+
+    public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, Pageable pageRequest, Principal principal)
+            throws OrganizationNotFoundException, Exception {
+        User authorizedUser = userService.findByUsername(principal.getName());
+
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
+            return organizationRepository.fetchAllByAccountantId(
+                    filter, pageRequest, authorizedUser
+            ).map(OrganizationDTO::fromEntity);
+        }
+
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
+            return organizationRepository.fetchAllByCustomerId(
+                    filter, pageRequest, authorizedUser
+            ).map(OrganizationDTO::fromEntity);
+        }
+
+        return null;
     }
 
     /* ****************************************************************************************************************
@@ -183,6 +200,7 @@ public class OrganizationService {
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         Organization organization = organizationDTO.toEntity();
         organization.setExternalId(UUID.randomUUID().toString());
+        organization.setCnpj(organizationDTO.getCnpj().replaceAll("\\D", ""));
         organization.setType(OrganizationTypes.CLIENT.getValue());
 
         if (organizationDTO.getOrganizationId() == null) {
@@ -206,6 +224,7 @@ public class OrganizationService {
         Organization organization = organizationDTO.toEntity();
         organization.setId(current.getId());
         organization.setExternalId(current.getExternalId());
+        organization.setCnpj(organizationDTO.getCnpj().replaceAll("\\D", ""));
         organization.setAvatar(current.getAvatar());
         organization.setType(current.getType());
         organization.setOrganization(current.getOrganization());

@@ -55,6 +55,10 @@ public class User implements Serializable {
     private String email;
 
     @Getter @Setter
+    @Column(name = "phone")
+    private String phone;
+
+    @Getter @Setter
     @Column(name = "first_name")
     private String firstName;
 

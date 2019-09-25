@@ -18,7 +18,6 @@ import br.com.ottimizza.application.domain.OrganizationTypes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -55,6 +54,10 @@ public class Organization implements Serializable {
     @Getter @Setter
     @Column(name = "codigo_erp", nullable = true)
     private String codigoERP;
+
+    @Getter @Setter
+    @Column(name = "email", nullable = true)
+    private String email;
 
     @Getter @Setter
     @Column(name = "avatar")

@@ -9,24 +9,30 @@ export var UserService = (function () {
 
   const controller = {
 
-    fetchAllInvitedUsers(email = null, pageIndex = 0, pageSize = 10) {
-      const url = email === null ? `${endpoint}/invited` : `${endpoint}/invited?email=${email}`;
-      return HttpClient.get(url, data, headers, options);
-    },
-
-    fetchById(id) {
-      return HttpClient.get(`${endpoint}/${id}`, headers, options);
-    },
-
-    fetchAll(filters = {}, pageIndex = 0, pageSize = 10) {
+    fetchAll(filters = {}, pageIndex = 0, pageSize = 10) { // -> '/api/v1/users'
       filters['pageIndex'] = pageIndex;
       filters['pageSize'] = pageSize;
       return HttpClient.get(`${endpoint}/?${URIService.encodeData(filters)}`, headers, options);
     },
 
-    patch(id, data) {
+    fetchById(id) { // -> '/api/v1/users/:id'
+      return HttpClient.get(`${endpoint}/${id}`, headers, options);
+    },
+
+    // *************************************************************************************************
+    // CRUD
+    //
+    patch(id, data) { // -> '/api/v1/users/:id'
       return HttpClient.patch(`${endpoint}/${id}`, data, headers, options);
-    }
+    },
+
+    //
+    //
+    //
+    fetchAllInvitedUsers(email = null, pageIndex = 0, pageSize = 10) {
+      const url = email === null ? `${endpoint}/invited` : `${endpoint}/invited?email=${email}`;
+      return HttpClient.get(url, data, headers, options);
+    },
   };
 
   return controller;

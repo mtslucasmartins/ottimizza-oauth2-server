@@ -37,6 +37,9 @@ public class OrganizationDTO implements Serializable {
     private String codigoERP;
 
     @Getter @Setter
+    private String email;
+
+    @Getter @Setter
     private String avatar;
 
     @Getter @Setter
@@ -52,6 +55,7 @@ public class OrganizationDTO implements Serializable {
         organization.setExternalId(this.externalId);
         organization.setName(this.name);
         organization.setCnpj(this.cnpj);
+        organization.setEmail(this.email);
         organization.setCodigoERP(this.codigoERP);
         organization.setAvatar(this.avatar);
         organization.setOrganization(accounting);
@@ -67,6 +71,7 @@ public class OrganizationDTO implements Serializable {
             .withName(organization.getName())
             .withCnpj(organization.getCnpj())
             .withCodigoERP(organization.getCodigoERP())
+            .withEmail(organization.getEmail())
             .withAvatar(organization.getAvatar())
             .withOrganizationId(organization.getOrganization());
         // @formatter:on
@@ -86,9 +91,12 @@ public class OrganizationDTO implements Serializable {
 
         if (this.codigoERP != null && !this.codigoERP.equals(""))
             organization.setCodigoERP(this.codigoERP);
-            
+
         if (this.avatar != null && !this.avatar.equals(""))
             organization.setAvatar(this.avatar);
+
+        if (this.email != null && !this.email.equals(""))
+            organization.setEmail(this.email);
 
         return organization;
     }
@@ -120,6 +128,11 @@ public class OrganizationDTO implements Serializable {
 
     OrganizationDTO withCodigoERP(String codigoERP) {
         this.codigoERP = codigoERP;
+        return this;
+    }
+
+    OrganizationDTO withEmail(String email) {
+        this.email = email;
         return this;
     }
 

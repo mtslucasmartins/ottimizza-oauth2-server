@@ -189,7 +189,7 @@
                 </executions>
             </plugin>
             <!-- VSCODE -->
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
@@ -207,7 +207,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
             <plugin>
                 <!-- a hint for IDE's to add the java sources to the classpath -->
                 <groupId>org.codehaus.mojo</groupId>

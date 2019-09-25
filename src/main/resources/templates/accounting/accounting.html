@@ -180,6 +180,30 @@
                         </div>
                       </div>
 
+                      <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label for="f-email" class="col-md-3 label-control">E-mail: </label>
+                        <div class="input-group col-md-6">
+                          <input id="f-email" v-model="accounting.email" :readonly="editingId != 'f-email'"
+                            class="form-control" type="text">
+                          <div v-if="editingId === 'f-email'" class="input-group-append">
+                            <button v-on:click="patch(accounting.id, {'email': accounting.email})" class="btn"
+                              style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fa fa-save text-success"></i></span>
+                            </button>
+                            <button v-on:click="editing(null)" class="btn" style="border: solid 1px #9E9E9E;"
+                              type="button">
+                              <i class="fa fa-times text-danger"></i>
+                            </button>
+                          </div>
+                          <div v-if="editingId !== 'f-email'" v-on:click="editing('f-email')" class="input-group-append">
+                            <button class="btn" style="border: solid 1px #9E9E9E;" type="button">
+                              <i class="fas fa-pencil"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
                       <!--
                       <div class="form-group row">
                         <div class="col-md-3"></div>

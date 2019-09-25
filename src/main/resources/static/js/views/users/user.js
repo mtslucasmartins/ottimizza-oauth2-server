@@ -21,7 +21,7 @@ var app = new Vue({
   },
   data() {
     return {
-      id: null, user: gUser,
+      id: null, user: gUser, pwd: { password: '', newPassword: '', inputType: 'password' },
       breadcrumb: [
         new BreadcrumItemModel().withLabel('Início').withIcon('fad fa-home-alt').withHref('/').build(),
         new BreadcrumItemModel().withLabel('Usuários').withIcon('fad fa-users').withHref('/usuarios').build()
@@ -41,6 +41,14 @@ var app = new Vue({
     editing: function (field) {
       this.editingField = field;
     },
+    updatePassword: function () {
+      if (this.pwd.password && this.pwd.newPassword) {
+        this.patch(this.user.id, {
+          password: this.pwd.password,
+          newPassword: this.pwd.newPassword
+        });
+      }
+    },
     update: function (data) {
       gUser = this.user = data;
       console.log(gUser);
@@ -52,7 +60,6 @@ var app = new Vue({
         .then((response) => this.update(response.record));
     },
     patch: async function (id = this.user.id, data) {
-      EventBus.$emit('i-got-clicked', 12);
       return UserService.patch(id, data).subscribe()
         .then((response) => this.update(response.record));
     }

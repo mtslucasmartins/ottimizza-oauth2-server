@@ -83,6 +83,7 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("user_not_found", ex.getMessage()));
         } catch (Exception ex) {
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }

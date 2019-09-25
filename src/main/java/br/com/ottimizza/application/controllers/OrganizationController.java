@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +64,26 @@ public class OrganizationController {
         }
     }
 
+    // @GetMapping
+    // public HttpEntity<?> findAll(@ModelAttribute OrganizationDTO filter,
+    //                           @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+    //                           @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
+    //                           Principal principal) {
+    //     try {
+    //         User authorizedUser = userService.findByUsername(principal.getName());
+    //         return ResponseEntity.ok(organizationService.findAll(
+    //             filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
+    //         );
+    //     } catch (OrganizationAlreadyRegisteredException ex) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT)
+    //                 .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
+    //     } catch (Exception ex) {
+    //         ex.printStackTrace();
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+    //     }
+    // }
+    
     /********************************************************************************************* **
      * CREATE UPDATE PATCH
      * ******************************************************************************************* */

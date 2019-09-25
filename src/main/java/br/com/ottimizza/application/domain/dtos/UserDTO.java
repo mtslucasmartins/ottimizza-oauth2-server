@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 // @formatter:off
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,7 +38,14 @@ public class UserDTO implements Serializable {
     private String password;
 
     @Getter @Setter
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String newPassword;
+
+    @Getter @Setter
     private String email;
+
+    @Getter @Setter
+    private String phone;
 
     @Getter
     @Setter
@@ -74,6 +83,7 @@ public class UserDTO implements Serializable {
         user.setUsername(this.username);
         user.setPassword(this.password);
         user.setEmail(this.email);
+        user.setPhone(this.phone);
         user.setType(this.type);
         user.setFirstName(this.firstName);
         user.setLastName(this.lastName);
@@ -92,6 +102,7 @@ public class UserDTO implements Serializable {
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
             .withEmail(user.getEmail())
+            .withPhone(user.getPhone())
             .withType(user.getType())
             .withAvatar(user.getAvatar())
             .withOrganizationId(user.getOrganization());
@@ -107,6 +118,7 @@ public class UserDTO implements Serializable {
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
             .withEmail(user.getEmail())
+            .withPhone(user.getPhone())
             .withType(user.getType())
             .withAvatar(user.getAvatar())
             .withOrganization(OrganizationDTO.fromEntity(user.getOrganization()));
@@ -128,11 +140,25 @@ public class UserDTO implements Serializable {
         if (this.firstName != null && !this.firstName.equals(""))
             user.setFirstName(this.firstName);
 
+        if (this.phone != null && !this.phone.equals(""))
+            user.setPhone(this.phone);
+
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
 
         if (this.avatar != null && !this.avatar.equals(""))
             user.setAvatar(this.avatar);
+
+        if (this.password != null && !this.password.equals("")) {
+            if (this.newPassword != null && !this.newPassword.equals("")) {
+
+                System.out.println("Changing Password");
+                if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
+                    System.out.println("Changing Password >>> " + this.newPassword);
+                    user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
+                }
+            }
+        }
 
         return user;
     }
@@ -149,6 +175,11 @@ public class UserDTO implements Serializable {
 
     UserDTO withEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    UserDTO withPhone(String phone) {
+        this.phone = phone;
         return this;
     }
 
