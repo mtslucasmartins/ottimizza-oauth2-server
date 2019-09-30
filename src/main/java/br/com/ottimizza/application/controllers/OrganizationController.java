@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
@@ -64,25 +65,24 @@ public class OrganizationController {
         }
     }
 
-    // @GetMapping
-    // public HttpEntity<?> findAll(@ModelAttribute OrganizationDTO filter,
-    //                           @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-    //                           @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
-    //                           Principal principal) {
-    //     try {
-    //         User authorizedUser = userService.findByUsername(principal.getName());
-    //         return ResponseEntity.ok(organizationService.findAll(
-    //             filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
-    //         );
-    //     } catch (OrganizationAlreadyRegisteredException ex) {
-    //         return ResponseEntity.status(HttpStatus.CONFLICT)
-    //                 .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
-    //     } catch (Exception ex) {
-    //         ex.printStackTrace();
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-    //     }
-    // }
+    @GetMapping("/v2")
+    public HttpEntity<?> fetchAll(@ModelAttribute OrganizationDTO filter,
+                              @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+                              @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
+                              Principal principal) {
+        try {
+            GenericPageableResponse<OrganizationDTO> response = new GenericPageableResponse<OrganizationDTO>(
+                    organizationService.fetchAll(filter, PageRequest.of(pageIndex, pageSize), principal)
+            );
+            return ResponseEntity.ok(response);
+        } catch (OrganizationAlreadyRegisteredException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
     
     /********************************************************************************************* **
      * CREATE UPDATE PATCH

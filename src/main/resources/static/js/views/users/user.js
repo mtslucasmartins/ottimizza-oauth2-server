@@ -1,6 +1,6 @@
 // VueJS Components
 import { BootstrapBreadcrumbComponent, BreadcrumItemModel } from './../../components/bootstrap-breadcrumb.component.js';
-import { ModalComponent } from '../../components/modals/Modal.vue.js';
+import { ModalComponent, AdvancedInputComponent } from '../../components/modals/Modal.vue.js';
 import { ButtonComponent } from '../../components/buttons/Button.vue.js';
 
 // services 
@@ -18,6 +18,7 @@ var app = new Vue({
     'breadcrumb': BootstrapBreadcrumbComponent,
     'v-button': ButtonComponent,
     'v-modal': ModalComponent,
+    'v-input': AdvancedInputComponent
   },
   data() {
     return {
@@ -37,6 +38,10 @@ var app = new Vue({
         new BreadcrumItemModel().withLabel('Usuários').withIcon('fad fa-users').withHref('/usuarios').build(),
         new BreadcrumItemModel().withLabel(fullname).withHref(`/usuarios/${user.id}`).isActive(true).build()
       ];
+    },
+    log: function (e) {
+      console.log(e);
+
     },
     editing: function (field) {
       this.editingField = field;

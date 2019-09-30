@@ -227,6 +227,10 @@ export var OrganizationService = (function () {
     return HttpClient.get(`${BASE_URL}/uuid/${externalId}`, {}, { responseType: 'json' });
   };
 
+  let fetchAll = function (filter = {}, pageIndex = 0, pageSize = 10) {
+
+  }
+
   let patch = function (id, data) {
     console.log(data);
     return HttpClient.patch(`${BASE_URL}/${id}`, data, { 'Content-Type': 'application/json' }, { responseType: 'json' });

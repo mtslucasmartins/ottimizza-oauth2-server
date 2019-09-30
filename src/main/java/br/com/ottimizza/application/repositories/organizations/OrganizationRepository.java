@@ -87,8 +87,8 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:username, :organizationId)", nativeQuery = true)
-    void addCustomer(@Param("username") String username, @Param("organizationId") BigInteger authority);
+    @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:userId, :organizationId)", nativeQuery = true)
+    void addCustomer(@Param("userId") BigInteger userId, @Param("organizationId") BigInteger authority);
 
     @Modifying
     @Transactional

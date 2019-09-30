@@ -112,7 +112,7 @@ public class OrganizationService {
         User user = userRepository.findByUsername(userDTO.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
 
-        organizationRepository.addCustomer(user.getUsername(), organization.getId());
+        organizationRepository.addCustomer(user.getId(), organization.getId());
 
         return UserDTO.fromEntity(user);
     }

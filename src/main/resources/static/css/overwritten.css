@@ -302,3 +302,31 @@ a.btn.disabled, fieldset:disabled a.btn {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
+
+
+/* 
+
+
+
+
+
+ */
+
+.text-montserrat {
+  font-family: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.15em;
+}
+
+.text-rubik {
+  font-family: 'Rubik', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #75787D;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+.input-group-append button {
+  border: solid 1px #9E9E9E;
+}

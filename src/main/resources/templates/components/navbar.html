@@ -37,9 +37,11 @@
                 </a>
 
                 <!-- CONFIGURAÇÕES DA CONTABILIDADE -->
-                <div class="dropdown-divider m-0"></div>
-                <a th:href="${'/contabilidade/' + authorizedUser.organization.externalId}" class="dropdown-item py-1">
-                  <i class="fas fa-money-check-edit-alt"></i> <span class="ml-1">Configurações da Contabilidade</span>
+                <div th:if="${authorizedUser.getType()} == 1" class="dropdown-divider m-0"></div>
+                <a th:if="${authorizedUser.type == 1}"
+                  th:href="${'/contabilidade/' + authorizedUser.organization.externalId}" class="dropdown-item py-1">
+                  <i class="fas fa-money-check-edit-alt"></i>
+                  <span class="ml-1">Configurações da Contabilidade </span>
                 </a>
 
                 <!-- Sair -->
@@ -82,8 +84,9 @@
                 </a>
 
                 <!-- CONFIGURAÇÕES DA CONTABILIDADE -->
-                <div class="dropdown-divider m-0"></div>
-                <a th:href="${'/contabilidade/' + authorizedUser.organization.externalId}" class="dropdown-item py-1">
+                <div th:if="${authorizedUser.getType()} == 1" class="dropdown-divider m-0"></div>
+                <a th:if="${authorizedUser.getType()} == 1"
+                  th:href="${'/contabilidade/' + authorizedUser.organization.externalId}" class="dropdown-item py-1">
                   <i class="fas fa-money-check-edit-alt"></i> <span class="ml-1">Configurações da Contabilidade</span>
                 </a>
 

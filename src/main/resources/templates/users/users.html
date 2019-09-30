@@ -56,7 +56,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="col-6">
+              <div th:if="${authorizedUser.getType()} == 1"  class="col-6">
                 <ul class="nav nav-pills flex-row-reverse">
                   <li class="nav-item notification-sidebar-toggle">
                     <a class="nav-link py-1 px-2 btn-primary active">Novo Usuário </span>

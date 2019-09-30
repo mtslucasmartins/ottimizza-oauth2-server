@@ -1,5 +1,6 @@
 import { findAllOrganizations, saveOrganization } from './../services/organizations.service.js';
 import { BootstrapBreadcrumbComponent, BootstrapPaginationComponent } from './../components/bootstrap-breadcrumb.component.js';
+import { OrganizationService } from '../services/api/organizations.service.js';
 
 Vue.component('suspension-points-animation', {
   template: `
@@ -11,15 +12,12 @@ Vue.component('suspension-points-animation', {
   `
 });
 
-
-
-// Tabela com Lista de organizações relacionadas ao Usuário logado.
-var organizationsTable = new Vue({
+var app = new Vue({
   el: '#app',
   components: {
     'breadcrumb': BootstrapBreadcrumbComponent,
     'bootstrap-pagination': BootstrapPaginationComponent
-  },
+  },  
   data: {
     loading: false,
     breadcrumb: [
@@ -27,45 +25,35 @@ var organizationsTable = new Vue({
       { label: 'Empresas', href: '/empresas', active: true },
 
     ],
-    pageInfo: {
-      pageIndex: 0,
-      pageSize: 10,
-      totalPages: 0
-    },
+    pageInfo: { pageIndex: 0, pageSize: 10, totalPages: 0 },
     organizations: []
   },
   methods: {
-    findAllOrganizations: function (filter = '', pageIndex = this.pageInfo.pageIndex, pageSize = this.pageInfo.pageSize) {
-      return findAllOrganizations(filter, pageIndex, pageSize);
+    fetchAll: async function (filter = {}) {
+      this.loading = true;
+      return OrganizationService.fetchAll({}, this.pageInfo.pageIndex, this.pageInfo.pageSize).subscribe()
+        .then((response) => {
+          this.organizations = response.records;
+          this.pageInfo = response.pageInfo;
+        }).then(() => this.loading = false);
     },
     onPageChange: function (event) {
+      if (event.selected === 'first') this.pageInfo.pageIndex = 0;
 
-      if (event.selected === 'first')
-        this.pageInfo.pageIndex = 0;
       if (event.selected === 'previous')
         this.pageInfo.pageIndex = (this.pageInfo.pageIndex - 1 < 0) ? 0 : this.pageInfo.pageIndex - 1;
+
       if (event.selected === 'next')
         this.pageInfo.pageIndex = this.pageInfo.pageIndex + 1 > this.pageInfo.totalPages ? this.pageInfo.totalPages - 1 : this.pageInfo.pageIndex + 1;
+
       if (event.selected === 'last')
         this.pageInfo.pageIndex = this.pageInfo.totalPages - 1;
 
-      this.loading = true;
-      this.findAllOrganizations().then((response) => {
-        this.loading = false;
-        this.organizations = response.records;
-        this.pageInfo = response.pageInfo;
-      });
+      this.fetchAll();
     }
   },
   created() {
-    this.loading = true;
-    this.findAllOrganizations().then((response) => {
-      this.loading = false;
-      this.organizations = response.records;
-      this.pageInfo = response.pageInfo;
-      console.log(this.pageInfo);
-
-    });
+    this.fetchAll();
   }
 });
 
