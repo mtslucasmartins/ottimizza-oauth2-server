@@ -61,7 +61,7 @@ spring:
   #
   # Thymeleaf properties.
   thymeleaf:
-    cache: false
+    cache: true
 
 security:
   basic:
