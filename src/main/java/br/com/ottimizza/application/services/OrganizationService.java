@@ -22,7 +22,7 @@ import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
-import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
@@ -204,8 +204,6 @@ public class OrganizationService {
     public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         Organization organization = organizationDTO.toEntity();
-        organization.setExternalId(UUID.randomUUID().toString());
-        organization.setCnpj(organizationDTO.getCnpj().replaceAll("\\D", ""));
         organization.setType(OrganizationTypes.CLIENT.getValue());
 
         if (organizationDTO.getOrganizationId() == null) {
@@ -220,6 +218,16 @@ public class OrganizationService {
         checkIfOrganizationIsNotAlreadyRegistered(organization);
 
         return OrganizationDTO.fromEntity(organizationRepository.save(organization));
+    }
+
+    public Organization create(Organization organization)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+
+        checkIfOrganizationIsNotParentOfItself(organization);
+
+        checkIfOrganizationIsNotAlreadyRegistered(organization);
+
+        return organizationRepository.save(organization);
     }
 
     public OrganizationDTO update(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)

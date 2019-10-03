@@ -5,9 +5,6 @@ server:
 
   http2:
     enabled: true
-# logging:
-#   level:
-#     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 
 spring:
   datasource:
@@ -24,7 +21,6 @@ spring:
       # min-idle: 8
       # default-auto-commit: true
       
-  #
   # JPA properties.
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -38,12 +34,11 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
-
-  #
+  
   # Spring-boot Mail properties
   mail:
-    host: br510.hostgator.com.br # smtp.gmail.com | mail.ottimizza.com.br
-    port: 465 # 26 ? --- 587 comum --- 465  SSL (doesn't connect)
+    host: br510.hostgator.com.br 
+    port: 465 
     username: redefinicao@ottimizza.com.br
     password: ottimizza
     properties:
@@ -57,6 +52,14 @@ spring:
           ssl:
             enable: true
     test-connection: true
+
+  # Multipart properties
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-request-size: 215MB
+      max-file-size: 200MB
 
   #
   # Thymeleaf properties.

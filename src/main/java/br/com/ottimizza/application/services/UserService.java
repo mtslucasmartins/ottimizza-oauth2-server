@@ -3,23 +3,30 @@ package br.com.ottimizza.application.services;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import br.com.ottimizza.application.client.ReceitaWSClient;
+import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
+import br.com.ottimizza.application.domain.dtos.ImportDataModel;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
-import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
@@ -30,6 +37,9 @@ import br.com.ottimizza.application.repositories.users.UsersRepository;
 @Service
 public class UserService {
 
+    @Autowired
+    ReceitaWSClient receitaWSClient;
+
     @Inject
     MailServices mailServices;
 
@@ -38,6 +48,9 @@ public class UserService {
 
     @Inject
     UserOrganizationInviteRepository userOrganizationInviteRepository;
+
+    @Inject
+    OrganizationRepository organizationRepository;
 
     public User findById(BigInteger id) throws UserNotFoundException, Exception {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
@@ -73,6 +86,12 @@ public class UserService {
                 .map(UserDTO::fromEntityWithOrganization);
     }
 
+    public User create(User user) throws OrganizationNotFoundException, UserAlreadyRegisteredException, Exception {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        checkIfEmailIsAlreadyRegistered(user);
+        return userRepository.save(user);
+    }
+
     public UserDTO create(UserDTO userDTO, Principal principal)
             throws OrganizationNotFoundException, UserAlreadyRegisteredException, Exception {
         User authorizedUser = findByUsername(principal.getName());
@@ -83,8 +102,9 @@ public class UserService {
         return UserDTO.fromEntity(userRepository.save(user));
     }
 
-    public UserDTO patch(BigInteger id, UserDTO userDTO, User authorizedUser)
+    public UserDTO patch(BigInteger id, UserDTO userDTO, Principal principal)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
         User current = findById(id);
         current = userDTO.patch(current);
         checkIfEmailIsAlreadyRegistered(current.getEmail(), current);
@@ -142,13 +162,16 @@ public class UserService {
 
     @Async
     private void sendInviteByEmail(UserOrganizationInvite invite, User authorizedUser) {
+        // @formatter:off
         String accountingName = authorizedUser.getOrganization().getName();
-        MailServices.Builder messageBuilder = new MailServices.Builder().withName(accountingName)
-                .withTo(invite.getEmail()).withCc(authorizedUser.getOrganization().getEmail())
+        MailServices.Builder messageBuilder = new MailServices.Builder()
+                .withName(accountingName)
+                .withTo(invite.getEmail())
+                .withCc(authorizedUser.getOrganization().getEmail())
                 .withSubject(MessageFormat.format("Conta {0}.", accountingName))
                 .withHtml(mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken()));
-
-        mailServices.send(messageBuilder);
+        mailServices.send(messageBuilder); 
+        // @formatter:on
     }
 
     public Page<UserOrganizationInvite> fetchInvitedUsers(String email, int pageIndex, int pageSize,
@@ -158,6 +181,137 @@ public class UserService {
                 authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
     } // @formatter:on
 
+    // public String importUsersFromCSV(MultipartFile file, Principal principal)
+    // throws Exception {
+    // InputStream is = file.getInputStream();
+
+    // BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+    // while (reader.ready()) {
+    // String line = reader.readLine();
+
+    // //
+
+    // }
+
+    // return "{}";
+    // }
+    public String importUsersFromJSON(List<ImportDataModel> data, Principal principal) throws Exception { // @formatter:off
+        User authorizedUser = findByUsername(principal.getName());
+
+        Date lastCallToAPI = null;
+
+        Organization lastAccounting = new Organization();
+        Organization lastOrganization = new Organization();
+
+        for (ImportDataModel object : data) {
+            
+            Organization accounting = Organization.builder()
+                    .name(object.getAccountingName())
+                    .cnpj(object.getAccountingCnpj().replaceAll("\\D", ""))
+                    .type(Organization.Type.ACCOUNTING).build();
+                    
+            Organization organization = Organization.builder()
+                    .name(object.getOrganizationName())
+                    .cnpj(object.getOrganizationCnpj().replaceAll("\\D", ""))
+                    .codigoERP(object.getOrganizationCode())
+                    .organization(accounting)
+                    .type(Organization.Type.CLIENT).build();
+
+            User user = User.builder()
+                    .firstName(object.getFirstName())
+                    .email(object.getEmail())
+                    .type(
+                        organization.getCnpj() == null || organization.getCnpj().isEmpty() 
+                            ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
+                    ).build();
+
+            if (!organization.getCnpj().equals(lastOrganization.getCnpj())) {
+                if (!accounting.getCnpj().equals(lastAccounting.getCnpj())) {
+
+                    accounting = organizationRepository
+                                    .findAccountingByCnpj(accounting.getCnpj())
+                                    .orElse(accounting);
+
+                    if (accounting.getId() == null) {
+                        long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
+
+                        TimeUnit.MILLISECONDS.sleep(timeout);
+
+                        DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
+                        lastCallToAPI = new Date();
+
+                        if (info.getEmail() != null && !info.getEmail().isEmpty()) {
+                            accounting.setEmail(info.getEmail());
+                            organizationRepository.save(accounting);
+
+                            User accountant = User.builder()
+                                    .firstName(info.getNome())
+                                    .email(info.getEmail())
+                                    .username(info.getEmail())
+                                    .password("ottimizza")
+                                    .type(User.Type.ACCOUNTANT)
+                                    .organization(accounting).build();
+
+                            create(accountant);
+                        }
+                    } 
+                } else {
+                    accounting = lastAccounting;
+                }
+                organization = organizationRepository.findOrganizationByCnpjAndAccountingId(
+                    organization.getCnpj(), accounting.getId()
+                ).orElse(organization);
+                if (organization.getId() == null) {
+                    organizationRepository.save(organization);
+                }
+            } else {
+                organization = lastOrganization;
+            }
+
+            // split(',')
+
+            // iterate emails 
+
+            System.out.println(MessageFormat.format("User Email   {0}", user.getEmail()));
+
+            // adds the organization to user
+            User u = userRepository.findByEmail(user.getEmail());
+
+            if (u == null || u.getId() == null) {
+                System.out.println("Creating New Customer User");
+                // creates the user
+            } else {
+                user = u;
+            }
+            // check if organization is from last iteration...
+            // 
+            //     check if organization is from last iteration...
+            //         check if accounting cnpj exists...
+            //        
+            //         if exists 
+            //              get accounting by cnpj
+            //         else 
+            //              creates a new accounting...
+            //              creates a admin...
+            //
+            //     check if organization cnpj exists...
+            //    
+            //     if exists 
+            //          get organization by cnpj
+            //     else 
+            //          creates a new organization...
+            // 
+            // creates the user...
+            lastAccounting = accounting.toBuilder().build();
+            lastOrganization = organization.toBuilder().build();
+        }
+
+        return "{}";
+    }
+
+    //
+    //
     //
     //
     //

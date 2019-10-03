@@ -57,6 +57,13 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
     @Query("SELECT o FROM Organization o WHERE o.externalId = :externalId ")
     Optional<Organization> findByExternalId(@Param("externalId") String externalId);
 
+    @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj AND o.type = 1 ")
+    Optional<Organization> findAccountingByCnpj(@Param("cnpj") String cnpj);
+    
+    @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj AND o.organization.id = :accountingId ")
+    Optional<Organization> findOrganizationByCnpjAndAccountingId(@Param("cnpj") String cnpj, 
+                                                                 @Param("accountingId") BigInteger accountingId);
+
     @Query("SELECT o FROM Organization o WHERE LOWER(o.name) like LOWER(:filter) ")
     Page<Organization> findAll(@Param("filter") String filter, Pageable pageable);
 

@@ -2,6 +2,7 @@ package br.com.ottimizza.application.model;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.UUID;
 
 import javax.persistence.Column;
 
@@ -11,17 +12,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import br.com.ottimizza.application.domain.OrganizationTypes;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @Table(name = "organizations") // @formatter:off
 public class Organization implements Serializable {
@@ -67,5 +71,17 @@ public class Organization implements Serializable {
     @ManyToOne
     @JoinColumn(name = "fk_organizations_id")
     private Organization organization;
+
+    @PrePersist
+    public void prePersist() {
+        this.setExternalId(UUID.randomUUID().toString());
+        this.setCnpj(cnpj.replaceAll("\\D", ""));
+    }
+
+    public static class Type {
+        public static final Integer ACCOUNTING = 1;
+        public static final Integer CLIENT = 2;
+    }
+
 
 }

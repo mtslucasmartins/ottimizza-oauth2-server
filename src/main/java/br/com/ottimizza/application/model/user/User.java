@@ -25,9 +25,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Builder;
 
 @Entity
 @Table(name = "users")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor // @formatter:off
 public class User implements Serializable {

@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.services.OrganizationService;

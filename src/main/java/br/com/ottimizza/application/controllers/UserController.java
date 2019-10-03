@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.ottimizza.application.domain.exceptions.UserNotFoundException;
+import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.user.User;
