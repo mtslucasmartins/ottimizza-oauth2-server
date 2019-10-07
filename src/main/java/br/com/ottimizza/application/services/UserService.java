@@ -3,6 +3,8 @@ package br.com.ottimizza.application.services;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -92,19 +94,18 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserDTO create(UserDTO userDTO, Principal principal)
+    public UserDTO create(UserDTO userDTO, Principal principal) // @formatter:off
             throws OrganizationNotFoundException, UserAlreadyRegisteredException, Exception {
         User authorizedUser = findByUsername(principal.getName());
-        User user = userDTO.toEntity();
-        user.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
-        user.setOrganization(authorizedUser.getOrganization());
-        checkIfEmailIsAlreadyRegistered(user);
-        return UserDTO.fromEntity(userRepository.save(user));
+        User user = userDTO.toEntity()
+                            .toBuilder()
+                                .organization(authorizedUser.getOrganization())
+                            .build();
+        return UserDTO.fromEntity(create(user));
     }
 
     public UserDTO patch(BigInteger id, UserDTO userDTO, Principal principal)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-        User authorizedUser = findByUsername(principal.getName());
         User current = findById(id);
         current = userDTO.patch(current);
         checkIfEmailIsAlreadyRegistered(current.getEmail(), current);
@@ -220,7 +221,9 @@ public class UserService {
 
             User user = User.builder()
                     .firstName(object.getFirstName())
+                    .username(object.getEmail())
                     .email(object.getEmail())
+                    .password("ottimizza")
                     .type(
                         organization.getCnpj() == null || organization.getCnpj().isEmpty() 
                             ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
@@ -268,41 +271,53 @@ public class UserService {
             } else {
                 organization = lastOrganization;
             }
+            
+            user.setOrganization(accounting);
 
-            // split(',')
-
-            // iterate emails 
-
-            System.out.println(MessageFormat.format("User Email   {0}", user.getEmail()));
-
-            // adds the organization to user
-            User u = userRepository.findByEmail(user.getEmail());
-
-            if (u == null || u.getId() == null) {
-                System.out.println("Creating New Customer User");
-                // creates the user
-            } else {
-                user = u;
+            List<String> emails = Arrays.asList(user.getEmail());
+            if (user.getEmail().contains(",")) {
+                emails = Arrays.asList(user.getEmail().split(","));
             }
-            // check if organization is from last iteration...
-            // 
-            //     check if organization is from last iteration...
-            //         check if accounting cnpj exists...
-            //        
-            //         if exists 
-            //              get accounting by cnpj
-            //         else 
-            //              creates a new accounting...
-            //              creates a admin...
-            //
-            //     check if organization cnpj exists...
-            //    
-            //     if exists 
-            //          get organization by cnpj
-            //     else 
-            //          creates a new organization...
-            // 
-            // creates the user...
+            
+            for (String email : emails) {
+                email = email.trim();
+
+                System.out.println("\n --- Novo usuário --- ");
+                System.out.println(MessageFormat.format(" E-mail: {0} ", email));
+
+                try {
+                    // verificando se o usuario já está registrado no sistema
+                    if (userRepository.emailIsAlreadyRegistered(email)) {
+                        User existing = findByUsername(email);
+
+                        // verificando se pertence a mesma contabilidade.
+                        if (existing.getOrganization().equals(user.getOrganization())) { 
+                            user = userRepository.save(
+                                UserDTO.fromEntity(existing).patch(user)
+                                    .toBuilder()
+                                        .type(user.getType())
+                                    .build()
+                            );
+                        } else {
+                            throw new Exception("");
+                        } 
+                    } else {
+                        // caso não exista, cria um novo usuário.
+                        user = userRepository.save(
+                            user 
+                                .toBuilder()
+                                    .email(email)
+                                .build()
+                        );
+                    }
+                    
+                    System.out.println(" --- Created --- \n");
+
+                } catch (Exception ex) {
+                    System.out.println("\n>>> Exception\n");
+                }
+            }
+
             lastAccounting = accounting.toBuilder().build();
             lastOrganization = organization.toBuilder().build();
         }

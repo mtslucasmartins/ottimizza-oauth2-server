@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import br.com.ottimizza.application.model.user.User;
@@ -33,11 +34,12 @@ public class PasswordResetToken implements Serializable {
     private static final int EXPIRATION = 60 * 24;
 
     @Id
-    @Getter
-    @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
+    @Column(name = "id", nullable = false)
+    @SequenceGenerator(name = "password_reset_token_sequence", sequenceName = "password_reset_token_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "password_reset_token_sequence")
     private BigInteger id;
-
+    
     @Getter
     @Setter
     @NonNull

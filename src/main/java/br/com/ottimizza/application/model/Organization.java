@@ -19,14 +19,16 @@ import javax.persistence.Table;
 import br.com.ottimizza.application.domain.OrganizationTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@AllArgsConstructor
 @Builder(toBuilder = true)
+@AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 @Table(name = "organizations") // @formatter:off
 public class Organization implements Serializable {
 
@@ -83,5 +85,21 @@ public class Organization implements Serializable {
         public static final Integer CLIENT = 2;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        // self check
+        if (this == o)
+            return true;
+        // null check
+        if (o == null)
+            return false;
+        // type check and cast
+        if (getClass() != o.getClass())
+            return false;
+        Organization organization = (Organization) o;
+        // field comparison
+        return organization.getId().equals(id);
+    }
 
 }

@@ -26,12 +26,14 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "users")
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor // @formatter:off
+@EqualsAndHashCode
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
