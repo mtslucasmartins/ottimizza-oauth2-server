@@ -62,23 +62,10 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    /**
-     * Método para listar usuários com base no usuário logado e no filtro
-     * especificado. Realiza paginação por padrão, página 1 com 10 itens por página.
-     * 
-     * @param filter    | Filtro - Classe com campos para filtro de usuário.
-     * @param pageIndex | Paginação - Indíce da página atual.
-     * @param pageSize  | Paginação - Quantidade de items por página.
-     * @param principal | Segurança - Informações do usuário logado.
-     * 
-     * @return Objeto contendo informações de página e lista de usuarios.
-     */
     public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            // se usuario for do tipo cliente, visualiza apenas usuarios vinculados as
-            // empresas da qual pertence.
             return userRepository
                     .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
                             filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize))
@@ -219,24 +206,18 @@ public class UserService {
                     .organization(accounting)
                     .type(Organization.Type.CLIENT).build();
 
-            User user = User.builder()
-                    .firstName(object.getFirstName())
-                    .username(object.getEmail())
-                    .email(object.getEmail())
-                    .password("ottimizza")
-                    .type(
-                        organization.getCnpj() == null || organization.getCnpj().isEmpty() 
-                            ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
-                    ).build();
-
             if (!organization.getCnpj().equals(lastOrganization.getCnpj())) {
                 if (!accounting.getCnpj().equals(lastAccounting.getCnpj())) {
-
+                    
                     accounting = organizationRepository
                                     .findAccountingByCnpj(accounting.getCnpj())
                                     .orElse(accounting);
-
+                                    
                     if (accounting.getId() == null) {
+
+                        System.out.println("\n --- Nova Contabilidade --- ");
+                        System.out.println(MessageFormat.format(" Nome: {0} ", accounting.getName()));
+
                         long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
 
                         TimeUnit.MILLISECONDS.sleep(timeout);
@@ -246,46 +227,74 @@ public class UserService {
 
                         if (info.getEmail() != null && !info.getEmail().isEmpty()) {
                             accounting.setEmail(info.getEmail());
-                            organizationRepository.save(accounting);
-
-                            User accountant = User.builder()
-                                    .firstName(info.getNome())
-                                    .email(info.getEmail())
-                                    .username(info.getEmail())
-                                    .password("ottimizza")
-                                    .type(User.Type.ACCOUNTANT)
-                                    .organization(accounting).build();
-
-                            create(accountant);
+                        } else {
+                            accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                         }
-                    } 
+                        accounting = organizationRepository.save(accounting);
+
+                        User accountant = User.builder()
+                                .firstName(info.getNome())
+                                .email(info.getEmail())
+                                .username(accounting.getEmail())
+                                .password("ottimizza")
+                                .type(User.Type.ACCOUNTANT)
+                                .organization(accounting).build();
+
+                        accountant = create(accountant);
+                    } else {
+                        System.out.println("\n --- Contabilidade --- ");
+                        System.out.println(MessageFormat.format(" Id: {0} ", accounting.getId()));
+                        System.out.println(MessageFormat.format(" Nome: {0} ", accounting.getName()));
+                    }
+
                 } else {
                     accounting = lastAccounting;
                 }
+                organization.setOrganization(accounting);
                 organization = organizationRepository.findOrganizationByCnpjAndAccountingId(
                     organization.getCnpj(), accounting.getId()
                 ).orElse(organization);
                 if (organization.getId() == null) {
-                    organizationRepository.save(organization);
+                    System.out.println("\n --- Nova Empresa --- ");
+                    System.out.println(MessageFormat.format(" Nome: {0} ", organization.getName()));
+
+                    organization = organizationRepository.save(organization);
+                } else {
+                    System.out.println("\n --- Epresa --- ");
+                    System.out.println(MessageFormat.format(" Id: {0} ", organization.getId()));
+                    System.out.println(MessageFormat.format(" Nome: {0} ", organization.getName()));
                 }
             } else {
                 organization = lastOrganization;
             }
             
-            user.setOrganization(accounting);
-
-            List<String> emails = Arrays.asList(user.getEmail());
-            if (user.getEmail().contains(",")) {
-                emails = Arrays.asList(user.getEmail().split(","));
+            List<String> emails = Arrays.asList(object.getEmail());
+            if (object.getEmail().contains(",")) {
+                emails = Arrays.asList(object.getEmail().split(","));
             }
             
             for (String email : emails) {
-                email = email.trim();
+                email = email.toLowerCase().trim();
+                User user = User.builder()
+                    .firstName(email)
+                    .username(email)
+                    .email(email)
+                    .password("ottimizza")
+                    .organization(accounting)
+                    .type(
+                        organization.getCnpj() == null || organization.getCnpj().isEmpty() 
+                            ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
+                    ).build();
 
-                System.out.println("\n --- Novo usuário --- ");
+                System.out.println("\n\t --- Novo usuário --- ");
                 System.out.println(MessageFormat.format(" E-mail: {0} ", email));
 
                 try {
+                    user.setId(null);
+                    user.setFirstName(email);
+                    user.setEmail(email);
+                    user.setUsername(email);
+
                     // verificando se o usuario já está registrado no sistema
                     if (userRepository.emailIsAlreadyRegistered(email)) {
                         User existing = findByUsername(email);
@@ -293,8 +302,10 @@ public class UserService {
                         // verificando se pertence a mesma contabilidade.
                         if (existing.getOrganization().equals(user.getOrganization())) { 
                             user = userRepository.save(
-                                UserDTO.fromEntity(existing).patch(user)
+                                UserDTO.fromEntity(user).patch(existing)
                                     .toBuilder()
+                                        .email(email)
+                                        .username(email)
                                         .type(user.getType())
                                     .build()
                             );
@@ -303,18 +314,11 @@ public class UserService {
                         } 
                     } else {
                         // caso não exista, cria um novo usuário.
-                        user = userRepository.save(
-                            user 
-                                .toBuilder()
-                                    .email(email)
-                                .build()
-                        );
+                        user = create(user);
                     }
-                    
-                    System.out.println(" --- Created --- \n");
-
                 } catch (Exception ex) {
                     System.out.println("\n>>> Exception\n");
+                    ex.printStackTrace();
                 }
             }
 
