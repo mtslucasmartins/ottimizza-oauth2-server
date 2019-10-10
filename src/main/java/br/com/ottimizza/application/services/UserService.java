@@ -309,7 +309,20 @@ public class UserService {
                         User existing = findByUsername(email);
 
                         // verificando se pertence a mesma contabilidade.
-                        if (existing.getOrganization().equals(user.getOrganization())) { 
+                        if (existing.getOrganization() == null) {
+                            user = userRepository.save(
+                                UserDTO.fromEntity(user).patch(existing)
+                                    .toBuilder()
+                                        .email(email)
+                                        .username(email)
+                                        .type(user.getType())
+                                        .organization(accounting)
+                                    .build()
+                            );
+                            try {
+                                userRepository.addOrganization(user.getId(), organization.getId());
+                            }catch (Exception e) {}
+                        } else if (existing.getOrganization().equals(user.getOrganization())) { 
                             user = userRepository.save(
                                 UserDTO.fromEntity(user).patch(existing)
                                     .toBuilder()
