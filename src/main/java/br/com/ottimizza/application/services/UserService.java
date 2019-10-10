@@ -289,7 +289,6 @@ public class UserService {
                     .firstName(email)
                     .username(email)
                     .email(email)
-                    .password("ottimizza")
                     .organization(accounting)
                     .type(
                         organization.getCnpj() == null || organization.getCnpj().isEmpty() 
@@ -327,6 +326,7 @@ public class UserService {
                         } 
                     } else {
                         // caso não exista, cria um novo usuário.
+                        user.setPassword("ottimizza");
                         user = create(user);
 
                         try {
