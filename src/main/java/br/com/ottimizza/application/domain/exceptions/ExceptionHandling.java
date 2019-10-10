@@ -36,6 +36,11 @@ public class ExceptionHandling {
         return error(HttpStatus.valueOf(e.status()), "internal_server_error", e.contentUTF8(), e);
     }
 
+    @ExceptionHandler(FeignException.GatewayTimeout.class)
+    public HttpEntity<?> handleFeignGatewayTimeoutException(FeignException e) {
+        return error(HttpStatus.valueOf(e.status()), "gateway_timeout", e.contentUTF8(), e);
+    }
+
     @ExceptionHandler(FeignException.BadRequest.class)
     public HttpEntity<?> handleFeignBadRequestException(FeignException e) {
         return error(HttpStatus.valueOf(e.status()), "bad_request", e.contentUTF8(), e);
@@ -63,6 +68,7 @@ public class ExceptionHandling {
     }
 
     private HttpEntity<?> error(HttpStatus status, String error, String errorDescription, Exception e) {
+        e.printStackTrace();
         ErrorResponse response = new ErrorResponse(error, errorDescription);
         return ResponseEntity.status(status).body(response);
     }

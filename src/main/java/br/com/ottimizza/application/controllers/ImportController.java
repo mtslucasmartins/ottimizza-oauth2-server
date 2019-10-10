@@ -49,7 +49,14 @@ public class ImportController {
     @ResponseBody
     @PostMapping("/json")
     public HttpEntity<?> upload(@RequestBody List<ImportDataModel> data, Principal principal) throws Exception {
-        return ResponseEntity.ok(userService.importUsersFromJSON(data, principal));
+        CompletableFuture.runAsync(() -> {
+            try {
+                userService.importUsersFromJSON(data, principal);
+            } catch (Exception ex) {
+            }
+        });
+
+        return ResponseEntity.ok("{}");
     }
 
     @PostMapping("/json3")

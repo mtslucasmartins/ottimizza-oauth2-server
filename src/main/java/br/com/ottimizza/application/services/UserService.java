@@ -220,27 +220,31 @@ public class UserService {
 
                         long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
 
-                        TimeUnit.MILLISECONDS.sleep(timeout);
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(timeout);
 
-                        DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
-                        lastCallToAPI = new Date();
+                            DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
+                            lastCallToAPI = new Date();
 
-                        if (info.getEmail() != null && !info.getEmail().isEmpty()) {
-                            accounting.setEmail(info.getEmail());
-                        } else {
-                            accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
+                            if (info.getEmail() != null && !info.getEmail().isEmpty()) {
+                                accounting.setEmail(info.getEmail());
+                            } else {
+                                accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
+                            }
+                            accounting = organizationRepository.save(accounting);
+
+                            User accountant = User.builder()
+                                    .firstName(info.getNome())
+                                    .email(info.getEmail())
+                                    .username(accounting.getEmail())
+                                    .password("ottimizza")
+                                    .type(User.Type.ACCOUNTANT)
+                                    .organization(accounting).build();
+
+                            accountant = create(accountant);
+                        } catch (Exception e) {
+                            continue;
                         }
-                        accounting = organizationRepository.save(accounting);
-
-                        User accountant = User.builder()
-                                .firstName(info.getNome())
-                                .email(info.getEmail())
-                                .username(accounting.getEmail())
-                                .password("ottimizza")
-                                .type(User.Type.ACCOUNTANT)
-                                .organization(accounting).build();
-
-                        accountant = create(accountant);
                     } else {
                         System.out.println("\n --- Contabilidade --- ");
                         System.out.println(MessageFormat.format(" Id: {0} ", accounting.getId()));
@@ -255,17 +259,18 @@ public class UserService {
                     organization.getCnpj(), accounting.getId()
                 ).orElse(organization);
                 if (organization.getId() == null) {
-                    System.out.println("\n --- Nova Empresa --- ");
-                    System.out.println(MessageFormat.format(" Nome: {0} ", organization.getName()));
+                    System.out.println("\n\t --- Nova Empresa --- ");
+                    System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
 
                     organization = organizationRepository.save(organization);
                 } else {
-                    System.out.println("\n --- Epresa --- ");
-                    System.out.println(MessageFormat.format(" Id: {0} ", organization.getId()));
-                    System.out.println(MessageFormat.format(" Nome: {0} ", organization.getName()));
+                    System.out.println("\n\t --- Epresa --- ");
+                    System.out.println(MessageFormat.format("\t Id: {0} ", organization.getId()));
+                    System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
                 }
             } else {
                 organization = lastOrganization;
+                accounting = lastAccounting;
             }
             
             List<String> emails = Arrays.asList(object.getEmail());
@@ -275,6 +280,11 @@ public class UserService {
             
             for (String email : emails) {
                 email = email.toLowerCase().trim();
+
+                if (email == null || email.isEmpty()) {
+                    continue;
+                }
+
                 User user = User.builder()
                     .firstName(email)
                     .username(email)
@@ -286,8 +296,8 @@ public class UserService {
                             ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
                     ).build();
 
-                System.out.println("\n\t --- Novo usuário --- ");
-                System.out.println(MessageFormat.format(" E-mail: {0} ", email));
+                System.out.println("\n\t\t --- Novo usuário --- ");
+                System.out.println(MessageFormat.format("\t\t E-mail: {0} ", email));
 
                 try {
                     user.setId(null);
@@ -309,17 +319,29 @@ public class UserService {
                                         .type(user.getType())
                                     .build()
                             );
+                            try {
+                                userRepository.addOrganization(user.getId(), organization.getId());
+                            }catch (Exception e) {}
                         } else {
                             throw new Exception("");
                         } 
                     } else {
                         // caso não exista, cria um novo usuário.
                         user = create(user);
+
+                        try {
+                            userRepository.addOrganization(user.getId(), organization.getId());
+                        }catch (Exception e) {}
                     }
                 } catch (Exception ex) {
                     System.out.println("\n>>> Exception\n");
                     ex.printStackTrace();
                 }
+
+                try {
+                    userRepository.addOrganization(user.getId(), organization.getId());
+                }catch (Exception e) {}
+
             }
 
             lastAccounting = accounting.toBuilder().build();
