@@ -8,12 +8,6 @@ import java.util.Base64;
 import javax.inject.Inject;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
-import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.services.OrganizationService;
-import br.com.ottimizza.application.services.UserService;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
