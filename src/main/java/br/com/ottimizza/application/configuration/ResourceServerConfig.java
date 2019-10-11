@@ -49,7 +49,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
                     .antMatchers("/user/**").authenticated()
                     .antMatchers("/**").permitAll()
-                    .anyRequest().authenticated();
+                .anyRequest().authenticated();
 		// @formatter:on
     }
 }
