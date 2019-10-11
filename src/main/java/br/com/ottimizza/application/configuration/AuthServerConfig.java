@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
@@ -79,6 +81,11 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .jdbc(dataSource)
                 .build();
         //@formatter:on
+    }
+
+    @Bean
+    protected AuthorizationCodeServices authorizationCodeServices() {
+        return new JdbcAuthorizationCodeServices(dataSource);
     }
 
     // @Bean

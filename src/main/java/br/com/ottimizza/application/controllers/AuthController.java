@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping(value = "/auth")
 public class AuthController {
 
     private String OAUTH2_SERVER_URL = "https://development-oauth-server.herokuapp.com";
@@ -35,7 +34,17 @@ public class AuthController {
 
     private String OAUTH2_CLIENT_SECRET = "72e9208c85fed78cb43fec9f953662664ab5f649";
 
-    @PostMapping("/callback")
+    @RequestMapping("/oauth/userinfo")
+    public Principal getUserInfo(Principal principal) {
+        return principal;
+    }
+
+    @RequestMapping("/oauth/tokeninfo")
+    public Principal getTokenInfo(Principal principal) {
+        return principal;
+    }
+
+    @PostMapping("/auth/callback")
     public ResponseEntity<String> oauthCallback(@RequestParam("code") String code,
             @RequestParam("redirect_uri") String redirectUri) throws IOException {
 
@@ -61,7 +70,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/auth/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> oauthRefresh(@RequestParam("refresh_token") String refreshToken,
             @RequestParam("client_id") String clientId) throws IOException {
 
