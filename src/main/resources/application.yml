@@ -15,6 +15,12 @@ spring:
 
     tomcat:
       initial-size: 2
+      # initial-size: 50
+      max-wait: 20000
+      max-active: 80 # 300
+      max-idle: 40 # 150
+      min-idle: 8
+      default-auto-commit: true
       # max-wait: 20000
       # max-active: 2
       # max-idle: 150
