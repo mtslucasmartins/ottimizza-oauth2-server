@@ -8,6 +8,10 @@ import java.util.Base64;
 import javax.inject.Inject;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
+import br.com.ottimizza.application.services.UserService;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,15 +32,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 public class AuthController {
 
+    @Inject
+    private UserService userService;
+
     private String OAUTH2_SERVER_URL = "https://development-oauth-server.herokuapp.com";
 
     private String OAUTH2_CLIENT_ID = "1defe81df9442d2b74c2";
 
     private String OAUTH2_CLIENT_SECRET = "72e9208c85fed78cb43fec9f953662664ab5f649";
 
-    @RequestMapping("/oauth/userinfo")
-    public Principal getUserInfo(Principal principal) {
-        return principal;
+    @RequestMapping("/oauth/userinfo") // @formatter:off
+    public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
+        return ResponseEntity.ok(
+            new GenericResponse<UserDTO>(
+                UserDTO.fromEntityWithOrganization(userService.findByUsername(principal.getName()))));
     }
 
     @RequestMapping("/oauth/tokeninfo")
