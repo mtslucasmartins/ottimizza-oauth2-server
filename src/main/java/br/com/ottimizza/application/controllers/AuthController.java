@@ -43,9 +43,11 @@ public class AuthController {
 
     @RequestMapping("/oauth/userinfo") // @formatter:off
     public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
+        String name = principal.getName();
+        System.out.println(name);
         return ResponseEntity.ok(
             new GenericResponse<UserDTO>(
-                UserDTO.fromEntityWithOrganization(userService.findByUsername(principal.getName()))));
+                UserDTO.fromEntityWithOrganization(userService.findByUsername(name))));
     }
 
     @RequestMapping("/oauth/tokeninfo")
