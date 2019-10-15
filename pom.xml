@@ -85,12 +85,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <exclusions>
+            <!-- <exclusions>
                 <exclusion>
                     <groupId>com.zaxxer</groupId>
                     <artifactId>HikariCP</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> -->
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -131,12 +131,12 @@
             <!-- <optional>true</optional> -->
         </dependency>
 
-        <!-- JDBC TOMCAT FOR CONNECTION POOL CONFIGURATIONS -->
+        <!-- JDBC TOMCAT FOR CONNECTION POOL CONFIGURATIONS
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
             <version>9.0.21</version>
-        </dependency>
+        </dependency> -->
 
 
 
