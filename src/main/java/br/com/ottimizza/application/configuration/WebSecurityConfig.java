@@ -52,7 +52,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/password_reset*",
                 "/maintenance",
                 "/tokens",
-                "/auth/**"
+                "/auth/**",
+                "/oauth/userinfo*",
+                "/oauth/tokeninfo*"
         }).toArray(new String[] {});
         
         // http
@@ -66,12 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(allowed).permitAll();
         
-        http.authorizeRequests()
-                .antMatchers("/oauth/revoke_token*").permitAll();
-
-        http.authorizeRequests()
-                .antMatchers("/oauth/userinfo*").permitAll();
-
         // http.authorizeRequests()
         //         .antMatchers("/oauth/tokeninfo*").permitAll();
 
