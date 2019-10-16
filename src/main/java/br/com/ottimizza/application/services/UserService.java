@@ -339,7 +339,7 @@ public class UserService {
                         } 
                     } else {
                         // caso não exista, cria um novo usuário.
-                        user.setPassword("ottimizza");
+                        user.setPassword(object.getPassword());
                         user = create(user);
 
                         try {

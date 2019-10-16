@@ -1,20 +1,20 @@
-
-
+# Start with a base image containing Java runtime
 FROM openjdk:8-jdk-alpine
 
-# We added a VOLUME pointing to "/tmp" because that is where a Spring Boot application 
-# creates working directories for Tomcat by default. The effect is to create a temporary 
-# file on your host under "/var/lib/docker" and link it to the container under "/tmp". 
-# This step is optional for the simple app that we wrote here, but can be necessary for 
-# other Spring Boot applications if they need to actually write in the filesystem.
+# Add Maintainer Info
+LABEL maintainer="dev.lucasmartins@gmail.com"
+
+# Add a volume pointing to /tmp
 VOLUME /tmp
 
-# ARG DEPENDENCY=target/dependency
-# COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-# COPY ${DEPENDENCY}/META-INF /app/META-INF
-# COPY ${DEPENDENCY}/BOOT-INF/classes /app
+# Make port 8080 available to the world outside this container
+EXPOSE 9092
 
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
+# The application's jar file
+ARG JAR_FILE=target/springboot-oauth2-server-0.0.1-SNAPSHOT.jar
 
-ENTRYPOINT ["java","-cp","app:app/lib/*","br.com.ottimizza.application.SpringbootOauth2ServerApplication"]
+# Add the application's jar to the container
+ADD ${JAR_FILE} oauth2-service.jar
+
+# Run the jar file 
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/oauth2-service.jar"]
