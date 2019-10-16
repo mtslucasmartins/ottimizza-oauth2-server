@@ -127,7 +127,7 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
             + " AND u.id != :userId                  ")
     boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
 
-    @Query(value = "SELECT a.name FROM users_authorities ua INNER JOIN authorities a ON (a.name = uo.fk_authorities_id) WHERE uo.username = :username", nativeQuery = true)
-    Set<Authority> fetchAuthoritiesByUsername(@Param("username") String username);
+    @Query(value = "SELECT a.name FROM users_authorities ua INNER JOIN authorities a ON (a.name = ua.fk_authorities_id) WHERE ua.fk_users_id = :id", nativeQuery = true)
+    Set<Authority> fetchAuthoritiesById(@Param("id") BigInteger id);
 
 }

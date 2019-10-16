@@ -38,7 +38,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     private Collection<GrantedAuthority> getGrantedAuthorities(User user) {
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         // for (Authority authority : user.getAuthorities()) {
-        for (Authority authority : usersRepository.fetchAuthoritiesByUsername(user.getUsername())) {
+        for (Authority authority : usersRepository.fetchAuthoritiesById(user.getId())) {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
             grantedAuthorities.add(grantedAuthority);
         }
