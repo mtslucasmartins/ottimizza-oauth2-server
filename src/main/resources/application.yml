@@ -32,12 +32,14 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     hibernate:
+      generate_statistics: true
       ddl-auto: update
       temp:
         use_jdbc_metadata_defaults: false
     show-sql: false
     properties:
       hibernate:
+        generate_statistics: true
         temp:
           use_jdbc_metadata_defaults: false
   
