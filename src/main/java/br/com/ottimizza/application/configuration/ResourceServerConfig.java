@@ -40,10 +40,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             .and()
-                .requestMatchers().antMatchers("/user/**", "/api/**")
+                .requestMatchers().antMatchers("/user/**", "/api/**", "/oauth/userinfo", "/oauth/tokeninfo")
             .and()
                 .authorizeRequests()
                     .antMatchers("/api/organizations*").authenticated()
+                    .antMatchers("/oauth/userinfo", "/oauth/tokeninfo").authenticated()
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/user/info", "/user/revoke_token").authenticated()
                     .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
