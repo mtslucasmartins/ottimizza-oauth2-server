@@ -1,9 +1,11 @@
 package br.com.ottimizza.application.repositories.users;
 
+import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.List;
 import java.math.BigInteger;
 
@@ -124,4 +126,8 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
             + " FROM User u                          " + " WHERE LOWER(u.email) = LOWER(:email) "
             + " AND u.id != :userId                  ")
     boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
+
+    @Query(value = "SELECT a.name FROM users_authorities ua INNER JOIN authorities a ON (a.name = uo.fk_authorities_id) WHERE uo.username = :username", nativeQuery = true)
+    Set<Authority> fetchAuthoritiesByUsername(@Param("username") String username);
+
 }
