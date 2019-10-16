@@ -17,4 +17,6 @@ ARG JAR_FILE=target/springboot-oauth2-server-0.0.1-SNAPSHOT.jar
 ADD ${JAR_FILE} oauth2-service.jar
 
 # Run the jar file 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/oauth2-service.jar"]
+# java -Dgrails.env=prod -jar build/libs/api-framework-example-0.1.jar 
+# ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/oauth2-service.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/oauth2-service.jar","-Xms2g","-Xmx2g","-Xmn150m","-XX:GCTimeRatio=2","-XX:ParallelGCThreads=10","-XX:+UseParNewGC","-XX:+DisableExplicitGC"]
