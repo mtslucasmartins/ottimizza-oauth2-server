@@ -82,13 +82,13 @@ public class User implements Serializable {
     @Column(name = "avatar")
     private String avatar; 
 
-    @Getter @Setter
-    @ManyToMany
-    @JoinTable(
-        name = "users_authorities", 
-        joinColumns = @JoinColumn(name = "fk_users_id"), 
-        inverseJoinColumns = @JoinColumn(name = "fk_authorities_id"))
-    private Set<Authority> authorities;
+    // @Getter @Setter
+    // @ManyToMany
+    // @JoinTable(
+    //     name = "users_authorities", 
+    //     joinColumns = @JoinColumn(name = "fk_users_id"), 
+    //     inverseJoinColumns = @JoinColumn(name = "fk_authorities_id"))
+    // private Set<Authority> authorities;
 
     @Getter @Setter
     @ManyToOne
