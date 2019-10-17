@@ -121,7 +121,7 @@ public class UserDTO implements Serializable {
             .withPhone(user.getPhone())
             .withType(user.getType())
             .withAvatar(user.getAvatar())
-            .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization());
+            .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization()));
         // @formatter:on
         return dto;
     }
