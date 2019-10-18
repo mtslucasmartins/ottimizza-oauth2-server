@@ -2,6 +2,7 @@ version: "3.0"
 
 services:
   web:
-    image: ottimizza-oauth-service
+    image: ottimizza-oauth-service:latest
     ports: 
       - 8080:9092
+    # depends_on: db

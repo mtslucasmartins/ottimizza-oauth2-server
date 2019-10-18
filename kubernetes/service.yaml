@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: service
+  # labels:
+  #   name: oauth-service
+spec:
+  containers:
+  - name: service
+    image: ottimizza-oauth-service:latest
+    ports:
+      - containerPort: 9092
