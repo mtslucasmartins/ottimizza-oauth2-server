@@ -1,0 +1,7 @@
+version: "3.0"
+
+services:
+  web:
+    image: ottimizza-oauth-service
+    ports: 
+      - 8080:9092

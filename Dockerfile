@@ -7,14 +7,14 @@ LABEL maintainer="dev.lucasmartins@gmail.com"
 # Add a volume pointing to /tmp
 VOLUME /tmp
 
-# Make port 8080 available to the world outside this container
-EXPOSE 9092
-
 # The application's jar file
 ARG JAR_FILE=target/springboot-oauth2-server-0.0.1-SNAPSHOT.jar
 
 # Add the application's jar to the container
 ADD ${JAR_FILE} oauth2-service.jar
+
+# Make port 8080 available to the world outside this container
+EXPOSE 9092
 
 # Run the jar file 
 # java -Dgrails.env=prod -jar build/libs/api-framework-example-0.1.jar 
