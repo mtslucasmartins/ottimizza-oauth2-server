@@ -212,13 +212,14 @@ public class UserService {
                                     .orElse(accounting);
                                     
                     if (accounting.getId() == null) {
-
-                        System.out.println("\n --- Nova Contabilidade --- ");
-                        System.out.println(MessageFormat.format(" Nome: {0} ", accounting.getName()));
-
+                        // tenta buscar dados da receita, se obtiver sucesso, 
+                        // substitui os dados encontrados e cria um usuário admin 
+                        
+                        // realiza calculo para fazer requests a cada 20s, para não estourar limite de uso 3 req/min 
                         long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
 
                         try {
+                            // se timeout > 0, pausa o processo pelo tempo determinado em milisegundos..
                             TimeUnit.MILLISECONDS.sleep(timeout);
 
                             DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
@@ -229,14 +230,18 @@ public class UserService {
                             } else {
                                 accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                             }
+
+                            if (info.getNome() != null && !info.getNome().isEmpty()) {
+                                accounting.setName(info.getNome());
+                            } 
                         } catch (Exception e) {
                             accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                         }
                         accounting = organizationRepository.save(accounting);
 
                         User accountant = User.builder()
-                            .firstName(info.getNome())
-                            .email(info.getEmail())
+                            .firstName(accounting.getName())
+                            .email(accounting.getEmail())
                             .username(accounting.getEmail())
                             .password("ottimizza")
                             .type(User.Type.ACCOUNTANT)
