@@ -4,5 +4,5 @@ services:
   web:
     image: ottimizza-oauth-service:latest
     ports: 
-      - 8080:9092
+      - 9092:9092
     # depends_on: db

@@ -19,7 +19,8 @@ public class SignInController {
     @Inject
     SecurityService securityService;
 
-    String DEFAULT_LOGO_URL = "https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png";
+    // String DEFAULT_LOGO_URL = "https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png";
+    String DEFAULT_LOGO_URL = "/assets/img/logos/tareffa-white.png";
 
     private SavedRequest getSavedRequest(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
