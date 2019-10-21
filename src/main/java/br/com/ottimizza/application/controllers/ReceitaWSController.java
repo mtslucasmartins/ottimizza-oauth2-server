@@ -25,7 +25,10 @@ public class ReceitaWSController {
     public HttpEntity<DadosReceitaWS> fetchById(@PathVariable String cnpj, Principal principal) throws Exception {
         System.out.println("CNPJ: " + cnpj);
         try {
-            return receitaWSClient.getInfo(cnpj);
+            DadosReceitaWS data = receitaWSClient.getInfo(cnpj).getBody();
+
+            System.out.println(data.getCnpj());
+            // return ;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
