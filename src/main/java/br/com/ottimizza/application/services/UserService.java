@@ -3,7 +3,6 @@ package br.com.ottimizza.application.services;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import br.com.ottimizza.application.client.ReceitaWSClient;
 import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
@@ -231,20 +229,20 @@ public class UserService {
                             } else {
                                 accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                             }
-                            accounting = organizationRepository.save(accounting);
-
-                            User accountant = User.builder()
-                                    .firstName(info.getNome())
-                                    .email(info.getEmail())
-                                    .username(accounting.getEmail())
-                                    .password("ottimizza")
-                                    .type(User.Type.ACCOUNTANT)
-                                    .organization(accounting).build();
-
-                            accountant = create(accountant);
                         } catch (Exception e) {
-                            continue;
+                            accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                         }
+                        accounting = organizationRepository.save(accounting);
+
+                        User accountant = User.builder()
+                            .firstName(info.getNome())
+                            .email(info.getEmail())
+                            .username(accounting.getEmail())
+                            .password("ottimizza")
+                            .type(User.Type.ACCOUNTANT)
+                            .organization(accounting).build();
+
+                        accountant = create(accountant);
                     } else {
                         System.out.println("\n --- Contabilidade --- ");
                         System.out.println(MessageFormat.format(" Id: {0} ", accounting.getId()));
