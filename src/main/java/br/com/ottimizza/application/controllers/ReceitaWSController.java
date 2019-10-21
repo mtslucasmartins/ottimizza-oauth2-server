@@ -26,9 +26,7 @@ public class ReceitaWSController {
         System.out.println("CNPJ: " + cnpj);
         try {
             DadosReceitaWS data = receitaWSClient.getInfo(cnpj).getBody();
-
-            System.out.println(data.getCnpj());
-            // return ;
+            return ResponseEntity.ok(receitaWSClient.getInfo(cnpj).getBody())
         } catch (Exception ex) {
             ex.printStackTrace();
         }
