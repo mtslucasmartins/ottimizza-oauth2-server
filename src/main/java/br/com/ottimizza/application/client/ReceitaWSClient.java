@@ -13,4 +13,8 @@ public interface ReceitaWSClient {
     @GetMapping("/v1/cnpj/{cnpj}")
     public HttpEntity<DadosReceitaWS> getInfo(@PathVariable String cnpj);
 
+    @GetMapping("/v1/cnpj/{cnpj}")
+    public HttpEntity<String> getInfoString(@PathVariable String cnpj);
+
+
 }

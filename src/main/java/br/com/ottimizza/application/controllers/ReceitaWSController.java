@@ -23,7 +23,14 @@ public class ReceitaWSController {
 
     @GetMapping("/cnpj/{cnpj}")
     public HttpEntity<DadosReceitaWS> fetchById(@PathVariable String cnpj, Principal principal) throws Exception {
-        return receitaWSClient.getInfo(cnpj);
+        System.out.println("CNPJ: " + cnpj);
+        try {
+            return receitaWSClient.getInfo(cnpj);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return ResponseEntity.ok(new DadosReceitaWS());
     }
 
 }
