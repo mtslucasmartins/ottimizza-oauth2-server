@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: deployment-oauth
-          image: ottimizza-oauth-service:latest
+          image: ottimizza/oauth-service:latest
           # imagePullPolicy: Never
           ports:
             - containerPort: 9092

@@ -2,15 +2,20 @@ server:
   port: ${PORT:9092}
   servlet:
     context-path: /
+    session:
+      cookie:
+        name: UISESSION
+
+        
 
   http2:
     enabled: true
 
 spring:
   datasource:
-    url: jdbc:postgresql://ec2-184-72-237-95.compute-1.amazonaws.com:5432/d5gfjjf0e7e3g2
-    username: utqisrinovbulz
-    password: 44ab5d4be338648ea11e5399b6adeaf275376ac34961a4ddf852851b13dad1f7
+    url: jdbc:postgresql://ec2-3-232-32-131.compute-1.amazonaws.com:5432/d40ba337mcfmt6
+    username: ub2tin7pee56a
+    password: p705c4484fdf16989fe401056f598633ef8efa0049abb94caa15b617de2d4ec29
     driver-class-name: org.postgresql.Driver
 
     tomcat:
