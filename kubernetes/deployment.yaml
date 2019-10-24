@@ -1,20 +1,58 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: deployment-oauth
+# spec:
+#   selector:
+#     matchLabels:
+#       app: deployment-oauth
+#   replicas: 3
+#   template:
+#     metadata:
+#       labels:
+#         app: deployment-oauth
+#     spec:
+#       containers:
+#         - name: deployment-oauth
+#           image: ottimizza/oauth-service:latest
+#           # imagePullPolicy: Never
+#           ports:
+#             - containerPort: 9092
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-oauth
+  name: oauth-service-deployment
 spec:
   selector:
     matchLabels:
-      app: deployment-oauth
+      app: oauth-service
   replicas: 3
   template:
     metadata:
       labels:
-        app: deployment-oauth
+        app: oauth-service
+        env: development
     spec:
       containers:
-        - name: deployment-oauth
-          image: ottimizza/oauth-service:latest
-          # imagePullPolicy: Never
-          ports:
-            - containerPort: 9092
+      - name: oauth-service
+        image: us.gcr.io/ottimizza-oauth-service/oauth-service # 1.0
+        ports:
+        - containerPort: 9092
+        env:
+        - name: PORT
+          value: "9092"
+        - name: ENVIRONMENT
+          value: "development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth-service-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 9092
+    protocol: TCP
+  selector:
+    app: oauth-service
