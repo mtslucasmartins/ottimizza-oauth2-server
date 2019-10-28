@@ -5,7 +5,7 @@ server:
     context-path: /
 
     session:
-      # timeout:  # seconds
+      timeout: 3600 # seconds
       cookie:
         name: UISESSION
 
