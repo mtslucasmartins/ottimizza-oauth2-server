@@ -5,6 +5,7 @@ server:
     context-path: /
 
     session:
+      # timeout:  # seconds
       cookie:
         name: UISESSION
 
@@ -81,6 +82,9 @@ spring:
 
   session:
     store-type: redis
+    redis:
+      flush-mode: on-save # Sessions flush mode.
+      namespace: spring:session  # Namespace for keys used to store sessions.
 
   # Thymeleaf properties.
   thymeleaf:
