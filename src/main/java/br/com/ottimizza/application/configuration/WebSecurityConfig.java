@@ -76,13 +76,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/user/**", "/api/**", "/oauth/userinfo", "/oauth/tokeninfo").permitAll() 
                 .anyRequest().authenticated()
-                .and()
-            .formLogin()
+            .and()
+                .formLogin()
                 .loginPage("/login")
                 .permitAll()
-                .and()
-            .logout()                                    
-                .permitAll();
+            .and()
+                .logout()
+                .logoutSuccessUrl("/exit").permitAll();
         //@formatter:on
     }
 
