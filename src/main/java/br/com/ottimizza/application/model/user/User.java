@@ -82,20 +82,13 @@ public class User implements Serializable {
     @Column(name = "avatar")
     private String avatar; 
 
-    // @Getter @Setter
-    // @ManyToMany
-    // @JoinTable(
-    //     name = "users_authorities", 
-    //     joinColumns = @JoinColumn(name = "fk_users_id"), 
-    //     inverseJoinColumns = @JoinColumn(name = "fk_authorities_id"))
-    // private Set<Authority> authorities;
-
     @Getter @Setter
     @ManyToOne
     @JoinColumn(name = "fk_accounting_id", nullable = true)
     private Organization organization;
 
     public static class Type {
+        public static final Integer ADMINISTRATOR = 0;
         public static final Integer ACCOUNTANT = 1;
         public static final Integer CUSTOMER = 2;
     }

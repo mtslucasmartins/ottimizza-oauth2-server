@@ -82,10 +82,28 @@ public class UserService {
     public UserDTO create(UserDTO userDTO, Principal principal) // @formatter:off
             throws OrganizationNotFoundException, UserAlreadyRegisteredException, Exception {
         User authorizedUser = findByUsername(principal.getName());
-        User user = userDTO.toEntity()
-                            .toBuilder()
-                                .organization(authorizedUser.getOrganization())
-                            .build();
+
+        if (authorizedUser.getType().equals(User.Type.ADMINISTRATOR)) {
+            BigInteger accountingId = userDTO.getOrganizationId();
+            String accountingCnpj = null;
+            if (accountingId == null && userDTO.getOrganization() != null) {
+                accountingId = userDTO.getOrganization().getId();
+                Organization accounting = null;
+                if (accountingId == null) {
+                    accountingCnpj = userDTO.getOrganization().getCnpj();
+                    if (accountingCnpj != null && !accountingCnpj.equals("")) {
+                        accounting = organizationRepository.findAccountingByCnpj(accountingCnpj)
+                                              .orElseThrow(() -> new OrganizationNotFoundException(""));
+                    }
+                } else {
+                    accounting = organizationRepository.fetchAccountingById(accountingId);
+                }
+                User user = userDTO.toEntity().toBuilder().organization(accounting).build();
+                return UserDTO.fromEntity(create(user));
+            }
+        }
+
+        User user = userDTO.toEntity().toBuilder().organization(authorizedUser.getOrganization()).build();
         return UserDTO.fromEntity(create(user));
     }
 
