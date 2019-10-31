@@ -38,8 +38,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         //         .anyRequest().authenticated();
 
         http
-            // .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            // .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            .and()
                 .requestMatchers().antMatchers("/user/**", "/api/**", "/oauth/userinfo", "/oauth/tokeninfo")
             .and()
                 .authorizeRequests()
