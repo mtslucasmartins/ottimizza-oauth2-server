@@ -204,12 +204,16 @@ public class OrganizationService {
     public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         Organization organization = organizationDTO.toEntity();
-        organization.setType(OrganizationTypes.CLIENT.getValue());
 
-        if (organizationDTO.getOrganizationId() == null) {
-            if (authorizedUser.getOrganization() != null 
-                && authorizedUser.getOrganization().getId() != null) {
-                organization.setOrganization(authorizedUser.getOrganization());
+        if (authorizedUser.getType().equals(User.Type.ADMINISTRATOR)) { 
+            // 
+        } else if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
+            organization.setType(OrganizationTypes.CLIENT.getValue());
+            if (organizationDTO.getOrganizationId() == null) {
+                if (authorizedUser.getOrganization() != null 
+                    && authorizedUser.getOrganization().getId() != null) {
+                    organization.setOrganization(authorizedUser.getOrganization());
+                }
             }
         }
 
