@@ -149,10 +149,12 @@ public class UserService {
 
         if (organizationId != null) {
             organization = Optional.ofNullable(organizationRepository.fetchById(organizationId))
-                    .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!"));
+                    .orElseThrow(() -> new OrganizationNotFoundException(
+                            "Não foi encontrada nenhuma organização com o ID informado!"));
         } else if (organizationCnpj != null && !organizationCnpj.equals("")) {
             organization = Optional.ofNullable(organizationRepository.fetchByCnpj(organizationCnpj))
-                    .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!"));
+                    .orElseThrow(() -> new OrganizationNotFoundException(
+                            "Não foi encontrada nenhuma organização com o CNPJ informado!"));
         } else {
             throw new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!");
         }
