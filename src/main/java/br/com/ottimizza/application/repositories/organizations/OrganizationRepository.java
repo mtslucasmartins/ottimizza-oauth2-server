@@ -14,34 +14,34 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 
-public interface OrganizationRepository extends PagingAndSortingRepository<Organization, BigInteger>, OrganizationRepositoryCustom { // @formatter:
-
+public interface OrganizationRepository
+        extends PagingAndSortingRepository<Organization, BigInteger>, OrganizationRepositoryCustom { // @formatter:
 
     @Query(value = " WITH organizations AS (                                               \n"
-    + " 	SELECT fk_organizations_id FROM users_organizations uo2                \n"
-    + " 	WHERE uo2.fk_users_id = :customerId                                    \n"
-    + " )                                                                          \n"
-    + " SELECT u.* FROM users u                                                    \n"
-    + " WHERE u.id IN (                                                            \n"
-    + " 	SELECT fk_users_id FROM users_organizations uo1                        \n"
-    + " 	WHERE uo1.fk_organizations_id IN (                                     \n"
-    + " 		SELECT fk_organizations_id FROM organizations                      \n"
-    + " 	)                                                                      \n"
-    + " )                                                                          \n"
-    + " AND (u.type = 2)                                                           \n"
-    + " AND (u.username LIKE CONCAT(:username) OR :username is null)                          \n"
-    + " AND (u.email LIKE CONCAT('%',:email,'%') OR :email is null)               \n"
-    + " AND (u.first_name LIKE CONCAT('%',:firstName,'%') OR :firstName is null)  \n"
-    + " AND (u.last_name LIKE CONCAT('%',:lastName,'%') OR :lastName is null)     \n", nativeQuery = true)
-    Page<Organization> fetchAllByAccountingId(
-            @Param("customerId") BigInteger customerId,
-            @Param("username") String username, 
-            @Param("email") String email, 
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName, 
-            Pageable pageable);
+            + " 	SELECT fk_organizations_id FROM users_organizations uo2                \n"
+            + " 	WHERE uo2.fk_users_id = :customerId                                    \n"
+            + " )                                                                          \n"
+            + " SELECT u.* FROM users u                                                    \n"
+            + " WHERE u.id IN (                                                            \n"
+            + " 	SELECT fk_users_id FROM users_organizations uo1                        \n"
+            + " 	WHERE uo1.fk_organizations_id IN (                                     \n"
+            + " 		SELECT fk_organizations_id FROM organizations                      \n"
+            + " 	)                                                                      \n"
+            + " )                                                                          \n"
+            + " AND (u.type = 2)                                                           \n"
+            + " AND (u.username LIKE CONCAT(:username) OR :username is null)                          \n"
+            + " AND (u.email LIKE CONCAT('%',:email,'%') OR :email is null)               \n"
+            + " AND (u.first_name LIKE CONCAT('%',:firstName,'%') OR :firstName is null)  \n"
+            + " AND (u.last_name LIKE CONCAT('%',:lastName,'%') OR :lastName is null)     \n", nativeQuery = true)
+    Page<Organization> fetchAllByAccountingId(@Param("customerId") BigInteger customerId,
+            @Param("username") String username, @Param("email") String email, @Param("firstName") String firstName,
+            @Param("lastName") String lastName, Pageable pageable);
 
+    @Query("SELECT o FROM Organization o WHERE o.id = :id")
+    Organization fetchById(@Param("id") BigInteger id);
 
+    @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj")
+    Organization fetchByCnpj(@Param("cnpj") String cnpj);
 
     @Query("SELECT o FROM Organization o WHERE o.id = :id AND o.type = 1")
     Organization fetchAccountingById(@Param("id") BigInteger id);
@@ -59,10 +59,10 @@ public interface OrganizationRepository extends PagingAndSortingRepository<Organ
 
     @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj AND o.type = 1 ")
     Optional<Organization> findAccountingByCnpj(@Param("cnpj") String cnpj);
-    
+
     @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj AND o.organization.id = :accountingId ")
-    Optional<Organization> findOrganizationByCnpjAndAccountingId(@Param("cnpj") String cnpj, 
-                                                                 @Param("accountingId") BigInteger accountingId);
+    Optional<Organization> findOrganizationByCnpjAndAccountingId(@Param("cnpj") String cnpj,
+            @Param("accountingId") BigInteger accountingId);
 
     @Query("SELECT o FROM Organization o WHERE LOWER(o.name) like LOWER(:filter) ")
     Page<Organization> findAll(@Param("filter") String filter, Pageable pageable);

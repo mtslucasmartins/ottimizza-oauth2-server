@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
@@ -60,6 +61,18 @@ public class UsersController {
     public HttpEntity<?> patch(@PathVariable("id") BigInteger id, @RequestBody UserDTO userDTO, Principal principal)
             throws Exception {
         return ResponseEntity.ok(new GenericResponse<UserDTO>(userService.patch(id, userDTO, principal)));
+    }
+
+    /**
+     * 
+     * EMPRESAS
+     * 
+     */
+    @PostMapping("/{id}/organizations") // @formatter:on
+    public HttpEntity<?> appendOrganization(@PathVariable("id") BigInteger id,
+            @RequestBody OrganizationDTO organizationDTO, Principal principal) throws Exception {
+        return ResponseEntity.ok(
+                new GenericResponse<OrganizationDTO>(userService.appendOrganization(id, organizationDTO, principal)));
     }
 
     /**

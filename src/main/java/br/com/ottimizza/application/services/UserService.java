@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import br.com.ottimizza.application.client.ReceitaWSClient;
 import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
 import br.com.ottimizza.application.domain.dtos.ImportDataModel;
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
@@ -84,23 +86,27 @@ public class UserService {
         User authorizedUser = findByUsername(principal.getName());
 
         if (authorizedUser.getType().equals(User.Type.ADMINISTRATOR)) {
+            Organization accounting = null;
             BigInteger accountingId = userDTO.getOrganizationId();
             String accountingCnpj = null;
             if (accountingId == null && userDTO.getOrganization() != null) {
                 accountingId = userDTO.getOrganization().getId();
-                Organization accounting = null;
                 if (accountingId == null) {
                     accountingCnpj = userDTO.getOrganization().getCnpj();
                     if (accountingCnpj != null && !accountingCnpj.equals("")) {
                         accounting = organizationRepository.findAccountingByCnpj(accountingCnpj)
-                                              .orElseThrow(() -> new OrganizationNotFoundException(""));
+                                              .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da contabilidade!"));
                     }
                 } else {
-                    accounting = organizationRepository.fetchAccountingById(accountingId);
+                    accounting = Optional.ofNullable(organizationRepository.fetchAccountingById(accountingId))
+                                         .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da contabilidade!"));
                 }
-                User user = userDTO.toEntity().toBuilder().organization(accounting).build();
-                return UserDTO.fromEntity(create(user));
+            } else {
+                accounting = Optional.ofNullable(organizationRepository.fetchAccountingById(accountingId))
+                                         .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da contabilidade!"));
             }
+            User user = userDTO.toEntity().toBuilder().organization(accounting).build();
+                return UserDTO.fromEntity(create(user));
         }
 
         User user = userDTO.toEntity().toBuilder().organization(authorizedUser.getOrganization()).build();
@@ -132,6 +138,29 @@ public class UserService {
             "%" + email + "%", 2, authorizedUser.getOrganization().getId(), PageRequest.of(pageIndex, pageSize)
         ).map(UserDTO::fromEntity);
     } // @formatter:on
+
+    public OrganizationDTO appendOrganization(BigInteger id, OrganizationDTO organizationDTO, Principal principal)
+            throws OrganizationNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        Organization organization = null;
+
+        BigInteger organizationId = organizationDTO.getId();
+        String organizationCnpj = organizationDTO.getCnpj();
+
+        if (organizationId != null) {
+            organization = Optional.ofNullable(organizationRepository.fetchById(organizationId))
+                    .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!"));
+        } else if (organizationCnpj != null && !organizationCnpj.equals("")) {
+            organization = Optional.ofNullable(organizationRepository.fetchByCnpj(organizationCnpj))
+                    .orElseThrow(() -> new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!"));
+        } else {
+            throw new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!");
+        }
+
+        userRepository.addOrganization(id, organization.getId());
+
+        return OrganizationDTO.fromEntity(organization);
+    }
 
     //
     // INVITE
