@@ -27,32 +27,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
+@RestController // @formatter:off
 @RequestMapping(value = "/api/v1/users")
 public class UsersController {
 
     @Inject
     UserService userService;
 
-    @GetMapping // @formatter:off
+    @GetMapping 
     public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
                                   @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                   Principal principal) throws Exception {
         return ResponseEntity.ok(
-            new GenericPageableResponse<UserDTO>(
-                userService.fetchAll(filter, pageIndex, pageSize, principal)));
+            new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, pageIndex, pageSize, principal))
+        );
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<?> fetchById(@PathVariable("id") BigInteger id, 
-                                   Principal principal) throws Exception {
+    public HttpEntity<?> fetchById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
         return ResponseEntity.ok(
-            new GenericResponse<UserDTO>(
-                UserDTO.fromEntityWithOrganization(userService.findById(id))));
+            new GenericResponse<UserDTO>(UserDTO.fromEntityWithOrganization(userService.findById(id)))
+        );
     }
 
-    @PostMapping // @formatter:on
+    @PostMapping 
     public HttpEntity<?> create(@RequestBody UserDTO userDTO, Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<UserDTO>(userService.create(userDTO, principal)));
     }
@@ -64,28 +63,18 @@ public class UsersController {
     }
 
     /**
-     * 
-     * EMPRESAS
-     * 
+     * Organizations
      */
-    @PostMapping("/{id}/organizations") // @formatter:on
+    @PostMapping("/{id}/organizations") 
     public HttpEntity<?> appendOrganization(@PathVariable("id") BigInteger id,
             @RequestBody OrganizationDTO organizationDTO, Principal principal) throws Exception {
         return ResponseEntity.ok(
-                new GenericResponse<OrganizationDTO>(userService.appendOrganization(id, organizationDTO, principal)));
+                new GenericResponse<OrganizationDTO>(userService.appendOrganization(id, organizationDTO, principal))
+        );
     }
 
     /**
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
+     * Invites
      */
     @GetMapping("/invited")
     public HttpEntity<?> fetchAllInvitedUsers(@ModelAttribute UserDTO filter,
@@ -101,6 +90,11 @@ public class UsersController {
         return ResponseEntity.ok(new GenericResponse<Map<String, String>>(userService.invite(args, authorizedUser)));
     }
 
+    /**
+     * 
+     * IMPORTAÇÃO
+     * 
+     */
     @PostMapping("/import")
     public HttpEntity<?> upload(@RequestParam("file") MultipartFile file, Principal principal) throws Exception {
         return ResponseEntity.ok("");
