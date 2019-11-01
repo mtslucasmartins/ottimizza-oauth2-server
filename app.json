@@ -1,4 +1,7 @@
 {
+  "name": "ottimizza-oauth2-server",
+  "description": "Serviço de Autorização e Contas Ottimizza.",
+  "repository": "https://github.com/ottimizza/ottimizza-oauth2-server",
   "addons": [
     "heroku-postgresql"
   ],
@@ -7,7 +10,6 @@
       "url": "heroku/java"
     }
   ],
-  "description": "Serviço de Autorização e Contas Ottimizza.",
   "env": {
     "DATABASE_URL": {
       "required": true
@@ -18,8 +20,6 @@
       "quantity": 1
     }
   },
-  "name": "ottimizza-oauth2-server",
-  "scripts": {
-  },
+  "scripts": {},
   "stack": "heroku-18"
 }
