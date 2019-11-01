@@ -109,7 +109,7 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
      */
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:userId, :organizationId)", nativeQuery = true)
+    @Query(value = "INSERT INTO users_organizations (fk_users_id, fk_organizations_id) VALUES (:userId, :organizationId) ON CONFLICT DO NOTHING", nativeQuery = true)
     void addOrganization(@Param("userId") BigInteger userId, @Param("organizationId") BigInteger organizationId);
 
     /*
