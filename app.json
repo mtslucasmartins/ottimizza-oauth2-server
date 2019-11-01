@@ -11,9 +11,6 @@
     }
   ],
   "env": {
-    "DATABASE_URL": {
-      // "required": true
-    }
   },
   "formation": {
     "web": {
