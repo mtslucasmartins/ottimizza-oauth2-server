@@ -69,7 +69,7 @@ public class ExceptionHandling {
     }
 
     @ExceptionHandler({ UserAlreadyRegisteredException.class })
-    public HttpEntity<?> handleUserAlreadyRegisteredException(UserNotFoundException e, Locale locale) {
+    public HttpEntity<?> handleUserAlreadyRegisteredException(UserAlreadyRegisteredException e, Locale locale) {
         return error(CONFLICT, "user_already_exists", e.getMessage(), e);
     }
 
