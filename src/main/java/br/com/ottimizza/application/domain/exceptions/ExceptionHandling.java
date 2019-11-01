@@ -62,6 +62,12 @@ public class ExceptionHandling {
         return error(NOT_FOUND, "user_not_found", e.getMessage(), e);
     }
 
+    @ExceptionHandler({ OrganizationNotFoundException.class })
+    public HttpEntity<?> handleOrganizationNotFoundExceptionException(OrganizationNotFoundException e, Locale locale) {
+        System.out.println(locale.getLanguage());
+        return error(NOT_FOUND, "organization_not_found", e.getMessage(), e);
+    }
+
     @ExceptionHandler({ UserAlreadyRegisteredException.class })
     public HttpEntity<?> handleUserAlreadyRegisteredException(UserNotFoundException e, Locale locale) {
         return error(CONFLICT, "user_already_exists", e.getMessage(), e);
