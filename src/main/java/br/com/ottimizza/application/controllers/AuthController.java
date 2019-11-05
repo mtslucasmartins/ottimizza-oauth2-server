@@ -74,10 +74,16 @@ public class AuthController {
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setHeader("Authorization", "Basic " + encodedCredentials);
 
+            System.out.println("URI: " + uri);
+            System.out.println("Authorization: " + OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET);
+
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity responseEntity = httpResponse.getEntity();
 
-            return ResponseEntity.ok(EntityUtils.toString(responseEntity, "UTF-8"));
+            String response = EntityUtils.toString(responseEntity, "UTF-8");
+            System.out.println("Response: \n" + response);
+
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(401).body("{}");
