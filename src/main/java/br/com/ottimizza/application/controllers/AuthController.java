@@ -35,11 +35,14 @@ public class AuthController {
     @Inject
     private UserService userService;
 
-    private String OAUTH2_SERVER_URL = "https://development-oauth-server.herokuapp.com";
+    @Value("${oauth2-config.server-url}")
+    private String OAUTH2_SERVER_URL;
 
-    private String OAUTH2_CLIENT_ID = "1defe81df9442d2b74c2";
+    @Value("${oauth2-config.client-id}")
+    private String OAUTH2_CLIENT_ID;
 
-    private String OAUTH2_CLIENT_SECRET = "72e9208c85fed78cb43fec9f953662664ab5f649";
+    @Value("${oauth2-config.client-secret}")
+    private String OAUTH2_CLIENT_SECRET;
 
     @RequestMapping("/oauth/userinfo") // @formatter:off
     public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
