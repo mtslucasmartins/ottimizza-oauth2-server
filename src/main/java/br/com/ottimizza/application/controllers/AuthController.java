@@ -30,10 +30,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 public class AuthController {
@@ -132,4 +134,12 @@ public class AuthController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
+
+    @ResponseBody
+    @GetMapping("/api/v1/oauth_client_details/{clientId}/access_tokens")
+    public ResponseEntity<?> fetchAccessTokensByClientId(@PathVariable("clientId") String clientId, Principal principal) {
+        GenericResponse<String> response = new GenericResponse<String>(oauthService.fetchAccessTokensByClientId(clientId));
+        return ResponseEntity.ok(response);
+    }
+    
 }

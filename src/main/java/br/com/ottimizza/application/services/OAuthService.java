@@ -1,8 +1,12 @@
 package br.com.ottimizza.application.services;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
@@ -28,6 +35,13 @@ public class OAuthService {
 
     @Inject
     OAuthClientRepository authClientRepository;
+
+    // @Resource(name = "tokenServices")
+    @Resource(name = "tokenServices")
+    ConsumerTokenServices tokenServices;
+
+    @Resource(name = "tokenStore")
+    TokenStore tokenStore;
 
     public GenericResponse<OAuthClientDetails> save(OAuthClientAdditionalInformation additionalInformation,
             Principal principal) throws UserNotFoundException {
@@ -59,6 +73,17 @@ public class OAuthService {
 
     public Page<OAuthClientDetails> fetchAll(Integer pageIndex, Integer pageSize, Principal principal) {
         return authClientRepository.findAll(PageRequest.of(pageIndex, pageSize));
+    }
+
+    public List<String> fetchAccessTokensByClientId(String clientId) {
+        List<String> tokenValues = new ArrayList<String>();
+        Collection<OAuth2AccessToken> tokens = tokenStore.findTokensByClientId(clientId);
+        if (tokens != null) {
+            for (OAuth2AccessToken token : tokens) {
+                tokenValues.add(token.getValue());
+            }
+        }
+        return tokenValues;
     }
 
     private String getRandomHexString(int numchars) {
