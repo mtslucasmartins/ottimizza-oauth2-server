@@ -14,12 +14,13 @@ public class OAuthClientAdditionalInformationConverter
     @Override
     public String convertToDatabaseColumn(OAuthClientAdditionalInformation entityValue) {
         ObjectMapper mapper = new ObjectMapper();
-        String additionalInformation = null;
+        String additionalInformation = "{}";
         if (entityValue == null)
             return null;
         try {
             additionalInformation = mapper.writeValueAsString(entityValue);
         } catch (Exception e) {
+            additionalInformation = "{}";
         }
         return additionalInformation;
     }

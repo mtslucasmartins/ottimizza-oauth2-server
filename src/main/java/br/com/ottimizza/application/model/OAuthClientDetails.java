@@ -72,7 +72,7 @@ public class OAuthClientDetails implements Serializable {
     @Setter
     @Convert(converter = OAuthClientAdditionalInformationConverter.class)
     @Column(name = "additional_information", length = 4096)
-    private String additionalInformation = "{}";
+    private OAuthClientAdditionalInformation additionalInformation;
 
     @Getter
     @Setter
