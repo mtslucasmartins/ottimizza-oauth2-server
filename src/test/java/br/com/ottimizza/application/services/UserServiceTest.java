@@ -26,7 +26,7 @@ import br.com.ottimizza.application.repositories.users.UsersRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringbootOauth2ServerApplication.class)
-class SignUpServiceTest {
+class UserServiceTest {
 
     @Autowired
     private UsersRepository usersRepository;

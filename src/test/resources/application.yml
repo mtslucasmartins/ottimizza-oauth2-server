@@ -6,7 +6,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:db;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=60 # ";DB_CLOSE_ON_EXIT=FALSE"
     username: sa
     password: sa
     driver-class-name: org.h2.Driver
@@ -53,6 +53,16 @@ spring:
             enable: true
     test-connection: true
 
+  
+  redis:
+    url: ${REDIS_URL:redis://h:p51990e69ca7ea4fab9ef30c054cb05c135ea8a921f288aafa9796f1170f11299@ec2-3-232-50-151.compute-1.amazonaws.com:12979}
+
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on-save # Sessions flush mode.
+      namespace: spring:session  # Namespace for keys used to store sessions.
+
   # #
   # # Thymeleaf properties.
   thymeleaf:
@@ -65,3 +75,9 @@ security:
   oauth2:
     resource:
       filter_order: 3
+
+
+oauth2-config:
+  client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
+  client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}
+  server-url: ${OAUTH2_URL:https://development-oauth-server.herokuapp.com}

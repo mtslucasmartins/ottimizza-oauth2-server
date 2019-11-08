@@ -2,6 +2,7 @@ package br.com.ottimizza.application.domain.dtos;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,9 +131,18 @@ public class UserDTO implements Serializable {
         return users.stream().map(user -> fromEntity(user)).collect(Collectors.toList());
     }
 
+    /**
+     * Patchable Arguments
+     * 
+     * username password email firstName lastName phone avatar
+     * 
+     */
     public User patch(User user) {
         if (this.username != null && !this.username.equals(""))
             user.setUsername(this.username);
+
+        if (this.type != null && Arrays.asList(0, 1, 2).contains(this.type))
+            user.setType(this.type);
 
         if (this.email != null && !this.email.equals(""))
             user.setEmail(this.email);
@@ -140,25 +150,28 @@ public class UserDTO implements Serializable {
         if (this.firstName != null && !this.firstName.equals(""))
             user.setFirstName(this.firstName);
 
-        if (this.phone != null && !this.phone.equals(""))
-            user.setPhone(this.phone);
-
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
+
+        if (this.phone != null && !this.phone.equals(""))
+            user.setPhone(this.phone);
 
         if (this.avatar != null && !this.avatar.equals(""))
             user.setAvatar(this.avatar);
 
         if (this.password != null && !this.password.equals("")) {
             if (this.newPassword != null && !this.newPassword.equals("")) {
-
-                System.out.println("Changing Password");
                 if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
-                    System.out.println("Changing Password >>> " + this.newPassword);
                     user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
                 }
             }
         }
+
+        return user;
+    }
+
+    public User patchAll(User user) {
+        user = this.patch(user);
 
         return user;
     }

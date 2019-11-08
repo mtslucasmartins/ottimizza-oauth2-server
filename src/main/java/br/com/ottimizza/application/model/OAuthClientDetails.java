@@ -3,10 +3,12 @@ package br.com.ottimizza.application.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import br.com.ottimizza.application.domain.converters.OAuthClientAdditionalInformationConverter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
@@ -68,6 +70,7 @@ public class OAuthClientDetails implements Serializable {
 
     @Getter
     @Setter
+    @Convert(converter = OAuthClientAdditionalInformationConverter.class)
     @Column(name = "additional_information", length = 4096)
     private String additionalInformation = "{}";
 
