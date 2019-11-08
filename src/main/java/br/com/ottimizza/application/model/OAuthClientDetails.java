@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import br.com.ottimizza.application.domain.converters.OAuthClientAdditionalInformationConverter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -35,6 +38,7 @@ public class OAuthClientDetails implements Serializable {
 
     @Getter
     @Setter
+    @JsonProperty(access = Access.WRITE_ONLY)
     @Column(name = "client_secret", length = 256)
     private String clientSecret;
 
