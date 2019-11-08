@@ -1,8 +1,8 @@
 package br.com.ottimizza.application.repositories.clients;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import br.com.ottimizza.application.model.OAuthClientDetails;
 
-public interface OAuthClientRepository extends JpaRepository<OAuthClientDetails, String> {
+public interface OAuthClientRepository extends PagingAndSortingRepository<OAuthClientDetails, String> {
 }

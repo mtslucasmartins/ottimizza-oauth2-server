@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
+import br.com.ottimizza.application.model.OAuthClientDetails;
 import br.com.ottimizza.application.services.OAuthService;
 import br.com.ottimizza.application.services.UserService;
 
@@ -109,6 +111,21 @@ public class AuthController {
     public ResponseEntity<?> createClient(@RequestBody OAuthClientAdditionalInformation additionalInformation, Principal principal) {
         try {
             return ResponseEntity.ok(oauthService.save(additionalInformation, principal));
+        }  catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
+        }
+    }
+
+    @GetMapping("/api/v1/oauth_client_details")
+    public ResponseEntity<?> fetchAll(@RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
+                                      @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
+        try {
+            GenericPageableResponse<OAuthClientDetails> response = new GenericPageableResponse<OAuthClientDetails>(
+                oauthService.fetchAll(pageIndex, pageSize, principal)
+            );
+            return ResponseEntity.ok(response);
         }  catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
