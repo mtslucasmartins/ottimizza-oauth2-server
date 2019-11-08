@@ -42,7 +42,7 @@ public class OAuthService {
 
             oauthClientDetails.setClientId(clientId);
             oauthClientDetails.setClientSecret(new BCryptPasswordEncoder().encode(clientSecret));
-            oauthClientDetails.setAdditionalInformation(additionalInfo);
+            oauthClientDetails.setAdditionalInformation(additionalInformation);
             oauthClientDetails.setWebServerRedirectUri(additionalInformation.getRedirectUris());
             OAuthClientDetails registered = authClientRepository.save(oauthClientDetails);
 
@@ -71,7 +71,7 @@ public class OAuthService {
 
             oauthClientDetails.setClientId(clientId);
             oauthClientDetails.setClientSecret(new BCryptPasswordEncoder().encode(clientSecret));
-            oauthClientDetails.setAdditionalInformation(additionalInfo);
+            oauthClientDetails.setAdditionalInformation(additionalInformation);
             oauthClientDetails.setWebServerRedirectUri(additionalInformation.getRedirectUris());
             OAuthClientDetails registered = authClientRepository.save(oauthClientDetails);
 
