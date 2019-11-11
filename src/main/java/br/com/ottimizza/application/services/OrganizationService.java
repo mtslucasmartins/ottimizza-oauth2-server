@@ -204,6 +204,7 @@ public class OrganizationService {
     public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         Organization organization = organizationDTO.toEntity();
+        organization.setCnpj(organization.getCnpj().replaceAll("\\D", ""));
 
         if (authorizedUser.getType().equals(User.Type.ADMINISTRATOR)) { 
             // 

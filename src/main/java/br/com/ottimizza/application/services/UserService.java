@@ -266,8 +266,20 @@ public class UserService {
 
         Organization lastAccounting = new Organization();
         Organization lastOrganization = new Organization();
+        System.out.println("***************************");
+        System.out.println("*  Importação de Usuários *");
+        System.out.println("***************************");
 
         for (ImportDataModel object : data) {
+
+            System.out.println("\n**********************");
+            System.out.println("First Name ..........: " + object.getFirstName());
+            System.out.println("E-mail ..............: " + object.getEmail());
+            System.out.println("Company Name ........: " + object.getOrganizationName());
+            System.out.println("Company CNPJ ........: " + object.getOrganizationCnpj().replaceAll("\\D", ""));
+            System.out.println("Accounting CNPJ .....: " + object.getAccountingName().replaceAll("\\D", ""));
+            System.out.println("Accounting CNPJ .....: " + object.getAccountingCnpj().replaceAll("\\D", ""));
+            System.out.println("**********************");
             
             Organization accounting = Organization.builder()
                     .name(object.getAccountingName())
@@ -371,7 +383,7 @@ public class UserService {
                     .email(email)
                     .organization(accounting)
                     .type(
-                        organization.getCnpj() == null || organization.getCnpj().isEmpty() 
+                        organization.getCnpj() == null || organization.getCnpj().equals("") 
                             ? User.Type.ACCOUNTANT : User.Type.CUSTOMER
                     ).build();
 
