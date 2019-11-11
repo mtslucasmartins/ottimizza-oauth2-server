@@ -90,6 +90,8 @@ public class UserService {
             if (accounting == null) {
                 user.setType(User.Type.ADMINISTRATOR);
                 user.setOrganization(authorizedUser.getOrganization());
+            } else {
+                user.setOrganization(accounting);
             }
             return UserDTO.fromEntity(create(user));
         } else {
