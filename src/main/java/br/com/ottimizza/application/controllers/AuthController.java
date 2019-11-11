@@ -5,7 +5,10 @@ import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.Base64;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.dtos.UserDTO;
@@ -28,6 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +51,12 @@ public class AuthController {
 
     @Inject
     private OAuthService oauthService;
+
+    @Resource(name = "tokenServices")
+    ConsumerTokenServices tokenServices;
+
+    @Resource(name = "tokenStore")
+    TokenStore tokenStore;
 
     @Value("${oauth2-config.server-url}")
     private String OAUTH2_SERVER_URL;
@@ -65,6 +77,16 @@ public class AuthController {
     @GetMapping("/oauth/tokeninfo")
     public Principal getTokenInfo(Principal principal) {
         return principal;
+    }
+
+    @ResponseBody
+    @DeleteMapping("/oauth/revoke_token")
+    public void revokeToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.contains("Bearer")) {
+            String tokenId = authorization.replace("Bearer ", "");
+            System.out.println(tokenServices.revokeToken(tokenId));
+        }
     }
 
     @PostMapping("/auth/callback")

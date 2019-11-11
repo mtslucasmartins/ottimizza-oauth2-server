@@ -40,13 +40,13 @@ public class RevokeTokenEndpoint {
         return tokenValues;
     }
 
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.DELETE, value = "/oauth/revoke_token")
-    public void revokeToken(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization != null && authorization.contains("Bearer")) {
-            String tokenId = authorization.replace("Bearer ", "");
-            System.out.println(tokenServices.revokeToken(tokenId));
-        }
-    }
+    // @ResponseBody
+    // @RequestMapping(method = RequestMethod.DELETE, value = "/oauth/revoke_token")
+    // public void revokeToken(HttpServletRequest request) {
+    // String authorization = request.getHeader("Authorization");
+    // if (authorization != null && authorization.contains("Bearer")) {
+    // String tokenId = authorization.replace("Bearer ", "");
+    // System.out.println(tokenServices.revokeToken(tokenId));
+    // }
+    // }
 }
