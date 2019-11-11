@@ -75,6 +75,11 @@ public class OAuthService {
         return authClientRepository.findAll(PageRequest.of(pageIndex, pageSize));
     }
 
+    /**
+     * *********************************************************************************
+     * * Access Tokens
+     * *********************************************************************************
+     */
     public List<String> fetchAccessTokensByClientId(String clientId) {
         List<String> tokenValues = new ArrayList<String>();
         Collection<OAuth2AccessToken> tokens = tokenStore.findTokensByClientId(clientId);
