@@ -346,19 +346,22 @@ public class UserService {
                 } else {
                     accounting = lastAccounting;
                 }
-                organization.setOrganization(accounting);
-                organization = organizationRepository.findOrganizationByCnpjAndAccountingId(
-                    organization.getCnpj(), accounting.getId()
-                ).orElse(organization);
-                if (organization.getId() == null) {
-                    System.out.println("\n\t --- Nova Empresa --- ");
-                    System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
+                
+                if (organization.getCnpj() != null && !organization.getCnpj().equals("")) {
+                    organization.setOrganization(accounting);
+                    organization = organizationRepository.findOrganizationByCnpjAndAccountingId(
+                        organization.getCnpj(), accounting.getId()
+                    ).orElse(organization);
+                    if (organization.getId() == null) {
+                        System.out.println("\n\t --- Nova Empresa --- ");
+                        System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
 
-                    organization = organizationRepository.save(organization);
-                } else {
-                    System.out.println("\n\t --- Epresa --- ");
-                    System.out.println(MessageFormat.format("\t Id: {0} ", organization.getId()));
-                    System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
+                        organization = organizationRepository.save(organization);
+                    } else {
+                        System.out.println("\n\t --- Epresa --- ");
+                        System.out.println(MessageFormat.format("\t Id: {0} ", organization.getId()));
+                        System.out.println(MessageFormat.format("\t Nome: {0} ", organization.getName()));
+                    }
                 }
             } else {
                 organization = lastOrganization;
@@ -400,7 +403,7 @@ public class UserService {
                     if (userRepository.emailIsAlreadyRegistered(email)) {
                         User existing = findByUsername(email);
 
-                        // verificando se pertence a mesma contabilidade.
+                        // se usuário existe mas não está vinculado a nenhuma contabilidade
                         if (existing.getOrganization() == null) {
                             user = userRepository.save(
                                 UserDTO.fromEntity(user).patch(existing)
@@ -411,9 +414,6 @@ public class UserService {
                                         .organization(accounting)
                                     .build()
                             );
-                            try {
-                                userRepository.addOrganization(user.getId(), organization.getId());
-                            }catch (Exception e) {}
                         } else if (existing.getOrganization().equals(user.getOrganization())) { 
                             user = userRepository.save(
                                 UserDTO.fromEntity(user).patch(existing)
@@ -423,20 +423,22 @@ public class UserService {
                                         .type(user.getType())
                                     .build()
                             );
-                            try {
-                                userRepository.addOrganization(user.getId(), organization.getId());
-                            }catch (Exception e) {}
                         } else {
                             throw new Exception("");
                         } 
+                        if (user.getType().equals(User.Type.CUSTOMER)) {
+                            try { userRepository.addOrganization(user.getId(), organization.getId());
+                            } catch (Exception e) {}
+                        }   
                     } else {
                         // caso não exista, cria um novo usuário.
                         user.setPassword(object.getPassword());
                         user = create(user);
 
-                        try {
-                            userRepository.addOrganization(user.getId(), organization.getId());
-                        }catch (Exception e) {}
+                        if (user.getType().equals(User.Type.CUSTOMER)) {
+                            try { userRepository.addOrganization(user.getId(), organization.getId());
+                            } catch (Exception e) {}
+                        }                        
                     }
                 } catch (Exception ex) {
                     System.out.println("\n>>> Exception\n");
