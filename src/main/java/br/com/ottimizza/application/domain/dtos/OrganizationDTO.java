@@ -73,6 +73,7 @@ public class OrganizationDTO implements Serializable {
             .withExternalId(organization.getExternalId())
             .withName(organization.getName())
             .withCnpj(organization.getCnpj())
+            .withType(organization.getType())
             .withCodigoERP(organization.getCodigoERP())
             .withEmail(organization.getEmail())
             .withAvatar(organization.getAvatar())
