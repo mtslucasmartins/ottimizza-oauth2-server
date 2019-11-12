@@ -40,6 +40,9 @@ class UserServiceTest {
         this.user.setUsername("test@ottimizza.com.br");
 
         User user = usersRepository.save(this.user);
+
+        
+
         User foundEntity = usersRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
 

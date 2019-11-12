@@ -33,16 +33,16 @@ class SignUpServiceTest {
 
     User user;
 
-    @Test
-    public void givenGenericEntityRepository_whenSaveAndRetreiveEntity_thenOK() throws Exception {
+    // @Test
+    // public void givenGenericEntityRepository_whenSaveAndRetreiveEntity_thenOK() throws Exception {
 
-        this.user = new User();
-        this.user.setUsername("test@ottimizza.com.br");
+    //     this.user = new User();
+    //     this.user.setUsername("test@ottimizza.com.br");
 
-        User user = usersRepository.save(this.user);
-        User foundEntity = usersRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+    //     User user = usersRepository.save(this.user);
+    //     User foundEntity = usersRepository.findByUsername(user.getUsername())
+    //             .orElseThrow(() -> new UserNotFoundException("User not found."));
 
-        assertNotNull(foundEntity);
-    }
+    //     assertNotNull(foundEntity);
+    // }
 }

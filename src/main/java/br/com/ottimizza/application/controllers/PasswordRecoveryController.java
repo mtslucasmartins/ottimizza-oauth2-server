@@ -105,15 +105,7 @@ public class PasswordRecoveryController {
         PasswordResetToken passwordRecoveryTokenObject = new PasswordResetToken(passwordRecoveryToken, user);
         passwordRecoveryRepository.save(passwordRecoveryTokenObject);
 
-
         sendResetPasswordEmail(user, passwordRecoveryToken);
-        // String passwordResetURL = new URIBuilder("https://accounts.ottimizza.com.br/password_reset")
-        //                             .addParameter("username", user.getUsername())
-        //                             .addParameter("token", passwordRecoveryToken)
-        //                             .toString();
-        // // redefinicao@ottimizza.com.br
-        // sendSimpleMessage(user.getEmail().trim(), "Ottimizza - Redefinição de Senha", passwordResetURL);
-        // // sendSimpleMessage("diogo@ottimizza.com.br", "Ottimizza - Redefinição de Senha", passwordResetURL);
 
         response.sendRedirect("/password_recovery?success");
     }
@@ -147,7 +139,7 @@ public class PasswordRecoveryController {
         response.sendRedirect("/password_reset?success");
     }
 
-    public void sendSimpleMessage(String to, String subject, String action) {
+    private void sendSimpleMessage(String to, String subject, String action) {
         // SimpleMailMessage message = new SimpleMailMessage(); 
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
@@ -163,7 +155,7 @@ public class PasswordRecoveryController {
         mailSender.send(messagePreparator);
     }
 
-    public void sendResetPasswordEmail(User user, String resetPasswordToken) throws Exception {
+    private void sendResetPasswordEmail(User user, String resetPasswordToken) throws Exception {
         String subject = "Ottimizza - Redefinição de Senha";
         String username = user.getUsername();
         String fullname = MessageFormat.format("{0} {1}", user.getFirstName(), user.getLastName());
