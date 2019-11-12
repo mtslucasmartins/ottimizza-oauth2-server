@@ -53,6 +53,7 @@ public class OrganizationDTO implements Serializable {
         organization.setName(this.name);
         organization.setCnpj(this.cnpj);
         organization.setEmail(this.email);
+        organization.setType(this.type);
         organization.setCodigoERP(this.codigoERP);
         organization.setAvatar(this.avatar);
         

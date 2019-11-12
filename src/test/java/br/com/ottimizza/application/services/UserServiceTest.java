@@ -35,13 +35,15 @@ class UserServiceTest {
 
     @Test
     public void givenGenericEntityRepository_whenSaveAndRetreiveEntity_thenOK() throws Exception {
-
+        System.out.println("asdasdadasdasdadad");
+        System.out.println("asdasdadasdasdadad");
+        System.out.println("asdasdadasdasdadad");
+        System.out.println("asdasdadasdasdadad");
+        System.out.println("asdasdadasdasdadad");
         this.user = new User();
         this.user.setUsername("test@ottimizza.com.br");
 
         User user = usersRepository.save(this.user);
-
-        
 
         User foundEntity = usersRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
