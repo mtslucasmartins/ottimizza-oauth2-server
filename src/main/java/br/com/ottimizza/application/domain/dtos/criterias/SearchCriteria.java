@@ -38,7 +38,7 @@ public class SearchCriteria implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        public Integer order;
+        public String order;
 
         public String attribute;
 
