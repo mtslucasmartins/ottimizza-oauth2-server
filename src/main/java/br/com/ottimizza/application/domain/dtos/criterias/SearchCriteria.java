@@ -21,7 +21,7 @@ public class SearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("sort")
-    private SortCriteria sort;
+    private SortCriteria sort = new SortCriteria();
 
     @JsonProperty(value = "page_index", defaultValue = "0")
     public Integer pageIndex;
