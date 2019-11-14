@@ -7,11 +7,15 @@ import br.com.ottimizza.application.model.user.QUser;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -75,9 +79,16 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
             query.where(user.type.eq(filter.getType()));
         }
 
+        PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
+        for (Sort.Order order : pageable.getSort()) {
+            PathBuilder<Object> path = entityPath.get(order.getProperty());
+            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), path));
+        }
+
         totalElements = query.fetchCount();
         query.limit(pageable.getPageSize());
         query.offset(pageable.getPageSize() * pageable.getPageNumber());
+
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
 
@@ -99,6 +110,12 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         }
 
         query.where(user.organization.eq(authorizedUser.getOrganization()));
+
+        PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
+        for (Sort.Order order : pageable.getSort()) {
+            PathBuilder<Object> path = entityPath.get(order.getProperty());
+            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), path));
+        }
 
         totalElements = query.fetchCount();
         query.limit(pageable.getPageSize());
