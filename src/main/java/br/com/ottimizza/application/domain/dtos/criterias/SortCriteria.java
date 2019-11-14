@@ -17,10 +17,20 @@ public class SortCriteria implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public String order;
+    private Sort sort;
 
-    public String attribute;
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    class Sort implements Serializable {
+        public String order;
 
-    public String attributes;
+        public String attribute;
+
+        public String attributes;
+
+    }
 
 }
