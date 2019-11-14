@@ -5,11 +5,14 @@ import java.security.Principal;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.criterias.SortCriteria;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user.User;
@@ -35,10 +38,13 @@ public class UsersController {
     UserService userService;
 
     @GetMapping 
-    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SortCriteria sort,
                                   @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                   Principal principal) throws Exception {
+        System.out.println("Order: " + sort.order);
+        System.out.println("attribute: " + sort.attribute);
+        System.out.println("attributes: " + sort.attributes);
         return ResponseEntity.ok(
             new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, pageIndex, pageSize, principal))
         );
