@@ -83,7 +83,7 @@ public class UserService {
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             return userRepository
                     .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
-                            filter.getFirstName(), filter.getLastName(), UserDTO.getPageRequest(searchCriteria),
+                            filter.getFirstName(), filter.getLastName(), UserDTO.getPageRequest(searchCriteria))
                     .map(UserDTO::fromEntityWithOrganization);
         }
 
