@@ -23,10 +23,10 @@ public class SearchCriteria implements Serializable {
     @JsonProperty("sort")
     private SortCriteria sort = new SortCriteria();
 
-    @JsonProperty(value = "page_index")
+    @JsonProperty("page_index")
     public Integer pageIndex = 0;
 
-    @JsonProperty(value = "page_size")
+    @JsonProperty("page_size")
     public Integer pageSize = 10;
 
     @Setter

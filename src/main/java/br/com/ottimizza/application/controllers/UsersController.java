@@ -45,6 +45,7 @@ public class UsersController {
         System.out.println("Order: " + criteria.getSort().getOrder());
         System.out.println("attribute: " + criteria.getSort().getAttribute());
         System.out.println("attributes: " + criteria.getSort().getAttributes());
+        System.out.println("attributes: " + criteria.getSort().getAttributes().size());
         return ResponseEntity.ok(
             new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, criteria.getPageIndex(), criteria.getPageSize(), principal))
         );
