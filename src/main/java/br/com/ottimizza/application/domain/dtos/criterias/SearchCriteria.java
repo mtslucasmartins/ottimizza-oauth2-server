@@ -13,14 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-class SortCritera implements Serializable {
+public class SearchCriteria implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public String order;
-
-    public String attribute;
-
-    public String attributes;
+    private SortCritera sort;
 
 }

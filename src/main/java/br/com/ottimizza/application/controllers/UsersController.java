@@ -42,7 +42,7 @@ public class UsersController {
                                   @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                   Principal principal) throws Exception {
-        System.out.println("Order: " + sort.order);
+        System.out.println("Order: " + sort.getSort().getOrder());
         System.out.println("attribute: " + sort.attribute);
         System.out.println("attributes: " + sort.attributes);
         return ResponseEntity.ok(
