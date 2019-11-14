@@ -39,15 +39,17 @@ public class UsersController {
     UserService userService;
 
     @GetMapping 
-    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria sort,
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria criteria,
                                   @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                   Principal principal) throws Exception {
-        System.out.println("Order: " + sort.getSort().getOrder());
-        System.out.println("attribute: " + sort.getSort().attribute);
-        System.out.println("attributes: " + sort.getSort().attributes);
+        System.out.println("Order: " + criteria.getPageIndex());
+        System.out.println("Order: " + criteria.getPageSize());
+        System.out.println("Order: " + criteria.getSort().getOrder());
+        System.out.println("attribute: " + criteria.getSort().getAttribute());
+        System.out.println("attributes: " + criteria.getSort().getAttributes());
         return ResponseEntity.ok(
-            new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, pageIndex, pageSize, principal))
+            new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, criteria.getPageIndex(), criteria.getPageSize(), principal))
         );
     }
 
