@@ -10,8 +10,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+
+import br.com.ottimizza.application.domain.dtos.criterias.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -93,6 +100,15 @@ public class UserDTO implements Serializable {
         user.setOrganization(accounting);
 
         return user;
+    }
+
+    public static Pageable getPageRequest(SearchCriteria searchCriteria) {
+        String order = searchCriteria.getSort().getOrder().toUpperCase();
+        String attribute = searchCriteria.getSort().getAttribute();
+        if (attribute.equals("fullname")) {
+            return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, "firstName", "lastName"));
+        }
+        return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, attribute));
     }
 
     public static UserDTO fromEntity(User user) {

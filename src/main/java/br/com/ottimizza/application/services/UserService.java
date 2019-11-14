@@ -25,6 +25,7 @@ import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
 import br.com.ottimizza.application.domain.dtos.ImportDataModel;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
@@ -72,6 +73,21 @@ public class UserService {
                     .map(UserDTO::fromEntityWithOrganization);
         }
         return userRepository.fetchAll(filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
+                .map(UserDTO::fromEntityWithOrganization);
+    }
+
+    public Page<UserDTO> fetchAll(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
+            throws UserNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
+            return userRepository
+                    .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
+                            filter.getFirstName(), filter.getLastName(), UserDTO.getPageRequest(searchCriteria),
+                    .map(UserDTO::fromEntityWithOrganization);
+        }
+
+        return userRepository.fetchAll(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
                 .map(UserDTO::fromEntityWithOrganization);
     }
 
