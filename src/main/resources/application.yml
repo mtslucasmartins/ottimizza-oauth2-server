@@ -46,7 +46,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: ${HIBERNATE_STATISTICS:false}
         temp:
           use_jdbc_metadata_defaults: false
   
