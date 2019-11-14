@@ -103,12 +103,16 @@ public class UserDTO implements Serializable {
     }
 
     public static Pageable getPageRequest(SearchCriteria searchCriteria) {
-        String order = searchCriteria.getSort().getOrder().toUpperCase();
-        String attribute = searchCriteria.getSort().getAttribute();
-        if (attribute.equals("fullname")) {
-            return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, "firstName", "lastName"));
+        if (searchCriteria.getSort() != null) {
+            String order = searchCriteria.getSort().getOrder().toUpperCase();
+            String attribute = searchCriteria.getSort().getAttribute();
+            if (attribute.equals("fullname")) {
+                return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, "firstName", "lastName"));
+            } 
+            return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, attribute));
+        } else {
+            return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize());
         }
-        return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, attribute));
     }
 
     public static UserDTO fromEntity(User user) {
