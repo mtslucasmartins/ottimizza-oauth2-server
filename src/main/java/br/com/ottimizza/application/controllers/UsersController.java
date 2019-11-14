@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.dtos.criterias.SortCriteria;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
@@ -38,13 +39,13 @@ public class UsersController {
     UserService userService;
 
     @GetMapping 
-    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SortCriteria sort,
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria sort,
                                   @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                   Principal principal) throws Exception {
         System.out.println("Order: " + sort.getSort().getOrder());
-        System.out.println("attribute: " + sort.attribute);
-        System.out.println("attributes: " + sort.attributes);
+        System.out.println("attribute: " + sort.getSort().attribute);
+        System.out.println("attributes: " + sort.getSort().attributes);
         return ResponseEntity.ok(
             new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, pageIndex, pageSize, principal))
         );

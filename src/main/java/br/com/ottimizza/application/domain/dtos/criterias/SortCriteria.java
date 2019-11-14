@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-class SortCritera implements Serializable {
+public class SortCriteria implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
