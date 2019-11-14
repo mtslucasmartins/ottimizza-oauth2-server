@@ -103,8 +103,10 @@ public class UserDTO implements Serializable {
     }
 
     public static Pageable getPageRequest(SearchCriteria searchCriteria) {
-        if (searchCriteria.getSort() != null) {
-            String order = searchCriteria.getSort().getOrder().toUpperCase();
+        if (searchCriteria.getSort() != null 
+                && searchCriteria.getSort().getOrder() != null 
+                    && searchCriteria.getSort().getAttribute() != null) {
+            String order = searchCriteria.getSort().getOrder();
             String attribute = searchCriteria.getSort().getAttribute();
             if (attribute.equals("fullname")) {
                 return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), Sort.by(order, "firstName", "lastName"));
