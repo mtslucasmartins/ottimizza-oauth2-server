@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
-import br.com.ottimizza.application.domain.dtos.criterias.SortCriteria;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user.User;
