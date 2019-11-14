@@ -39,10 +39,8 @@ public class UsersController {
     UserService userService;
 
     @GetMapping 
-    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria criteria,
-                                  @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-                                  @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
-                                  Principal principal) throws Exception {
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria criteria, Principal principal) 
+            throws Exception {
         System.out.println("Order: " + criteria.getPageIndex());
         System.out.println("Order: " + criteria.getPageSize());
         System.out.println("Order: " + criteria.getSort().getOrder());
