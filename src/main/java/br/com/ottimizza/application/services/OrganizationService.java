@@ -54,6 +54,12 @@ public class OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 
+    // @formatter:off
+    public OrganizationDTO findById(BigInteger id, Principal principal)throws OrganizationNotFoundException, Exception {
+        User authenticated = this.userService.findByUsername(principal.getName());
+        return OrganizationDTO.fromEntity(findById(id, authenticated));
+    }
+
     public Organization findByExternalId(String externalId, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         return organizationRepository.findByExternalId(externalId)

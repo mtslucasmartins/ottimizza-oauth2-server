@@ -152,18 +152,8 @@ public class OrganizationController {
     //
     //
     @GetMapping("/{id}")
-    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, 
-                               Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.findById(id, authorizedUser));
-        } catch (OrganizationNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
+    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(organizationService.findById(id, principal)));
     }
 
     @GetMapping("/uuid/{externalId}")
