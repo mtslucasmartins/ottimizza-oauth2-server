@@ -121,14 +121,14 @@ public interface UsersRepository extends PagingAndSortingRepository<User, BigInt
     boolean emailIsAlreadyRegistered(@Param("email") String email);
 
     @Query(" SELECT                                                                       "
-         + "     CASE                                                                  "
-         + "         WHEN (COUNT(u.id) > 0)                                            "
-         + "             THEN TRUE                                                     "
-         + "         ELSE FALSE                                                        "
-         + "     END                                                                   "
-         + " FROM User u                                                               "
-         + " WHERE LOWER(u.email) = LOWER(:email)                                      "
-         + " AND u.id != :userId                                                       ")
+            + "     CASE                                                                  "
+            + "         WHEN (COUNT(u.id) > 0)                                            "
+            + "             THEN TRUE                                                     "
+            + "         ELSE FALSE                                                        "
+            + "     END                                                                   "
+            + " FROM User u                                                               "
+            + " WHERE LOWER(u.email) = LOWER(:email)                                      "
+            + " AND u.id != :userId                                                       ")
     boolean emailIsAlreadyRegistered(@Param("email") String email, @Param("userId") BigInteger userId);
 
     @Query(value = "SELECT a.name FROM users_authorities ua INNER JOIN authorities a ON (a.name = ua.fk_authorities_id) WHERE ua.fk_users_id = :id", nativeQuery = true)

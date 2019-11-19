@@ -94,7 +94,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     } // @formatter:off
 
     @Override
-    public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
+    public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authenticated) {
         long totalElements = 0;
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
 
@@ -117,6 +117,14 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             query.where(organization.type.eq(filter.getType()));
         }
         if (filter.getOrganizationId() != null) {
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+            System.out.println("" + filter.getOrganizationId() );
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
         }
 
