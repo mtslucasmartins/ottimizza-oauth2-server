@@ -36,26 +36,14 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
     @Override
     public Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
+        filter.setOrganizationId(authorizedUser.getOrganization().getId());
         long totalElements = 0;
+
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
 
-        query.where(organization.organization.id.eq(authorizedUser.getOrganization().getId()));
+        query = filter(query, filter);
 
-        if (filter.getId() != null) {
-            query.where(organization.id.eq(filter.getId()));
-        }
-        if (filter.getName() != null && !filter.getName().isEmpty()) {
-            query.where(organization.name.like("%" + filter.getName() + "%"));
-        }
-        if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
-            query.where(organization.externalId.like(filter.getExternalId()));
-        }
-        if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
-            query.where(organization.cnpj.like(filter.getCnpj()));
-        }
-        if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
-            query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
-        }
+        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);
 
         totalElements = query.fetchCount();
 
@@ -72,21 +60,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                 .on(userOrganization.organization.id.eq(organization.id)
                 .and(userOrganization.user.id.eq(authorizedUser.getId())));
 
-        if (filter.getId() != null) {
-            query.where(organization.id.eq(filter.getId()));
-        }
-        if (filter.getName() != null && !filter.getName().isEmpty()) {
-            query.where(organization.name.like("%" + filter.getName() + "%"));
-        }
-        if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
-            query.where(organization.externalId.like(filter.getExternalId()));
-        }   
-        if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
-            query.where(organization.cnpj.like(filter.getCnpj()));
-        }
-        if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
-            query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
-        }
+        query = filter(query, filter);  
+
+        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);
 
         totalElements = query.fetchCount();
 
