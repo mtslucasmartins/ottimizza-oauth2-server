@@ -27,12 +27,12 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
     private final String QORGANIZATION_NAME = "organization1";
 
-    @PersistenceContext
-    EntityManager em;
-
     private QOrganization organization = QOrganization.organization1;
 
     private QUserOrganization userOrganization = QUserOrganization.userOrganization;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Override
     public Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
@@ -41,13 +41,13 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
 
-        query = filter(query, filter);
+        filter(query, filter);
 
-        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);
+        sort(query, pageable, Organization.class, QORGANIZATION_NAME);
 
         totalElements = query.fetchCount();
 
-        query = paginate(query, pageable);
+        paginate(query, pageable);
 
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
@@ -60,13 +60,12 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                 .on(userOrganization.organization.id.eq(organization.id)
                 .and(userOrganization.user.id.eq(authorizedUser.getId())));
 
-        query = filter(query, filter);  
-
-        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);
+        filter(query, filter);  
+        sort(query, pageable, Organization.class, QORGANIZATION_NAME);
 
         totalElements = query.fetchCount();
 
-        query = paginate(query, pageable);
+        paginate(query, pageable);
 
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } // @formatter:off
@@ -78,13 +77,13 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             .leftJoin(organization.organization)
                 .on(organization.organization.id.eq(organization.id));
 
-        query = filter(query, filter);  
+        filter(query, filter);  
         
-        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);  
+        sort(query, pageable, Organization.class, QORGANIZATION_NAME);  
 
         totalElements = query.fetchCount();
 
-        query = paginate(query, pageable);
+        paginate(query, pageable);
 
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
