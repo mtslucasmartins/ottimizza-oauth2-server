@@ -120,10 +120,11 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
         }
 
+        query = sort(query, pageable, Organization.class, "organization");  
+
         totalElements = query.fetchCount();
         
         query = paginate(query, pageable);
-        query = sort(query, pageable, Organization.class, "organization");
 
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
