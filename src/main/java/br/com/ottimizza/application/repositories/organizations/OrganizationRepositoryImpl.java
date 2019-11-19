@@ -25,6 +25,8 @@ import com.querydsl.core.types.dsl.PathBuilder;
 @Repository
 public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom {
 
+    private final String QORGANIZATION_NAME = "organization1";
+
     @PersistenceContext
     EntityManager em;
 
@@ -100,6 +102,18 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             .leftJoin(organization.organization)
                 .on(organization.organization.id.eq(organization.id));
 
+        query = filter(query, filter);  
+        
+        query = sort(query, pageable, Organization.class, QORGANIZATION_NAME);  
+
+        totalElements = query.fetchCount();
+
+        query = paginate(query, pageable);
+
+        return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
+    }
+
+    private <T> JPAQuery<T> filter(JPAQuery<T> query, OrganizationDTO filter) {
         if (filter.getId() != null) {
             query.where(organization.id.eq(filter.getId()));
         }
@@ -119,34 +133,18 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             query.where(organization.type.eq(filter.getType()));
         }
         if (filter.getOrganizationId() != null) {
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
-            System.out.println("" + filter.getOrganizationId() );
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
         }
-
-        query = sort(query, pageable, Organization.class, "organization1");  
-
-        totalElements = query.fetchCount();
-
-        query.limit(pageable.getPageSize());
-        query.offset(pageable.getPageSize() * pageable.getPageNumber());
-        
-        return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
+        return query;
     }
 
-    public <T> JPAQuery<T> paginate(JPAQuery<T> query, Pageable pageable) {
+    private <T> JPAQuery<T> paginate(JPAQuery<T> query, Pageable pageable) {
         query.limit(pageable.getPageSize());
         query.offset(pageable.getPageSize() * pageable.getPageNumber());
         return query;
     }
 
-    public <T> JPAQuery<T> sort(JPAQuery<T> query, Pageable pageable, Class<T> clazz, String value) {
+    private <T> JPAQuery<T> sort(JPAQuery<T> query, Pageable pageable, Class<T> clazz, String value) {
         PathBuilder<T> entityPath = new PathBuilder<T>(clazz, value);
         for (Sort.Order order : pageable.getSort()) {
             PathBuilder<Object> propertyPath = entityPath.get(order.getProperty());
@@ -154,8 +152,6 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         }
         return query;
     }
-
-
     //  
     /*
     @Override
