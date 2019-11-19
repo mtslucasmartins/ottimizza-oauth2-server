@@ -22,7 +22,7 @@ import org.springframework.data.domain.Sort;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 
-@Repository
+@Repository // @formatter:off
 public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom {
 
     private final String QORGANIZATION_NAME = "organization1";
@@ -46,7 +46,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
 
-    @Override // @formatter:off
+    @Override 
     public Page<Organization> fetchAllByCustomerId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
             .innerJoin(userOrganization)
@@ -56,7 +56,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
-    } // @formatter:off
+    } 
 
     @Override
     public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authenticated) {
@@ -64,33 +64,33 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             .leftJoin(organization.organization)
                 .on(organization.organization.id.eq(organization.id));
         totalElements = filter(query, filter);  
-        sort(query, pageable, Organization.class, QORGANIZATION_NAME);  
+        sort(query, pageable, Organization.class, QORGANIZATION_NAME);
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
 
     private <T> long filter(JPAQuery<T> query, OrganizationDTO filter) {
-        if (filter.getId() != null) {
+        if (filter.getId() != null) 
             query.where(organization.id.eq(filter.getId()));
-        }
-        if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
+        
+        if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) 
             query.where(organization.externalId.like(filter.getExternalId()));
-        }
-        if (filter.getName() != null && !filter.getName().isEmpty()) {
+        
+        if (filter.getName() != null && !filter.getName().isEmpty()) 
             query.where(organization.name.like("%" + filter.getName() + "%"));
-        }
-        if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
+        
+        if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) 
             query.where(organization.cnpj.like(filter.getCnpj()));
-        }
-        if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
+        
+        if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) 
             query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
-        }
-        if (filter.getType() != null) {
+        
+        if (filter.getType() != null) 
             query.where(organization.type.eq(filter.getType()));
-        }
-        if (filter.getOrganizationId() != null) {
+        
+        if (filter.getOrganizationId() != null) 
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
-        }
+        
         return query.fetchCount();
     }
 
