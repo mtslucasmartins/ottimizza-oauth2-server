@@ -46,7 +46,7 @@ public class OrganizationController {
     OrganizationService organizationService;
 
 
-    @GetMapping("/v2")
+    @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute OrganizationDTO filter,
                                   @ModelAttribute SearchCriteria searchCriteria,
                                   Principal principal) throws Exception {
