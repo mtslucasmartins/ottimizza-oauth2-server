@@ -27,6 +27,8 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
     private final String QORGANIZATION_NAME = "organization1";
 
+    private long totalElements;
+
     private QOrganization organization = QOrganization.organization1;
 
     private QUserOrganization userOrganization = QUserOrganization.userOrganization;
@@ -37,58 +39,37 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     @Override
     public Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
         filter.setOrganizationId(authorizedUser.getOrganization().getId());
-        long totalElements = 0;
-
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
-
-        filter(query, filter);
-
+        totalElements = filter(query, filter);
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);
-
-        totalElements = query.fetchCount();
-
         paginate(query, pageable);
-
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
 
     @Override // @formatter:off
     public Page<Organization> fetchAllByCustomerId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
-        long totalElements = 0;
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
             .innerJoin(userOrganization)
                 .on(userOrganization.organization.id.eq(organization.id)
                 .and(userOrganization.user.id.eq(authorizedUser.getId())));
-
-        filter(query, filter);  
+        totalElements = filter(query, filter);  
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);
-
-        totalElements = query.fetchCount();
-
         paginate(query, pageable);
-
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } // @formatter:off
 
     @Override
     public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authenticated) {
-        long totalElements = 0;
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
             .leftJoin(organization.organization)
                 .on(organization.organization.id.eq(organization.id));
-
-        filter(query, filter);  
-        
+        totalElements = filter(query, filter);  
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);  
-
-        totalElements = query.fetchCount();
-
         paginate(query, pageable);
-
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
 
-    private <T> JPAQuery<T> filter(JPAQuery<T> query, OrganizationDTO filter) {
+    private <T> long filter(JPAQuery<T> query, OrganizationDTO filter) {
         if (filter.getId() != null) {
             query.where(organization.id.eq(filter.getId()));
         }
@@ -110,7 +91,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         if (filter.getOrganizationId() != null) {
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
         }
-        return query;
+        return query.fetchCount();
     }
 
     private <T> JPAQuery<T> paginate(JPAQuery<T> query, Pageable pageable) {
