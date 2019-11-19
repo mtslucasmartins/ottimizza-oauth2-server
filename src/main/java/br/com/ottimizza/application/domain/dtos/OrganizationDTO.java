@@ -5,6 +5,11 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.model.Organization;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -103,6 +108,34 @@ public class OrganizationDTO implements Serializable {
             organization.setEmail(this.email);
 
         return organization;
+    }
+
+    public static Pageable getPageRequest(SearchCriteria searchCriteria) {
+        return PageRequest.of(searchCriteria.getPageIndex(), searchCriteria.getPageSize(), getSort(searchCriteria));
+    }
+
+    public static Sort getSort(SearchCriteria searchCriteria) {
+        Sort sort = Sort.unsorted();
+
+        if (searchCriteria.getSort() != null && searchCriteria.getSort().getOrder() != null
+                && searchCriteria.getSort().getAttribute() != null) {
+            String order = searchCriteria.getSort().getOrder();
+            String attribute = searchCriteria.getSort().getAttribute();
+            return getSort(attribute, order);
+        }
+
+        return sort;
+    }
+
+    public static Sort getSort(String attribute, String order) {
+        Sort sort = Sort.unsorted();
+        sort = Sort.by(attribute);
+        if (order.equals("asc")) {
+            sort = sort.ascending();
+        } else if (order.equals("desc")) {
+            sort = sort.descending();
+        }
+        return sort;
     }
 
     OrganizationDTO withId(BigInteger id) {

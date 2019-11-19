@@ -20,6 +20,7 @@ import br.com.ottimizza.application.domain.Authorities;
 import br.com.ottimizza.application.domain.OrganizationTypes;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
@@ -54,12 +55,6 @@ public class OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 
-    // @formatter:off
-    public OrganizationDTO findById(BigInteger id, Principal principal)throws OrganizationNotFoundException, Exception {
-        User authenticated = this.userService.findByUsername(principal.getName());
-        return OrganizationDTO.fromEntity(findById(id, authenticated));
-    }
-
     public Organization findByExternalId(String externalId, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         return organizationRepository.findByExternalId(externalId)
@@ -67,6 +62,15 @@ public class OrganizationService {
     }
 
     // @formatter:off
+    public OrganizationDTO findById(BigInteger id, Principal principal)throws OrganizationNotFoundException, Exception {
+        User authenticated = this.userService.findByUsername(principal.getName());
+        return OrganizationDTO.fromEntity(findById(id, authenticated));
+    }
+
+    
+
+    // @formatter:off
+    @Deprecated
     public GenericPageableResponse<Organization> findAll(String filter, Pageable pageRequest, User authorizedUser)
             throws OrganizationNotFoundException, Exception {
         filter = "%" + filter + "%";
@@ -89,19 +93,25 @@ public class OrganizationService {
     }
 
 
-    public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, Pageable pageRequest, Principal principal)
+    public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, SearchCriteria criteria, Principal principal)
             throws OrganizationNotFoundException, Exception {
-        User authorizedUser = userService.findByUsername(principal.getName());
-
-        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
-            return organizationRepository.fetchAllByAccountantId(
-                    filter, pageRequest, authorizedUser
+        User authenticated = userService.findByUsername(principal.getName());
+        
+        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
+            return organizationRepository.fetchAll(
+                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
             ).map(OrganizationDTO::fromEntity);
         }
 
-        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
+        if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+            return organizationRepository.fetchAllByAccountantId(
+                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
+            ).map(OrganizationDTO::fromEntity);
+        }
+
+        if (authenticated.getType().equals(User.Type.CUSTOMER)) {
             return organizationRepository.fetchAllByCustomerId(
-                    filter, pageRequest, authorizedUser
+                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
             ).map(OrganizationDTO::fromEntity);
         }
 

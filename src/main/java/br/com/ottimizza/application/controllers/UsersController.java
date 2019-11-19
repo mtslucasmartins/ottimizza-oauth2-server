@@ -38,20 +38,17 @@ public class UsersController {
     UserService userService;
 
     @GetMapping 
-    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter, @ModelAttribute SearchCriteria criteria, Principal principal) 
-            throws Exception {
-        System.out.println("Order: " + criteria.getPageIndex());
-        System.out.println("Order: " + criteria.getPageSize());
+    public HttpEntity<?> fetchAll(@ModelAttribute UserDTO filter,
+                                  @ModelAttribute SearchCriteria criteria, 
+                                  Principal principal) throws Exception {
         return ResponseEntity.ok(
-            new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, criteria, principal))
-        );
+            new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, criteria, principal)));
     }
 
     @GetMapping("/{id}")
     public HttpEntity<?> fetchById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
         return ResponseEntity.ok(
-            new GenericResponse<UserDTO>(UserDTO.fromEntityWithOrganization(userService.findById(id)))
-        );
+            new GenericResponse<UserDTO>(UserDTO.fromEntityWithOrganization(userService.findById(id))));
     }
 
     @PostMapping 

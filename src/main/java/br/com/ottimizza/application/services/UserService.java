@@ -63,19 +63,6 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    public Page<UserDTO> fetchAll(UserDTO filter, int pageIndex, int pageSize, Principal principal)
-            throws UserNotFoundException, Exception {
-        User authorizedUser = findByUsername(principal.getName());
-        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            return userRepository
-                    .fetchCustomersByCustomerId(authorizedUser.getId(), filter.getUsername(), filter.getEmail(),
-                            filter.getFirstName(), filter.getLastName(), PageRequest.of(pageIndex, pageSize))
-                    .map(UserDTO::fromEntityWithOrganization);
-        }
-        return userRepository.fetchAll(filter, PageRequest.of(pageIndex, pageSize), authorizedUser)
-                .map(UserDTO::fromEntityWithOrganization);
-    }
-
     public Page<UserDTO> fetchAll(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());

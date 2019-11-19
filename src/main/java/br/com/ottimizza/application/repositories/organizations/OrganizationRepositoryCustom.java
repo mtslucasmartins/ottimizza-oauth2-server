@@ -7,7 +7,9 @@ import br.com.ottimizza.application.model.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface OrganizationRepositoryCustom { // @formatter:
+public interface OrganizationRepositoryCustom { // @formatter:off OrganizationRepositoryImpl
+
+    Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authorizedUser);
 
     Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser);
 
