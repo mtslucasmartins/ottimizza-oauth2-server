@@ -96,7 +96,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     @Override
     public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authenticated) {
         long totalElements = 0;
-        JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
+        JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
+            .leftJoin(organization.organization)
+                .on(organization.organization.id.eq(organization.id));
 
         if (filter.getId() != null) {
             query.where(organization.id.eq(filter.getId()));
