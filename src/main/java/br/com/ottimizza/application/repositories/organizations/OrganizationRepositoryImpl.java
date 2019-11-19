@@ -108,20 +108,5 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         }
         return query;
     }
-    //  
-    /*
-    @Override
-	public KpiDTO findKpiDTOByCompanyId(BigInteger companyId) {
-		
-		JPAQuery<KpiDTO> query = new JPAQuery<KpiDTO>(em).from(kpi)
-                .innerJoin(kpiDetail).on(kpiDetail.kpiID.id.eq(kpi.id))
-                .where(kpi.company.id.eq(companyId)
-                .and(kpi.graphType.in(7,12)));
-        
-        query.select(Projections.constructor(KpiDTO.class, kpi.title, kpiDetail.valorKPI));
-		
-        return query.fetchFirst();
-	}    
-    */
-
+    
 }
