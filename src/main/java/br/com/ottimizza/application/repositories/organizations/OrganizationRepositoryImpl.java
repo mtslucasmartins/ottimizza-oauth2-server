@@ -78,7 +78,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         }
         if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
             query.where(organization.externalId.like(filter.getExternalId()));
-        }
+        }   
         if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
             query.where(organization.cnpj.like(filter.getCnpj()));
         }
@@ -130,7 +130,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             query.where(organization.organization.id.eq(filter.getOrganizationId()));
         }
 
-        query = sort(query, pageable, Organization.class, "organization");  
+        query = sort(query, pageable, Organization.class, "organization1");  
 
         totalElements = query.fetchCount();
 
