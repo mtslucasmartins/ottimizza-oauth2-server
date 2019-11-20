@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.domain.Authorities;
@@ -205,6 +206,8 @@ public class OrganizationService {
         } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
             organization.setType(Organization.Type.CLIENT);
             organization.setOrganization(authenticated.getOrganization());
+        } else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
+            throw new AccessDeniedException("Você não tem permissão para criar empresas!");
         }
         checkRequiredFields(organization);
         checkIfOrganizationIsNotParentOfItself(organization);
