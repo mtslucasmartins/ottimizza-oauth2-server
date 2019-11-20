@@ -1,7 +1,10 @@
 package br.com.ottimizza.application;
 
+import org.apache.coyote.http2.Http2Protocol;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,11 +28,18 @@ public class SpringbootOauth2ServerApplication {
 
 	// @Bean
 	// public CookieSerializer cookieSerializer() {
-	// 	DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-	// 	serializer.setCookieName("JSESSIONID");
-	// 	serializer.setCookiePath("/");
-	// 	serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
-	// 	return serializer;
+	// DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+	// serializer.setCookieName("JSESSIONID");
+	// serializer.setCookiePath("/");
+	// serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+	// return serializer;
 	// }
+
+	@Bean
+	public ConfigurableServletWebServerFactory tomcatCustomizer() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+		factory.addConnectorCustomizers(connector -> connector.addUpgradeProtocol(new Http2Protocol()));
+		return factory;
+	}
 
 }

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
@@ -51,7 +53,7 @@ public class OrganizationService {
     @Inject
     MailServices mailServices;
 
-    public Organization findById(BigInteger id, User authorizedUser) throws OrganizationNotFoundException {
+    public Organization findById(BigInteger id, User authenticated) throws OrganizationNotFoundException {
         return organizationRepository.findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
@@ -77,26 +79,43 @@ public class OrganizationService {
     public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, SearchCriteria criteria, Principal principal)
             throws OrganizationNotFoundException, Exception {
         User authenticated = userService.findByUsername(principal.getName());
-        
+        Pageable pageRequest = OrganizationDTO.getPageRequest(criteria);
+        Page<Organization> results = new PageImpl<Organization>(new ArrayList<Organization>(), pageRequest, 0);
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
-            return organizationRepository.fetchAll(
-                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
-            ).map(OrganizationDTO::fromEntity);
+            results = organizationRepository.fetchAll(filter, pageRequest, authenticated);
         }
-
         if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
-            return organizationRepository.fetchAllByAccountantId(
-                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
-            ).map(OrganizationDTO::fromEntity);
+            results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
         }
-
         if (authenticated.getType().equals(User.Type.CUSTOMER)) {
-            return organizationRepository.fetchAllByCustomerId(
-                    filter, OrganizationDTO.getPageRequest(criteria), authenticated
-            ).map(OrganizationDTO::fromEntity);
+            results = organizationRepository.fetchAllByCustomerId(filter, pageRequest, authenticated);
         }
+        return results.map(OrganizationDTO::fromEntity);
+    }
 
-        return null;
+    public OrganizationDTO create(OrganizationDTO organizationDTO, Principal principal)
+            throws IllegalArgumentException, OrganizationAlreadyRegisteredException, Exception {
+        User authenticated = userService.findByUsername(principal.getName());
+        Organization organization = organizationDTO.toEntity();
+        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) { 
+        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+            organization.setType(Organization.Type.CLIENT);
+            organization.setOrganization(authenticated.getOrganization());
+        } else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
+            throw new AccessDeniedException("Você não tem permissão para criar empresas!");
+        }
+        checkRequiredFields(organization);
+        checkIfOrganizationIsNotParentOfItself(organization);
+        checkIfOrganizationIsNotAlreadyRegistered(organization);
+        return OrganizationDTO.fromEntity(organizationRepository.save(organization));
+    }
+
+    public OrganizationDTO patch(BigInteger id, OrganizationDTO organizationDTO, Principal principal)
+            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+        User authenticated = userService.findByUsername(principal.getName());
+        Organization current = organizationDTO.patch(findById(id, authenticated));
+        checkIfOrganizationIsNotAlreadyRegistered(current);
+        return OrganizationDTO.fromEntity(organizationRepository.save(current));
     }
 
     /* ****************************************************************************************************************
@@ -126,7 +145,6 @@ public class OrganizationService {
         return UserDTO.fromEntity(user);
     }
     
-
     public List<UserDTO> fetchCustomers(User authorizedUser) {
         if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
             return UserDTO.fromEntities(userRepository.findCustomersByAccountingId(authorizedUser.getOrganization().getId()));
@@ -198,22 +216,6 @@ public class OrganizationService {
     /* ****************************************************************************************************************
      * CREATE - UPDATE - PATCH
      * ************************************************************************************************************* */
-    public OrganizationDTO create(OrganizationDTO organizationDTO, Principal principal)
-            throws IllegalArgumentException, OrganizationAlreadyRegisteredException, Exception {
-        User authenticated = userService.findByUsername(principal.getName());
-        Organization organization = organizationDTO.toEntity();
-        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) { 
-        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
-            organization.setType(Organization.Type.CLIENT);
-            organization.setOrganization(authenticated.getOrganization());
-        } else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
-            throw new AccessDeniedException("Você não tem permissão para criar empresas!");
-        }
-        checkRequiredFields(organization);
-        checkIfOrganizationIsNotParentOfItself(organization);
-        checkIfOrganizationIsNotAlreadyRegistered(organization);
-        return OrganizationDTO.fromEntity(organizationRepository.save(organization));
-    }
 
     public OrganizationDTO update(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
@@ -239,15 +241,6 @@ public class OrganizationService {
         checkIfOrganizationIsNotAlreadyRegistered(organization);
 
         return OrganizationDTO.fromEntity(organizationRepository.save(organization));
-    }
-
-    public OrganizationDTO patch(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)
-            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-        Organization current = organizationDTO.patch(findById(id, authorizedUser));
-
-        checkIfOrganizationIsNotAlreadyRegistered(current);
-
-        return OrganizationDTO.fromEntity(organizationRepository.save(current));
     }
 
 

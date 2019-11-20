@@ -54,12 +54,26 @@ public class OrganizationController {
                 organizationService.fetchAll(filter, searchCriteria, principal)));
     }
     
+    @GetMapping("/{id}")
+    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(organizationService.findById(id, principal)));
+    }
+
     @PostMapping
     public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,  
                                 Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
                 organizationService.create(organizationDTO, principal)));
     }
+
+    @PatchMapping("/{id}")
+    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
+                               @RequestBody OrganizationDTO organizationDTO, 
+                               Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
+                organizationService.patch(id, organizationDTO, principal)));
+    }
+
 
     @PutMapping("/{id}")
     public HttpEntity<?> update(@PathVariable("id") BigInteger id, 
@@ -83,36 +97,9 @@ public class OrganizationController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
-
-    @PatchMapping("/{id}")
-    public HttpEntity<?> patch(@PathVariable("id") BigInteger id, 
-                               @RequestBody OrganizationDTO organizationDTO, 
-                               Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-
-            OrganizationDTO patched = organizationService.patch(id, organizationDTO, authorizedUser);
-
-            return ResponseEntity.ok(new GenericResponse<OrganizationDTO>( patched ));
-
-        } catch (OrganizationNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("organization_not_found", ex.getMessage()));
-        } catch (OrganizationAlreadyRegisteredException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
-    }
-
     //
     //
-    @GetMapping("/{id}")
-    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
-        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(organizationService.findById(id, principal)));
-    }
+
 
     @GetMapping("/uuid/{externalId}")
     public HttpEntity<?> findByExternalId(@PathVariable("externalId") String externalId, 

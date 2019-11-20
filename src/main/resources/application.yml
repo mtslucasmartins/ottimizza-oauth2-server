@@ -1,6 +1,7 @@
 server:
   port: ${PORT:9092}
-  
+  http2:
+    enabled: true
   servlet:
     context-path: /
 
@@ -9,10 +10,6 @@ server:
     #   cookie:
     #     name: UISESSION
 
-        
-
-  http2:
-    enabled: true
 
 spring:
 
@@ -94,10 +91,10 @@ security:
   basic:
     enabled: false
 
+
   oauth2:
     resource:
       filter_order: 3
-
 
 oauth2-config:
   client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
