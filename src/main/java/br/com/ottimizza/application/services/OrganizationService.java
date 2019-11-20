@@ -50,15 +50,21 @@ public class OrganizationService {
     @Inject
     MailServices mailServices;
 
-    public Organization findById(BigInteger id, User authorizedUser) throws OrganizationNotFoundException, Exception {
+    public Organization findById(BigInteger id, User authorizedUser) throws OrganizationNotFoundException {
         return organizationRepository.findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 
-    public Organization findByExternalId(String externalId, User authorizedUser)
-            throws OrganizationNotFoundException, Exception {
+    public Organization findByExternalId(String externalId, User authorizedUser) throws OrganizationNotFoundException {
         return organizationRepository.findByExternalId(externalId)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+    }
+
+    public Organization create(Organization organization)
+            throws IllegalArgumentException, OrganizationAlreadyRegisteredException {
+        checkIfOrganizationIsNotParentOfItself(organization);
+        checkIfOrganizationIsNotAlreadyRegistered(organization);
+        return organizationRepository.save(organization);
     }
 
     // @formatter:off
@@ -66,32 +72,6 @@ public class OrganizationService {
         User authenticated = this.userService.findByUsername(principal.getName());
         return OrganizationDTO.fromEntity(findById(id, authenticated));
     }
-
-    
-
-    // @formatter:off
-    @Deprecated
-    public GenericPageableResponse<Organization> findAll(String filter, Pageable pageRequest, User authorizedUser)
-            throws OrganizationNotFoundException, Exception {
-        filter = "%" + filter + "%";
-        
-        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
-            Page<Organization> page =  organizationRepository.findAllByAccountingId(
-                    filter, authorizedUser.getOrganization().getId(), pageRequest
-            );
-            return new GenericPageableResponse<Organization>(page);
-        }
-
-        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            Page<Organization> page =  organizationRepository.findAllByAccountingIdAndUserId(
-                    filter, authorizedUser.getOrganization().getId(), authorizedUser.getId(), pageRequest
-            );
-            return new GenericPageableResponse<Organization>(page);
-        }
-
-        return new GenericPageableResponse<>();
-    }
-
 
     public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, SearchCriteria criteria, Principal principal)
             throws OrganizationNotFoundException, Exception {
@@ -217,38 +197,19 @@ public class OrganizationService {
     /* ****************************************************************************************************************
      * CREATE - UPDATE - PATCH
      * ************************************************************************************************************* */
-    public OrganizationDTO create(OrganizationDTO organizationDTO, User authorizedUser)
-            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
+    public OrganizationDTO create(OrganizationDTO organizationDTO, Principal principal)
+            throws IllegalArgumentException, OrganizationAlreadyRegisteredException, Exception {
+        User authenticated = userService.findByUsername(principal.getName());
         Organization organization = organizationDTO.toEntity();
-        organization.setCnpj(organization.getCnpj().replaceAll("\\D", ""));
-
-        if (authorizedUser.getType().equals(User.Type.ADMINISTRATOR)) { 
-            // 
-        } else if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
-            organization.setType(OrganizationTypes.CLIENT.getValue());
-            if (organizationDTO.getOrganizationId() == null) {
-                if (authorizedUser.getOrganization() != null 
-                    && authorizedUser.getOrganization().getId() != null) {
-                    organization.setOrganization(authorizedUser.getOrganization());
-                }
-            }
+        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) { 
+        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+            organization.setType(Organization.Type.CLIENT);
+            organization.setOrganization(authenticated.getOrganization());
         }
-
+        checkRequiredFields(organization);
         checkIfOrganizationIsNotParentOfItself(organization);
-
         checkIfOrganizationIsNotAlreadyRegistered(organization);
-
         return OrganizationDTO.fromEntity(organizationRepository.save(organization));
-    }
-
-    public Organization create(Organization organization)
-            throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
-
-        checkIfOrganizationIsNotParentOfItself(organization);
-
-        checkIfOrganizationIsNotAlreadyRegistered(organization);
-
-        return organizationRepository.save(organization);
     }
 
     public OrganizationDTO update(BigInteger id, OrganizationDTO organizationDTO, User authorizedUser)
@@ -300,13 +261,29 @@ public class OrganizationService {
     }
 
     public boolean checkIfOrganizationIsNotParentOfItself(Organization organization) 
-            throws Exception {
+            throws IllegalArgumentException {
         if (organization != null && organization.getOrganization() != null) {
             if (organization.getId() != null && organization.getOrganization().getId() != null
                 && organization.getId().compareTo(organization.getOrganization().getId()) == 0) {
-                System.out.println("A organization cannot be a parent of itself.");
-                throw new Exception("A organization cannot be a parent of itself.");
+                throw new IllegalArgumentException("A organization cannot be a parent of itself.");
             }
+        }
+        return true;
+    }
+
+    public boolean checkRequiredFields(Organization organization) throws IllegalArgumentException {
+        if (organization.getType() == null) 
+            throw new IllegalArgumentException("Informe o tipo da organização!");
+
+        if (organization.getName() == null || organization.getName().equals("")) 
+            throw new IllegalArgumentException("Informe o nome da organização!");
+            
+        if (organization.getCnpj() == null || organization.getCnpj().equals("")) 
+            throw new IllegalArgumentException("Informe o CPF ou o CNPJ da organização!");
+
+        if (organization.getType().equals(Organization.Type.CLIENT)) {
+            if (organization.getOrganization() == null || organization.getOrganization().getId() == null) 
+                throw new IllegalArgumentException("Informe a contabilidade relacionada a esta organização!");
         }
         return true;
     }

@@ -54,23 +54,11 @@ public class OrganizationController {
                 organizationService.fetchAll(filter, searchCriteria, principal)));
     }
     
-    /********************************************************************************************* **
-     * CREATE UPDATE PATCH
-     * ******************************************************************************************* */
     @PostMapping
     public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,  
-            Principal principal) {
-        try {
-            User authorizedUser = userService.findByUsername(principal.getName());
-            return ResponseEntity.ok(organizationService.create(organizationDTO, authorizedUser));
-        } catch (OrganizationAlreadyRegisteredException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse("organization_already_exists", ex.getMessage()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
+                                Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
+                organizationService.create(organizationDTO, principal)));
     }
 
     @PutMapping("/{id}")

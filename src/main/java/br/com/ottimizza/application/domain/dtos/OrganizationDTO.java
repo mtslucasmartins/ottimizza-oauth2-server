@@ -50,8 +50,11 @@ public class OrganizationDTO implements Serializable {
     @Getter @Setter
     private BigInteger organizationId;
 
-    public Organization toEntity() {
+    public Organization toEntity(boolean removeNonDigitsFromCNPJ) {
         Organization organization = new Organization();
+        
+        if (removeNonDigitsFromCNPJ && this.cnpj != null) 
+            this.cnpj = this.cnpj.replaceAll("\\D", "");
 
         organization.setId(this.id);
         organization.setExternalId(this.externalId);
@@ -69,6 +72,9 @@ public class OrganizationDTO implements Serializable {
         }
 
         return organization;
+    }
+    public Organization toEntity() {
+        return this.toEntity(true);
     }
 
     public static OrganizationDTO fromEntity(Organization organization) {
