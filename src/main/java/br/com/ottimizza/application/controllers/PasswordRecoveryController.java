@@ -59,11 +59,6 @@ public class PasswordRecoveryController {
     @Autowired
     private JavaMailSender mailSender;
 
-    @GetMapping(value = "/password_recovery")
-    public String passwordRecoveryPage(Locale locale, Model model) {
-        return "password_recovery.html";
-    }
-
     @GetMapping(value = "/password_reset") //@formatter:off
     public String passwordResetPage(@RequestParam(name = "username", defaultValue = "") String username, 
                                     @RequestParam(name = "token", defaultValue = "") String token,

@@ -50,29 +50,4 @@ public class CustomersController {
         }
     }
 
-    @GetMapping("/test")
-    public HttpEntity<?> fetchCustomersTest(@ModelAttribute UserDTO filter,
-            @RequestParam(name = "email", defaultValue = "") String email,
-            @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-            @RequestParam(name = "page_size", defaultValue = "10") int pageSize, Principal principal) {
-        try {
-
-            System.out.println(filter.getEmail());
-
-            GenericPageableResponse<UserDTO> response = new GenericPageableResponse<UserDTO>(
-                    userService.fetchCustomers(email, pageIndex, pageSize, principal));
-            return ResponseEntity.ok(response);
-        } catch (UserNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("user_not_found", ex.getMessage()));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse("illegal_arguments", "Illegal arguments."));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-        }
-    }
-
 }

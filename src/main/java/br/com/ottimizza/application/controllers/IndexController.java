@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.controllers;
 
 import java.security.Principal;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -86,6 +87,16 @@ public class IndexController {
         model.addAttribute("authorizedUser", userRepository.findByEmail(principal.getName()));
 
         return "profile/security.html";
+    }
+
+    /**
+     * ********************************************************************************
+     * ** PASSWORD RESET
+     * *********************************************************************************
+     */
+    @GetMapping(value = "/password_recovery")
+    public String passwordRecoveryPage(Locale locale, Model model) {
+        return "password_recovery.html";
     }
 
 }

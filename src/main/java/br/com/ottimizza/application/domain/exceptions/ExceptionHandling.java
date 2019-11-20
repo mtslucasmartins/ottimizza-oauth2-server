@@ -18,9 +18,15 @@ import java.util.Locale;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
 @ControllerAdvice
 public class ExceptionHandling {
+
+    @ExceptionHandler({ InvalidClientException.class })
+    public HttpEntity<?> handleInvalidClientException(InvalidClientException e, Locale locale) {
+        return error(INTERNAL_SERVER_ERROR, "invalid_client", e.getMessage(), e);
+    }
 
     @ExceptionHandler({ RuntimeException.class })
     public HttpEntity<?> handleRunTimeException(RuntimeException e, Locale locale) {

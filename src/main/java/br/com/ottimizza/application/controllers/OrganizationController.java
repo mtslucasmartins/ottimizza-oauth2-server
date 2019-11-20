@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
@@ -45,25 +43,26 @@ public class OrganizationController {
     @Inject
     OrganizationService organizationService;
 
-
     @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute OrganizationDTO filter,
                                   @ModelAttribute SearchCriteria searchCriteria,
                                   Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericPageableResponse<OrganizationDTO>(
-                organizationService.fetchAll(filter, searchCriteria, principal)));
+            organizationService.fetchAll(filter, searchCriteria, principal)));
     }
     
     @GetMapping("/{id}")
-    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
-        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(organizationService.findById(id, principal)));
+    public HttpEntity<?> findById(@PathVariable("id") BigInteger id, Principal principal) 
+            throws Exception {
+        return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
+            organizationService.findById(id, principal)));
     }
 
     @PostMapping
     public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,  
                                 Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
-                organizationService.create(organizationDTO, principal)));
+            organizationService.create(organizationDTO, principal)));
     }
 
     @PatchMapping("/{id}")
@@ -168,10 +167,10 @@ public class OrganizationController {
         }   
     }
 
-
     /********************************************************************************************* **
-     * INVITED CUSTOMERS 
+     * DEPRECATED
      * ******************************************************************************************* */
+    @Deprecated
     @GetMapping("/{id}/customers/invited")
     public HttpEntity<?> fetchInvitedCustomers(@PathVariable("id") BigInteger id, Principal principal) {
         try {
@@ -186,6 +185,7 @@ public class OrganizationController {
         }
     }
 
+    @Deprecated
     @PostMapping("/{id}/customers/invite")
     public HttpEntity<?> inviteCustomer(@PathVariable("id") BigInteger id,
                                         @RequestBody  Map<String, String> args, 
@@ -208,10 +208,6 @@ public class OrganizationController {
         }
     }
 
-
-    /********************************************************************************************* **
-     * USERS
-     * ******************************************************************************************* */
     @Deprecated
     @GetMapping("/{id}/users")
     public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
@@ -223,20 +219,5 @@ public class OrganizationController {
                     .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
         }
     }
-
-
-    // /********************************************************************************************* **
-    //  * RECEITA WS
-    //  * ******************************************************************************************* */
-    // @GetMapping("/{id}/users")
-    // public HttpEntity<?> findUsersByOrganizationId(@PathVariable("id") BigInteger id, Principal principal) {
-    //     try {
-    //         User authorizedUser = userService.findByUsername(principal.getName());
-    //         return ResponseEntity.ok(organizationService.fetchCustomers(id, authorizedUser));
-    //     } catch (Exception ex) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-    //                 .body(new ErrorResponse("internal_server_error", "Something wrong happened."));
-    //     }
-    // }
  
 }
