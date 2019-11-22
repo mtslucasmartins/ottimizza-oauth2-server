@@ -23,11 +23,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 @ControllerAdvice
 public class ExceptionHandling {
 
-    @ExceptionHandler({ InvalidClientException.class })
-    public HttpEntity<?> handleInvalidClientException(InvalidClientException e, Locale locale) {
-        return error(INTERNAL_SERVER_ERROR, "invalid_client", e.getMessage(), e);
-    }
-
     @ExceptionHandler({ RuntimeException.class })
     public HttpEntity<?> handleRunTimeException(RuntimeException e, Locale locale) {
         return error(INTERNAL_SERVER_ERROR, "internal_server_error", e.getMessage(), e);
