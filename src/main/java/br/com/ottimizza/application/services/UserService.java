@@ -32,10 +32,12 @@ import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredExcep
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.UserOrganization;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
+import br.com.ottimizza.application.repositories.users_organizations.UserOrganizationRepository;
 
 @Service
 public class UserService {
@@ -48,6 +50,9 @@ public class UserService {
 
     @Inject
     UsersRepository userRepository;
+
+    @Inject
+    UserOrganizationRepository userOrganizationRepository;
 
     @Inject
     UserOrganizationInviteRepository userOrganizationInviteRepository;
@@ -152,6 +157,7 @@ public class UserService {
     public OrganizationDTO appendOrganization(BigInteger id, OrganizationDTO organizationDTO, Principal principal)
             throws OrganizationNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
+        User user = findById(id);
         Organization organization = null;
 
         BigInteger organizationId = organizationDTO.getId();
@@ -169,7 +175,11 @@ public class UserService {
             throw new OrganizationNotFoundException("Informe o ID ou o CNPJ da organização!");
         }
 
-        userRepository.addOrganization(id, organization.getId());
+        UserOrganization userOrganization = new UserOrganization();
+        userOrganization.setUser(user);
+        userOrganization.setOrganization(organization);
+
+        userOrganizationRepository.save(userOrganization);
 
         return OrganizationDTO.fromEntity(organization);
     }

@@ -1,56 +1,107 @@
 package br.com.ottimizza.application.services;
 
-// import org.junit.jupiter.api.Assertions;
-// import org.junit.jupiter.api.BeforeAll;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
-// import static org.junit.jupiter.api.Assertions.fail;
+import java.security.Principal;
 
-// import java.math.BigInteger;
-// import java.util.Calendar;
-// import java.util.Date;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-// import org.junit.Assert;
-// import org.junit.jupiter.api.Test;
-// import org.junit.runner.RunWith;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.test.context.junit4.SpringRunner;
+import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
+import br.com.ottimizza.application.model.Organization;
 
-// import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
-// import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
-// import br.com.ottimizza.application.model.Organization;
-// import br.com.ottimizza.application.model.PasswordResetToken;
-// import br.com.ottimizza.application.model.user.User;
-
-// @RunWith(SpringRunner.class)
-// @SpringBootTest(classes = SpringbootOauth2ServerApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringbootOauth2ServerApplication.class) // @formatter:off
 class OrganizationServiceTest {
 
-    // @Autowired
-    // OrganizationService organizationService;
+    public static final String ADMINISTRATOR = "administrator@ottimizza.com.br";
+    public static final String ACCOUNTANT = "accountant@ottimizza.com.br";
+    public static final String CUSTOMER = "customer@ottimizza.com.br";
 
-    // @Test
-    // void testCheckIfOrganizationIsNotParentOfItself() {
-    //     Organization accounting = new Organization();
-    //     accounting.setId(BigInteger.ONE);
+    @Mock
+    private Principal principal;
 
-    //     Organization organization = new Organization();
-    //     organization.setId(BigInteger.TEN);
-    //     organization.setOrganization(accounting);
+    @Autowired
+    OrganizationService organizationService;
 
-    //     try {
-    //         // null
-    //         Assertions.assertTrue(organizationService.checkIfOrganizationIsNotParentOfItself(null));
+    @Test
+    public void givenOrganizationDTO_whenSaveAndRetreiveEntity_thenOK() throws Exception { 
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        OrganizationDTO created = organizationService.create(organizationDTO, principal);
+        Assertions.assertNotNull(created);
+        Assertions.assertNotNull(created.getId());
+	}
 
-    //         // accounting (does not have a organization related to it)
-    //         Assertions.assertTrue(organizationService.checkIfOrganizationIsNotParentOfItself(accounting));
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithNullName_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
 
-    //         // company (has fk to accouting)
-    //         Assertions.assertTrue(organizationService.checkIfOrganizationIsNotParentOfItself(organization));
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithEmptyName_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
 
-    //     } catch (Exception ex) {
-    //         ex.printStackTrace();
-    //         fail("Exception was thrown, but no exception should be expected." + ex.getMessage());
-    //     }
-    // }
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithNullCNPJ_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Example Company Ltd")
+            .type(Organization.Type.ACCOUNTING).build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
+
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithEmptyCNPJ_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Example Company Ltd")
+            .cnpj("")
+            .type(Organization.Type.ACCOUNTING).build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
+
+    
+
+    @Test
+    public void givenOrganizationDTO_whenSaveCompanyWithoutAccounting_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Example Company Ltd")
+            .cnpj("00000000000102")
+            .type(Organization.Type.CLIENT).build();
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
+
 }

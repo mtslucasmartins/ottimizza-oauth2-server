@@ -12,11 +12,13 @@ import org.springframework.data.domain.Sort;
 import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.model.Organization;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // @formatter:off
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationDTO implements Serializable {
