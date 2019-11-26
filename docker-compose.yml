@@ -2,7 +2,8 @@ version: "3.0"
 
 services:
   web:
+    env_file:
+      - .env
     image: ottimizza-oauth-service:latest
-    ports: 
+    ports:
       - 9092:9092
-    # depends_on: db

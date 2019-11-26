@@ -14,9 +14,9 @@ server:
 spring:
 
   datasource:
-    url: jdbc:postgresql://ec2-184-72-237-95.compute-1.amazonaws.com:5432/d5gfjjf0e7e3g2
-    username: utqisrinovbulz
-    password: 44ab5d4be338648ea11e5399b6adeaf275376ac34961a4ddf852851b13dad1f7
+    url: ${DATABASE_URL}
+    # username: utqisrinovbulz
+    # password: 44ab5d4be338648ea11e5399b6adeaf275376ac34961a4ddf852851b13dad1f7
     driver-class-name: org.postgresql.Driver
 
     # Tomcat Connection Pool
@@ -75,7 +75,7 @@ spring:
       max-file-size: 200MB
 
   redis:
-    url: ${REDIS_URL:redis://h:p51990e69ca7ea4fab9ef30c054cb05c135ea8a921f288aafa9796f1170f11299@ec2-3-232-50-151.compute-1.amazonaws.com:12979}
+    url: ${REDIS_URL:redis://h:p51990e69ca7ea4fab9ef30c054cb05c135ea8a921f288aafa9796f1170f11299@ec2-52-7-238-54.compute-1.amazonaws.com:25389}
 
   session:
     store-type: redis
@@ -87,14 +87,12 @@ spring:
   thymeleaf:
     cache: false
 
-security:
-  basic:
-    enabled: false
-
-
-  oauth2:
-    resource:
-      filter_order: 3
+# security:
+#   basic:
+#     enabled: false
+#   oauth2:
+#     resource:
+#       filter_order: 3
 
 oauth2-config:
   client-id: ${CLIENT_ID:76179baad962d1b8ce4d}

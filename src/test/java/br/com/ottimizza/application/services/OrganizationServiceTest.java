@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
+import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.model.Organization;
 
 @RunWith(SpringRunner.class)
@@ -31,7 +32,7 @@ class OrganizationServiceTest {
     OrganizationService organizationService;
 
     @Test
-    public void givenOrganizationDTO_whenSaveAndRetreiveEntity_thenOK() throws Exception { 
+    public void givenOrganizationDTO_whenSaveAccountingAndRetreive_thenOK() throws Exception { 
         Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
         OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Accounting Firm Co")
@@ -40,6 +41,41 @@ class OrganizationServiceTest {
         OrganizationDTO created = organizationService.create(organizationDTO, principal);
         Assertions.assertNotNull(created);
         Assertions.assertNotNull(created.getId());
+	}
+
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingAgain_thenThrowOrganizationAlreadyRegisteredException() throws Exception { 
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        Assertions.assertThrows(OrganizationAlreadyRegisteredException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
+
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithNullType_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101").build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
+	}
+
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithInvalidType_thenIllegalArgumentException() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(99).build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.create(organizationDTO, principal);
+        });
 	}
 
     @Test
@@ -87,8 +123,6 @@ class OrganizationServiceTest {
             organizationService.create(organizationDTO, principal);
         });
 	}
-
-    
 
     @Test
     public void givenOrganizationDTO_whenSaveCompanyWithoutAccounting_thenIllegalArgumentException() throws Exception {

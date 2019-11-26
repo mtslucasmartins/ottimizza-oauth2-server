@@ -68,15 +68,6 @@ spring:
   thymeleaf:
     cache: false
 
-security:
-  basic:
-    enabled: false
-
-  oauth2:
-    resource:
-      filter_order: 3
-
-
 oauth2-config:
   client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
   client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}

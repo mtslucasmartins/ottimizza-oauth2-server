@@ -4,30 +4,26 @@ import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import br.com.ottimizza.application.domain.Authorities;
-import br.com.ottimizza.application.domain.OrganizationTypes;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
-import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
@@ -277,6 +273,9 @@ public class OrganizationService {
         if (organization.getCnpj() == null || organization.getCnpj().equals("")) 
             throw new IllegalArgumentException("Informe o CPF ou o CNPJ da organização!");
 
+        if (!Arrays.asList(Organization.Type.ACCOUNTING, Organization.Type.CLIENT).contains(organization.getType())) {
+            throw new IllegalArgumentException("Informe um tipo de organização válido!");
+        }
         if (organization.getType().equals(Organization.Type.CLIENT)) {
             if (organization.getOrganization() == null || organization.getOrganization().getId() == null) 
                 throw new IllegalArgumentException("Informe a contabilidade relacionada a esta organização!");

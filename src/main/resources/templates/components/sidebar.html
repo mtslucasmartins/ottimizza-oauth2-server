@@ -7,7 +7,11 @@
       <div class="logo clearfix">
         <a th:href="${'/'}" class="logo-text float-left">
           <div class="mx-4">
-            <img class="img-fluid" src="https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png" />
+            <img th:if="${authorizedUser.organization.avatar} == null"
+              src="https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png" class="img-fluid"
+              th:alt="${authorizedUser.organization.name}">
+            <img th:if="${authorizedUser.organization.avatar} != null" th:src="${authorizedUser.organization.avatar}"
+              class="img-fluid" th:alt="${authorizedUser.organization.name}">
           </div>
         </a>
       </div>
