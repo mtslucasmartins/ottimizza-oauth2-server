@@ -103,19 +103,6 @@
         </dependency>
         <!-- /database -->
 
-
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.lettuce</groupId>
-            <artifactId>lettuce-core</artifactId>
-            <version>5.2.0.RELEASE</version>
-        </dependency>
-        <!-- /redis -->
-
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
