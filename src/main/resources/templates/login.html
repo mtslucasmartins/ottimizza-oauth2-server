@@ -8,7 +8,7 @@
   <meta name="description" content="Ottimizza Conta do Usuario.">
   <meta name="keywords" content="Ottimizza, Ottimizza conta, Ottimizza entrar, Ottimizza login">
   <meta name="author" content="Ottimizza">
-  <title>Ottimizza - Entrar</title>
+  <title th:text="${title}"></title>
   <link rel="apple-touch-icon" sizes="60x60" href="assets/img/ico/apple-icon-60.png">
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/ico/apple-icon-76.png">
   <link rel="apple-touch-icon" sizes="120x120" href="assets/img/ico/apple-icon-120.png">
@@ -44,7 +44,7 @@
 
 </head>
 
-<body data-col="1-column" class=" 1-column  blank-page">
+<body data-col="1-column" class=" 1-column  blank-page" th:style="'background-color: ' + ${background} + ';'">
   <div th:fragment="content" class="wrapper">
     <div class="main-panel">
       <div class="main-content">
@@ -53,13 +53,13 @@
             <div class="container-fluid">
               <div class="row full-height-vh m-0">
                 <div class="col-12 d-flex flex-column align-items-center justify-content-center">
-                  <div class="d-block d-sm-block d-md-none text-center mb-2">
+                  <div th:if="${logo} != null" class="d-block d-sm-block d-md-none text-center mb-2">
                     <img width="200px" th:src="${logo}" alt="">
                   </div>
-                  <div class="d-none d-md-block d-lg-none text-center mb-3">
+                  <div th:if="${logo} != null" class="d-none d-md-block d-lg-none text-center mb-3">
                     <img width="200px" th:src="${logo}" alt="">
                   </div>
-                  <div class="d-none d-lg-block text-center mb-4">
+                  <div th:if="${logo} != null" class="d-none d-lg-block text-center mb-4">
                     <img width="200px" th:src="${logo}" alt="">
                   </div>
                   <div class="card">

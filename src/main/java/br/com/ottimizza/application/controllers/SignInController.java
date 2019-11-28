@@ -22,6 +22,17 @@ public class SignInController {
     // String DEFAULT_LOGO_URL = "https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png";
     String DEFAULT_LOGO_URL = "/assets/img/logos/tareffa-white.png";
 
+
+    private String getSignInLogo() {
+        return System.getenv("SIGNIN_LOGO");
+    }
+    private String getSignInBackground() {
+        return System.getenv("SIGNIN_BACKGROUND");
+    }
+    private String getSignInTitle() {
+        return System.getenv("SIGNIN_TITLE");
+    }
+
     private SavedRequest getSavedRequest(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null)
@@ -30,7 +41,7 @@ public class SignInController {
     }
 
     private void getCustomAttributes(Model model, HttpServletRequest request, HttpServletResponse response) {
-        String logoURL = DEFAULT_LOGO_URL;
+        String logoURL = getSignInLogo();
         SavedRequest savedRequest = getSavedRequest(request, response);
         if (savedRequest != null) {
             try {
@@ -41,20 +52,19 @@ public class SignInController {
             }
         }
         model.addAttribute("logo", logoURL);
+        model.addAttribute("background", getSignInBackground());
+        model.addAttribute("title", getSignInTitle());
     }
 
     @GetMapping("/login")
     public String loginPage(Model model, HttpServletRequest request, HttpServletResponse response) {
-        // sets custom attributes such as logo.
         getCustomAttributes(model, request, response);
-        // returns the template.
         return "login.html";
     }
 
     @GetMapping("/maintenance")
     public String manteinencePage() {
         return "maintenance.html";
-        // return "maintenance.html";
     }
 
 }

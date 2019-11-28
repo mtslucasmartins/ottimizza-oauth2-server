@@ -32,7 +32,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #004ecb!important;
+  background-color: #004ecb;
 }
 
 #login {
@@ -854,7 +854,6 @@ body {
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: #F5F7FA;
 }
 
 h4 {
