@@ -1,6 +1,6 @@
 package br.com.ottimizza.application;
 
-import org.apache.coyote.http2.Http2Protocol;
+// import org.apache.coyote.http2.Http2Protocol;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -35,11 +35,11 @@ public class SpringbootOauth2ServerApplication {
 	// return serializer;
 	// }
 
-	@Bean
-	public ConfigurableServletWebServerFactory tomcatCustomizer() {
-		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-		factory.addConnectorCustomizers(connector -> connector.addUpgradeProtocol(new Http2Protocol()));
-		return factory;
-	}
+	// @Bean
+	// public ConfigurableServletWebServerFactory tomcatCustomizer() {
+	// 	TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+	// 	factory.addConnectorCustomizers(connector -> connector.addUpgradeProtocol(new Http2Protocol()));
+	// 	return factory;
+	// }
 
 }
