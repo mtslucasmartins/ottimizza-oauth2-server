@@ -53,16 +53,6 @@ spring:
             enable: true
     test-connection: true
 
-  
-  redis:
-    url: ${REDIS_URL:redis://h:p51990e69ca7ea4fab9ef30c054cb05c135ea8a921f288aafa9796f1170f11299@ec2-3-232-50-151.compute-1.amazonaws.com:12979}
-
-  session:
-    store-type: redis
-    redis:
-      flush-mode: on-save # Sessions flush mode.
-      namespace: spring:session  # Namespace for keys used to store sessions.
-
   # #
   # # Thymeleaf properties.
   thymeleaf:
