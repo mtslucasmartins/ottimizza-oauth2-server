@@ -1,41 +1,24 @@
 server:
+  # http2:
+  #   enabled: true
   port: ${PORT:9092}
-  http2:
-    enabled: true
   servlet:
     context-path: /
 
-    # session:
-    #   timeout: 3600 # seconds
-    #   cookie:
-    #     name: UISESSION
-
-
 spring:
-
+  application:
+    name: OAuth2 Authorization Server
+  main:
+    banner-mode: off
   datasource:
     url: ${DATABASE_URL}
-    # username: utqisrinovbulz
-    # password: 44ab5d4be338648ea11e5399b6adeaf275376ac34961a4ddf852851b13dad1f7
     driver-class-name: org.postgresql.Driver
-
-    # Tomcat Connection Pool
-    # tomcat:
-    #   initial-size: 2
-    #   # initial-size: 50
-    #   max-wait: 20000
-    #   max-active: 80 # 300
-    #   max-idle: 40 # 150
-    #   min-idle: 8
-    #   default-auto-commit: true
-    #   # max-wait: 20000
-    #   # max-active: 2
-    #   # max-idle: 150
-    #   # min-idle: 8
-    #   # default-auto-commit: true
-      
-  # JPA properties.
   jpa:
+    # 'spring.jpa.open-in-view' is enabled by default. 
+    # Therefore, database queries may be performed during view rendering. 
+    # Explicitly configure spring.jpa.open-in-view to disable this warning
+    open-in-view: false 
+
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     hibernate:
@@ -46,8 +29,6 @@ spring:
         generate_statistics: ${HIBERNATE_STATISTICS:false}
         temp:
           use_jdbc_metadata_defaults: false
-  
-  # Spring-boot Mail properties
   mail:
     host: br510.hostgator.com.br 
     port: 465 
@@ -55,7 +36,7 @@ spring:
     password: ottimizza
     properties:
       mail:
-        debug: true
+        debug: false # was true
         smtp:
           auth: true
           starttls:
@@ -63,37 +44,15 @@ spring:
             required: true
           ssl:
             enable: true
-    test-connection: true
-
-  
-  # Multipart properties
+    test-connection: false # was true
   servlet:
     multipart:
       enabled: true
       file-size-threshold: 2KB
       max-request-size: 215MB
       max-file-size: 200MB
-
-  redis:
-    url: ${REDIS_URL:redis://h:p51990e69ca7ea4fab9ef30c054cb05c135ea8a921f288aafa9796f1170f11299@ec2-52-7-238-54.compute-1.amazonaws.com:25389}
-
-  session:
-    store-type: redis
-    redis:
-      flush-mode: on-save # Sessions flush mode.
-      namespace: spring:session  # Namespace for keys used to store sessions.
-
-  # Thymeleaf properties.
   thymeleaf:
     cache: false
-
-# security:
-#   basic:
-#     enabled: false
-#   oauth2:
-#     resource:
-#       filter_order: 3
-
 oauth2-config:
   client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
   client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}
