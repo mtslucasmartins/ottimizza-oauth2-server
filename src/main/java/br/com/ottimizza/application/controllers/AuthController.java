@@ -123,8 +123,11 @@ public class AuthController {
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader("Authorization", "Basic " + encodedCredentials);
             HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity responseEntity = httpResponse.getEntity();
-            return ResponseEntity.ok(EntityUtils.toString(responseEntity, "UTF-8"));
+
+            Integer status = httpResponse.getStatusLine().getStatusCode();
+            String response = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+
+            return ResponseEntity.status(status).body(response);
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(401).body("{}");
