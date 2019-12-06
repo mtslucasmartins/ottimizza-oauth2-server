@@ -102,7 +102,10 @@ public class AuthController {
             httpPost.setHeader("Authorization", "Basic " + encodedCredentials);
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity responseEntity = httpResponse.getEntity();
+            
+            Integer status = httpResponse.getStatusLine().getStatusCode();
             String response = EntityUtils.toString(responseEntity, "UTF-8");
+
             return ResponseEntity.status(status).body(response);
         } catch (Exception ex) {
             ex.printStackTrace();
