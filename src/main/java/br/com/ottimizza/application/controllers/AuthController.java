@@ -90,14 +90,18 @@ public class AuthController {
     }
 
     @PostMapping("/auth/callback")
-    public ResponseEntity<String> oauthCallback(@RequestParam("code") String code,
+    public ResponseEntity<?> oauthCallback(@RequestParam("code") String code,
             @RequestParam("redirect_uri") String redirectUri) throws IOException {
         String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
         try {
-            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpClient httpClient = HttpClientBuilder.create().build(); 
             String uri = MessageFormat.format("{0}/oauth/token?grant_type={1}&code={2}&redirect_uri={3}",
                     OAUTH2_SERVER_URL, "authorization_code", code, redirectUri);
+
+            System.out.println("URI ............: " + uri);
+            System.out.println("Credentials ....: " + credentials);
+            
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setHeader("Authorization", "Basic " + encodedCredentials);
             HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -105,6 +109,8 @@ public class AuthController {
             
             Integer status = httpResponse.getStatusLine().getStatusCode();
             String response = EntityUtils.toString(responseEntity, "UTF-8");
+            System.out.println("Status .........: " + status);
+            System.out.println("Response .......: " + response);
 
             return ResponseEntity.status(status).body(response);
         } catch (Exception ex) {
