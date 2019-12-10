@@ -1,9 +1,11 @@
 server:
-  # http2:
-  #   enabled: true
   port: ${PORT:9092}
   servlet:
     context-path: /
+
+    session:
+      persistent: false
+      timeout: 0
 
 spring:
   application:
