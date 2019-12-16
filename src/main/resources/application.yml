@@ -4,6 +4,7 @@ server:
     context-path: /
 
     session:
+
       persistent: false
       timeout: 0
 
@@ -55,6 +56,7 @@ spring:
       max-file-size: 200MB
   thymeleaf:
     cache: false
+
 oauth2-config:
   client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
   client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}
