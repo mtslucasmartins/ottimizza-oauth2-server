@@ -103,6 +103,13 @@ public class InvitationService {
         return inviteDetails;
     }
     
+    public Page<UserOrganizationInvite> fetchInvitedUsers(String email, Integer pageIndex, Integer pageSize, Principal principal)
+            throws Exception {
+        User authenticated = userRepository.findByUsername(principal.getName())
+                                            .orElseThrow(() -> new UserNotFoundException(""));
+        return userOrganizationInviteRepository.fetchInvitedUsersByAccountingId(
+            email, authenticated.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
+    }
 
     @Async
     private void sendInvitation(UserOrganizationInvite invite, User authorizedUser) {
