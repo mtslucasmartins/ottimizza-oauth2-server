@@ -34,3 +34,4 @@ public interface UserOrganizationInviteRepository
             @Param("organizationId") BigInteger organizationId, Pageable pageable);
 
 }
+        
