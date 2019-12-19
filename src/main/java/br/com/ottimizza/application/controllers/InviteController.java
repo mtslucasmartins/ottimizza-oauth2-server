@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.services.InvitationService;
@@ -39,7 +40,9 @@ public class InviteController {
     public ResponseEntity<?> fetch(@RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                    @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
                                    Principal principal) throws Exception {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new GenericPageableResponse<UserOrganizationInvite>(
+            invitationService.fetchInvitedUsers("", pageIndex, pageSize, principal)
+        ));
     }
 
     @PostMapping
