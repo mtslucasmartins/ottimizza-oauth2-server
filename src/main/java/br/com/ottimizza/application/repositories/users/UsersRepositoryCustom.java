@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UsersRepositoryCustom {
-//  UsersRepositoryImpl
+    // UsersRepositoryImpl
     Page<User> fetchAll(UserDTO filter, Pageable pageable);
 
     Page<User> fetchAll(UserDTO filter, Pageable pageable, User authorizedUser);
+
+    Page<User> fetchAllCustomers(UserDTO filter, Pageable pageable, User authorizedUser);
 
 }

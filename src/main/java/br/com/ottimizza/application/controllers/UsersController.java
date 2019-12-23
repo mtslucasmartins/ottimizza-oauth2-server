@@ -62,9 +62,11 @@ public class UsersController {
         return ResponseEntity.ok(new GenericResponse<UserDTO>(userService.patch(id, userDTO, principal)));
     }
 
-    /**
+    /* ********************************************************************************************* *
+     *
      * Organizations
-     */
+     * 
+     * ********************************************************************************************* */
     @PostMapping("/{id}/organizations") 
     public HttpEntity<?> appendOrganization(@PathVariable("id") BigInteger id,
             @RequestBody OrganizationDTO organizationDTO, Principal principal) throws Exception {
