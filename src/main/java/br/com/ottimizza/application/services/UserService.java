@@ -188,7 +188,7 @@ public class UserService {
         User authorizedUser = findByUsername(principal.getName());
 
         // Garante que não terá acesso a dados de outras contabilidades.
-        filter.setOrganizationId(authorizedUser.getOrganization().getId());
+        // filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
         return organizationRepository
                 .fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria), authorizedUser)
