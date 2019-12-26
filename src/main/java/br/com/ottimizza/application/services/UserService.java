@@ -188,6 +188,9 @@ public class UserService {
             throws OrganizationNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
 
+        if (filter == null)
+            filter = new OrganizationDTO();
+
         // Garante que não terá acesso a dados de outras contabilidades.
         filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
