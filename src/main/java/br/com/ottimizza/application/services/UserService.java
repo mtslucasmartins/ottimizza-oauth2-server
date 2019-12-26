@@ -187,11 +187,12 @@ public class UserService {
             SearchCriteria searchCriteria, Principal principal) throws OrganizationNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
 
+        System.out.println(">>" + id);
+
         // Garante que não terá acesso a dados de outras contabilidades.
         // filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
-        return organizationRepository
-                .fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria))
+        return organizationRepository.fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria))
                 .map(OrganizationDTO::fromEntity);
     }
 
