@@ -184,13 +184,12 @@ public class UserService {
     }
 
     public Page<OrganizationDTO> fetchOrganizations(BigInteger id, OrganizationDTO filter,
-            SearchCriteria searchCriteria, Principal principal) throws OrganizationNotFoundException, Exception {
-        // User authorizedUser = findByUsername(principal.getName());
+            SearchCriteria<OrganizationDTO> searchCriteria, Principal principal)
+            throws OrganizationNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
 
-        System.out.println(">>" + id);
-        System.out.println(">>" + filter.getId());
         // Garante que não terá acesso a dados de outras contabilidades.
-        // filter.setOrganizationId(authorizedUser.getOrganization().getId());
+        filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
         return organizationRepository.fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria))
                 .map(OrganizationDTO::fromEntity);
