@@ -35,7 +35,7 @@ public class InviteController {
 
     @Inject
     InvitationService invitationService;
-
+ 
     @GetMapping
     public ResponseEntity<?> fetch(@RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
                                    @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
