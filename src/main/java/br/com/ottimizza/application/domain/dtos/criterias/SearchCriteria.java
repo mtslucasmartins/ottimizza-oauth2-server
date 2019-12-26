@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class SearchCriteria implements Serializable {
+public class SearchCriteria<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,6 +27,8 @@ public class SearchCriteria implements Serializable {
 
     @JsonProperty("page_size")
     public Integer pageSize = 10;
+
+    public T filter;
 
     @Getter
     @NoArgsConstructor
