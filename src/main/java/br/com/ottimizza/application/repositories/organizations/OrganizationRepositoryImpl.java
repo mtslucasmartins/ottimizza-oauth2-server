@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -45,6 +47,18 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     }
+
+    @Override 
+    public Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable, User authorizedUser) {
+        JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
+            .innerJoin(userOrganization)
+                .on(userOrganization.organization.id.eq(organization.id)
+                .and(userOrganization.user.id.eq(id)));
+        totalElements = filter(query, filter);  
+        sort(query, pageable, Organization.class, QORGANIZATION_NAME);
+        paginate(query, pageable);
+        return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
+    } 
 
     @Override 
     public Page<Organization> fetchAllByCustomerId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {

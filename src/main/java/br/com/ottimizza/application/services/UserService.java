@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -72,9 +73,9 @@ public class UserService {
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
 
-        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {  
+        if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             return userRepository.fetchAllCustomers(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
-                .map(UserDTO::fromEntityWithOrganization);
+                    .map(UserDTO::fromEntityWithOrganization);
         }
 
         return userRepository.fetchAll(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
@@ -180,6 +181,18 @@ public class UserService {
         userOrganizationRepository.save(userOrganization);
 
         return OrganizationDTO.fromEntity(organization);
+    }
+
+    public Page<OrganizationDTO> fetchOrganizations(BigInteger id, OrganizationDTO filter,
+            SearchCriteria searchCriteria, Principal principal) throws OrganizationNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+
+        // Garante que não terá acesso a dados de outras contabilidades.
+        filter.setOrganizationId(authorizedUser.getOrganization().getId());
+
+        return organizationRepository
+                .fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria), authorizedUser)
+                .map(OrganizationDTO::fromEntity);
     }
 
     private Organization findAccounting(UserDTO userDTO) throws OrganizationNotFoundException {
