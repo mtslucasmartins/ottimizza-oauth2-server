@@ -188,12 +188,10 @@ public class UserService {
         // User authorizedUser = findByUsername(principal.getName());
 
         System.out.println(">>" + id);
-        User authorizedUser = new User();
-        authorizedUser.setId(id);
         // Garante que não terá acesso a dados de outras contabilidades.
         // filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
-        return organizationRepository.fetchAllByCustomerId(filter, OrganizationDTO.getPageRequest(searchCriteria),authorizedUser)
+        return organizationRepository.fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria))
                 .map(OrganizationDTO::fromEntity);
     }
 

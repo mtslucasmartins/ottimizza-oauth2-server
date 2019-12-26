@@ -54,9 +54,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             .innerJoin(userOrganization)
                 .on(userOrganization.organization.id.eq(organization.id)
                 .and(userOrganization.user.id.eq(id)));
-        totalElements = filter(query, filter);  
-        sort(query, pageable, Organization.class, QORGANIZATION_NAME);
-        paginate(query, pageable);
+        // totalElements = filter(query, filter);  
+        // sort(query, pageable, Organization.class, QORGANIZATION_NAME);
+        // paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } 
 
