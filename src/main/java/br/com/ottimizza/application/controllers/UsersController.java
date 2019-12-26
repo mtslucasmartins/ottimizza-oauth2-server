@@ -67,6 +67,14 @@ public class UsersController {
      * Organizations
      * 
      * ********************************************************************************************* */
+    @GetMapping("/{id}/organizations") 
+    public HttpEntity<?> fetchOrganization(@PathVariable("id") BigInteger id, @ModelAttribute OrganizationDTO filter, 
+                                           @ModelAttribute SearchCriteria criteria, Principal principal) throws Exception {
+        return ResponseEntity.ok(
+                new GenericPageableResponse<OrganizationDTO>(userService.fetchOrganizations(id, filter, criteria, principal))
+        );
+    }
+
     @PostMapping("/{id}/organizations") 
     public HttpEntity<?> appendOrganization(@PathVariable("id") BigInteger id,
             @RequestBody OrganizationDTO organizationDTO, Principal principal) throws Exception {
@@ -75,9 +83,11 @@ public class UsersController {
         );
     }
 
-    /**
-     * Invites
-     */
+    /* ********************************************************************************************* *
+     *
+     * Invtations
+     * 
+     * ********************************************************************************************* */
     @GetMapping("/invited")
     public HttpEntity<?> fetchAllInvitedUsers(@ModelAttribute UserDTO filter,
             @RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
