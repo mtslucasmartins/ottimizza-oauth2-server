@@ -188,6 +188,7 @@ public class UserService {
         // User authorizedUser = findByUsername(principal.getName());
 
         System.out.println(">>" + id);
+        System.out.println(">>" + filter.getId());
         // Garante que não terá acesso a dados de outras contabilidades.
         // filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
