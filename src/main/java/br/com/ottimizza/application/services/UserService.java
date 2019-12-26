@@ -191,7 +191,7 @@ public class UserService {
         // filter.setOrganizationId(authorizedUser.getOrganization().getId());
 
         return organizationRepository
-                .fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria), authorizedUser)
+                .fetchAllByCustomerId(id, filter, OrganizationDTO.getPageRequest(searchCriteria))
                 .map(OrganizationDTO::fromEntity);
     }
 

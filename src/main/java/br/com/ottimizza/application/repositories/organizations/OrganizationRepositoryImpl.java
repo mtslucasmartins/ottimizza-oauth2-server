@@ -49,7 +49,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     @Override 
-    public Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable, User authorizedUser) {
+    public Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable) {
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
             .innerJoin(userOrganization)
                 .on(userOrganization.organization.id.eq(organization.id)
