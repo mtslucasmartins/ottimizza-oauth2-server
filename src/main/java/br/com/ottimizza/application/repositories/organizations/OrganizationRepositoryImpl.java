@@ -56,7 +56,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                 .and(userOrganization.user.id.eq(id)));
         // totalElements = filter(query, filter);  
         // sort(query, pageable, Organization.class, QORGANIZATION_NAME);
-        // paginate(query, pageable);
+        paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } 
 
