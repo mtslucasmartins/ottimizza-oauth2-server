@@ -49,7 +49,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     @Override 
-    public Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable, User authorizedUser) {
+    public Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable) {
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization)
             .innerJoin(userOrganization)
                 .on(userOrganization.organization.id.eq(organization.id)
@@ -84,27 +84,29 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     private <T> long filter(JPAQuery<T> query, OrganizationDTO filter) {
-        if (filter.getId() != null) 
-            query.where(organization.id.eq(filter.getId()));
-        
-        if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) 
-            query.where(organization.externalId.like(filter.getExternalId()));
-        
-        if (filter.getName() != null && !filter.getName().isEmpty()) 
-            query.where(organization.name.like("%" + filter.getName() + "%"));
-        
-        if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) 
-            query.where(organization.cnpj.like(filter.getCnpj()));
-        
-        if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) 
-            query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
-        
-        if (filter.getType() != null) 
-            query.where(organization.type.eq(filter.getType()));
-        
-        if (filter.getOrganizationId() != null) 
-            query.where(organization.organization.id.eq(filter.getOrganizationId()));
-        
+        if (filter != null){
+            if (filter.getId() != null) {
+                query.where(organization.id.eq(filter.getId()));
+            }
+            if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
+                query.where(organization.externalId.like(filter.getExternalId()));
+            }
+            if (filter.getName() != null && !filter.getName().isEmpty()) {
+                query.where(organization.name.like("%" + filter.getName() + "%"));
+            }
+            if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
+                query.where(organization.cnpj.like(filter.getCnpj()));
+            }
+            if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
+                query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
+            }
+            if (filter.getType() != null) {
+                query.where(organization.type.eq(filter.getType()));
+            }
+            if (filter.getOrganizationId() != null) {
+                query.where(organization.organization.id.eq(filter.getOrganizationId()));
+            }
+        }
         return query.fetchCount();
     }
 

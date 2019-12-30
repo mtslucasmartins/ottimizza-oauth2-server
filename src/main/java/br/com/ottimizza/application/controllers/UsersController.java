@@ -68,10 +68,10 @@ public class UsersController {
      * 
      * ********************************************************************************************* */
     @GetMapping("/{id}/organizations") 
-    public HttpEntity<?> fetchOrganization(@PathVariable("id") BigInteger id, @ModelAttribute OrganizationDTO filter, 
-                                           @ModelAttribute SearchCriteria criteria, Principal principal) throws Exception {
+    public HttpEntity<?> fetchOrganization(@PathVariable("id") BigInteger id,
+                                           @ModelAttribute SearchCriteria<OrganizationDTO> criteria, Principal principal) throws Exception {
         return ResponseEntity.ok(
-                new GenericPageableResponse<OrganizationDTO>(userService.fetchOrganizations(id, filter, criteria, principal))
+                new GenericPageableResponse<OrganizationDTO>(userService.fetchOrganizations(id, criteria.getFilter(), criteria, principal))
         );
     }
 

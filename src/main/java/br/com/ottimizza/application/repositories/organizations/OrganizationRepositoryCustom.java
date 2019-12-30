@@ -15,7 +15,7 @@ public interface OrganizationRepositoryCustom { // @formatter:off OrganizationRe
 
     Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser);
 
-    Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable, User authorizedUser);
+    Page<Organization> fetchAllByCustomerId(BigInteger id, OrganizationDTO filter, Pageable pageable);
 
     Page<Organization> fetchAllByCustomerId(OrganizationDTO filter, Pageable pageable, User authorizedUser);
 
