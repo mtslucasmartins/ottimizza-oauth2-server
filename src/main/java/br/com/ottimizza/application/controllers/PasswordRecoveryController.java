@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 // Spring - Security
@@ -43,6 +44,9 @@ import br.com.ottimizza.application.services.MailContentBuilder;
 
 @Controller
 public class PasswordRecoveryController {
+
+    @Value("${oauth2-config.server-url}")
+    private String hostname;
 
     @Inject
     private UsersRepository userRepository;
@@ -133,30 +137,14 @@ public class PasswordRecoveryController {
         // return "result"; // + locale.getLanguage(); .html?lang=pt-br
         response.sendRedirect("/password_reset?success");
     }
-
-    private void sendSimpleMessage(String to, String subject, String action) {
-        // SimpleMailMessage message = new SimpleMailMessage(); 
-        MimeMessagePreparator messagePreparator = mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setFrom("redefinicao@ottimizza.com.br");
-            messageHelper.setTo(to);
-            messageHelper.setSubject(subject);
-            // messageHelper.setText(message);
-            // ... 
-            String content = mailContentBuilder.build("Olá, " + to + "!", action);
-            messageHelper.setText(content, true);
-        };
-        
-        mailSender.send(messagePreparator);
-    }
-
+    
     private void sendResetPasswordEmail(User user, String resetPasswordToken) throws Exception {
         String subject = "Ottimizza - Redefinição de Senha";
         String username = user.getUsername();
         String fullname = MessageFormat.format("{0} {1}", user.getFirstName(), user.getLastName());
         
         String greeting = MessageFormat.format("Olá {0}!", fullname);
-        String passwordResetURL = new URIBuilder("https://accounts.ottimizza.com.br/password_reset")
+        String passwordResetURL = new URIBuilder(MessageFormat.format("{0}/password_reset", hostname))
                                     .addParameter("username", username)
                                     .addParameter("token", resetPasswordToken)
                                     .toString();

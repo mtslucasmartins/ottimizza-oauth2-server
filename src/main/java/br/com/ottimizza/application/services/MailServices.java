@@ -33,7 +33,7 @@ public class MailServices {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${hostname:https://accounts.ottimizza.com.br}")
+    @Value("${oauth2-config.server-url}")
     private String hostname;
 
     @Autowired
@@ -41,19 +41,11 @@ public class MailServices {
         this.templateEngine = templateEngine;
     }
 
-    private String passwordReset(String fullname, String passwordResetURL) {
-        Context context = new Context();
-        context.setVariable("fullname", fullname);
-        context.setVariable("passwordResetURL", passwordResetURL);
-        return templateEngine.process("mail/password_reset", context);
-    }
-
     public String inviteCustomerTemplate(User invitedBy, String registerToken) {
         Context context = new Context();
         String registerURL = "";
         try {
-            System.out.println(hostname);
-            registerURL = new URIBuilder("https://accounts.ottimizza.com.br/register")
+            registerURL = new URIBuilder(MessageFormat.format("{0}/register", hostname))
                     .addParameter("token", registerToken).toString();
         } catch (Exception ex) {
         }
