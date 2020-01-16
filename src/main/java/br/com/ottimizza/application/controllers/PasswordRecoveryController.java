@@ -139,7 +139,7 @@ public class PasswordRecoveryController {
     }
     
     private void sendResetPasswordEmail(User user, String resetPasswordToken) throws Exception {
-        String subject = "Ottimizza - Redefinição de Senha";
+        String subject = "Redefinição de Senha";
         String username = user.getUsername();
         String fullname = MessageFormat.format("{0} {1}", user.getFirstName(), user.getLastName());
         
