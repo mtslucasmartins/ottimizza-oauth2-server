@@ -146,7 +146,7 @@ public class UserDTO implements Serializable {
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
-            .withActivated(user.getActivated())
+            .withActivated(user.isActivated())
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
