@@ -67,6 +67,9 @@ public class UserDTO implements Serializable {
     @Setter
     private Integer type;
 
+    @Getter @Setter
+    private Boolean activated;
+
     @Getter
     @Setter
     private String avatar;
@@ -91,6 +94,7 @@ public class UserDTO implements Serializable {
         user.setUsername(this.username);
         user.setPassword(this.password);
         user.setEmail(this.email);
+        user.setActivated(this.activated);
         user.setPhone(this.phone);
         user.setType(this.type);
         user.setFirstName(this.firstName);
@@ -142,6 +146,7 @@ public class UserDTO implements Serializable {
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
+            .withActivated(user.getActivated())
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
@@ -193,6 +198,10 @@ public class UserDTO implements Serializable {
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
 
+        if (this.activated != null)
+            user.setActivated(this.activated);
+
+
         if (this.phone != null && !this.phone.equals(""))
             user.setPhone(this.phone);
 
@@ -240,6 +249,12 @@ public class UserDTO implements Serializable {
         this.type = type;
         return this;
     }
+
+    UserDTO withActivated(Boolean activated) {
+        this.activated = activated;
+        return this;
+    }
+
 
     UserDTO withFirstName(String firstName) {
         this.firstName = firstName;
