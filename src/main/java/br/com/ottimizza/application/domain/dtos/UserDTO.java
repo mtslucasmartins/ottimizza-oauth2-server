@@ -166,6 +166,7 @@ public class UserDTO implements Serializable {
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
+            .withActivated(user.isActivated())
             .withAvatar(user.getAvatar())
             .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization()));
         // @formatter:on
@@ -208,13 +209,14 @@ public class UserDTO implements Serializable {
         if (this.avatar != null && !this.avatar.equals(""))
             user.setAvatar(this.avatar);
 
-        if (this.password != null && !this.password.equals("")) {
-            if (this.newPassword != null && !this.newPassword.equals("")) {
-                if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
-                    user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
-                }
-            }
+        // realiza update sem saber a senha antiga. para migração de clientes da Depaula
+        // if (this.password != null && !this.password.equals("")) {
+        if (this.newPassword != null && !this.newPassword.equals("")) {
+            // if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
+            user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
+            // }
         }
+        // }
 
         return user;
     }
