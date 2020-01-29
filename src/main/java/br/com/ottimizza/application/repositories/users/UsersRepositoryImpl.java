@@ -3,10 +3,19 @@ package br.com.ottimizza.application.repositories.users;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.QUserOrganization;
+import br.com.ottimizza.application.model.user_organization.UserOrganization;
 import br.com.ottimizza.application.model.user.QUser;
+
+import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -139,5 +148,32 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         query.offset(pageable.getPageSize() * pageable.getPageNumber());
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
+
+    @SuppressWarnings("unused")
+    private Page<User> fetchCustomers(UserDTO filter, Pageable pageable, User authenticated) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> from = query.from(User.class);
+
+        Subquery<UserOrganization> usersSubquery = query.subquery(UserOrganization.class);
+        Root<UserOrganization> fromUsers = usersSubquery.from(UserOrganization.class);
+        // select fk_users_id from uses_organizations.
+        usersSubquery.select(fromUsers.get("user").get("id")); 
+        // Subquery to get all organizations by user id 
+        Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
+        Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
+        // select fk_organizations_id from uses_organizations.
+        organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
+        organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId()));
+        // get all users where organization id in subquery to get all organizations by authenticated id.
+        usersSubquery.where(builder.in(fromUsers.get("organization").get("id")).value(organizationsSubquery));
+
+        return new PageImpl<User>(new ArrayList<>(), pageable, 0);
+    }
+
+    private Expression<String> unaccent(CriteriaBuilder cb, Path<String> path) {
+        return cb.function("unaccent", String.class, cb.upper(path));
+    }
+
 
 }
