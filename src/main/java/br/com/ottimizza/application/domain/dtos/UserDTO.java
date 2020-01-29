@@ -67,6 +67,9 @@ public class UserDTO implements Serializable {
     @Setter
     private Integer type;
 
+    @Getter @Setter
+    private Boolean activated;
+
     @Getter
     @Setter
     private String avatar;
@@ -91,6 +94,7 @@ public class UserDTO implements Serializable {
         user.setUsername(this.username);
         user.setPassword(this.password);
         user.setEmail(this.email);
+        user.setActivated(this.activated);
         user.setPhone(this.phone);
         user.setType(this.type);
         user.setFirstName(this.firstName);
@@ -142,6 +146,7 @@ public class UserDTO implements Serializable {
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
+            .withActivated(user.isActivated())
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
@@ -161,6 +166,7 @@ public class UserDTO implements Serializable {
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
+            .withActivated(user.isActivated())
             .withAvatar(user.getAvatar())
             .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization()));
         // @formatter:on
@@ -193,19 +199,24 @@ public class UserDTO implements Serializable {
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
 
+        if (this.activated != null)
+            user.setActivated(this.activated);
+
+
         if (this.phone != null && !this.phone.equals(""))
             user.setPhone(this.phone);
 
         if (this.avatar != null && !this.avatar.equals(""))
             user.setAvatar(this.avatar);
 
-        if (this.password != null && !this.password.equals("")) {
-            if (this.newPassword != null && !this.newPassword.equals("")) {
-                if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
-                    user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
-                }
-            }
+        // realiza update sem saber a senha antiga. para migração de clientes da Depaula
+        // if (this.password != null && !this.password.equals("")) {
+        if (this.newPassword != null && !this.newPassword.equals("")) {
+            // if (new BCryptPasswordEncoder().matches(this.password, user.getPassword())) {
+            user.setPassword(new BCryptPasswordEncoder().encode(this.newPassword));
+            // }
         }
+        // }
 
         return user;
     }
@@ -240,6 +251,12 @@ public class UserDTO implements Serializable {
         this.type = type;
         return this;
     }
+
+    UserDTO withActivated(Boolean activated) {
+        this.activated = activated;
+        return this;
+    }
+
 
     UserDTO withFirstName(String firstName) {
         this.firstName = firstName;
