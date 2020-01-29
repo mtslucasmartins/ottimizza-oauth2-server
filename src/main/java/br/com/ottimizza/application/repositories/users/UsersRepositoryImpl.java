@@ -46,6 +46,9 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         if (filter.getType() != null && filter.getType() > 0) {
             query.where(user.type.eq(filter.getType()));
         }
+        if (filter.getActive() != null) {
+            query.where(user.active.eq(filter.getActive()));
+        }
 
         PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
         for (Sort.Order order : pageable.getSort()) {
@@ -75,6 +78,9 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         }
         if (filter.getType() != null && filter.getType() > 0) {
             query.where(user.type.eq(filter.getType()));
+        }
+        if (filter.getActive() != null) {
+            query.where(user.active.eq(filter.getActive()));
         }
 
         query.where(user.organization.eq(authorizedUser.getOrganization()));
@@ -116,6 +122,9 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         }
         if (filter.getType() != null && filter.getType() > 0) {
             query.where(user.type.eq(filter.getType()));
+        }
+        if (filter.getActive() != null) {
+            query.where(user.active.eq(filter.getActive()));
         }
 
 
