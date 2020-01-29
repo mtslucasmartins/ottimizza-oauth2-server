@@ -68,6 +68,9 @@ public class UserDTO implements Serializable {
     private Integer type;
 
     @Getter @Setter
+    private Boolean active;
+
+    @Getter @Setter
     private Boolean activated;
 
     @Getter
@@ -94,6 +97,7 @@ public class UserDTO implements Serializable {
         user.setUsername(this.username);
         user.setPassword(this.password);
         user.setEmail(this.email);
+        user.setActive(this.active);
         user.setActivated(this.activated);
         user.setPhone(this.phone);
         user.setType(this.type);
@@ -146,6 +150,7 @@ public class UserDTO implements Serializable {
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
+            .withActive(user.isActive())
             .withActivated(user.isActivated())
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
@@ -166,6 +171,7 @@ public class UserDTO implements Serializable {
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
+            .withActive(user.isActive())
             .withActivated(user.isActivated())
             .withAvatar(user.getAvatar())
             .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization()));
@@ -198,6 +204,10 @@ public class UserDTO implements Serializable {
 
         if (this.lastName != null && !this.lastName.equals(""))
             user.setLastName(this.lastName);
+
+        if (this.active != null)
+            user.setActive(this.active);
+
 
         if (this.activated != null)
             user.setActivated(this.activated);
@@ -249,6 +259,11 @@ public class UserDTO implements Serializable {
 
     UserDTO withType(Integer type) {
         this.type = type;
+        return this;
+    }
+
+    UserDTO withActive(Boolean active) {
+        this.active = active;
         return this;
     }
 
