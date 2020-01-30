@@ -54,7 +54,7 @@ public class Organization implements Serializable {
     private Integer type = OrganizationTypes.CLIENT.getValue();
 
     @Getter @Setter
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "boolean default true")
     private Boolean active;
 
     @Getter @Setter
