@@ -71,6 +71,10 @@ public class User implements Serializable {
     private String lastName;
 
     @Getter @Setter
+    @Column(name = "is_active", columnDefinition = "boolean default true")
+    private boolean active;
+
+    @Getter @Setter
     @Column(name = "activated")
     private boolean activated;
 
