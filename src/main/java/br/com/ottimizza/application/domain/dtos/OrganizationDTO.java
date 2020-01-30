@@ -93,7 +93,7 @@ public class OrganizationDTO implements Serializable {
             .email(organization.getEmail())
             .avatar(organization.getAvatar())
             .organizationId(
-                organization != null && organization.getId() != null
+                organization.getOrganization() != null && organization.getOrganization().getId() != null
                 ? organization.getOrganization().getId()
                 : null
             )
