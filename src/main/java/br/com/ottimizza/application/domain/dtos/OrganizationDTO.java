@@ -117,6 +117,9 @@ public class OrganizationDTO implements Serializable {
         if (this.avatar != null && !this.avatar.equals(""))
             organization.setAvatar(this.avatar);
 
+        if (this.active != null)
+            organization.setActive(this.active);
+
         if (this.email != null && !this.email.equals(""))
             organization.setEmail(this.email);
 

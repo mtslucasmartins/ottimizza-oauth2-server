@@ -24,6 +24,7 @@ import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
+import br.com.ottimizza.application.domain.mappers.OrganizationMapper;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
@@ -111,7 +112,7 @@ public class OrganizationService {
         User authenticated = userService.findByUsername(principal.getName());
         Organization current = organizationDTO.patch(findById(id, authenticated));
         checkIfOrganizationIsNotAlreadyRegistered(current);
-        return OrganizationDTO.fromEntity(organizationRepository.save(current));
+        return OrganizationMapper.fromEntity(organizationRepository.save(current));
     }
 
     /* ****************************************************************************************************************

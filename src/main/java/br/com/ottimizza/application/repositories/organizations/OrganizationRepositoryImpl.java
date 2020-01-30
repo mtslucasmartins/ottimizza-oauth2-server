@@ -97,6 +97,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
                 query.where(organization.cnpj.like(filter.getCnpj()));
             }
+            if (filter.getActive() != null) {
+                query.where(organization.active.eq(filter.getActive()));
+            }
             if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
                 query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
             }
