@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity(debug = false)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${oauth2-config.default-success-redirect}")
+    private String DEFAULT_SUCCESS_URL;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -67,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers(allowed).permitAll();
-        
+
         // http.authorizeRequests()
         //         .antMatchers("/oauth/tokeninfo*").permitAll();
 
@@ -83,6 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .formLogin()
                 .loginPage("/login")
+                // .defaultSuccessUrl(DEFAULT_SUCCESS_URL, false)
+                // .success
                 .permitAll()
             .and()
                 .logout()
