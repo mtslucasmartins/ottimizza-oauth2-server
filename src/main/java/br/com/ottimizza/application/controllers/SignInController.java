@@ -63,15 +63,15 @@ public class SignInController {
     public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws IOException {
         getCustomAttributes(model, request, response);
 
-        String client_id = request.getParameter("client_id"); 
-        String response_type = request.getParameter("response_type"); 
-        String redirect_uri = request.getParameter("redirect_uri"); 
+        SavedRequest savedRequest = getSavedRequest(request, response);
+
+        String client_id = savedRequest.getParameterMap().get("client_id")[0]; // request.getParameter("client_id"); 
+        String response_type = savedRequest.getParameterMap().get("response_type")[0]; // request.getParameter("response_type"); 
+        String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0]; // request.getParameter("redirect_uri"); 
 
         System.out.println("client_id: " + client_id);
         System.out.println("response_type: " + response_type);
-        System.out.println("redirect_uri: " + redirect_uri);
-
-        // SavedRequest savedRequest = getSavedRequest(request, response);
+        System.out.println("redirect_uri: " + redirect_uri);       
 
         // if (savedRequest != null) {
         //     try {
