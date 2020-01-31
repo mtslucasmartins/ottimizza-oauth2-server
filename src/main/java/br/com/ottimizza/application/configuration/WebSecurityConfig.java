@@ -71,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers(allowed).permitAll();
-        
+
         // http.authorizeRequests()
         //         .antMatchers("/oauth/tokeninfo*").permitAll();
 

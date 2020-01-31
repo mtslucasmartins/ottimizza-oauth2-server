@@ -75,9 +75,9 @@ public class SignInController {
     }
 
     private String defaultRedirect() throws Exception {
-        String redirect = MessageFormat.format(
-            "{0}/oauth/authorize?response_type=code&client_id={1}&redirect_uri={2}", 
-            SERVER_URL, CLIENT_ID, URLEncoder.encode(DEFAULT_SUCCESS_URL, "UTF-8")  // URLEncoder.encode(redirect_uri, "UTF-8");
+        String redirect = MessageFormat.format("{0}/oauth/authorize?response_type=code&client_id={1}&redirect_uri={2}",
+                SERVER_URL, CLIENT_ID, URLEncoder.encode(DEFAULT_SUCCESS_URL, "UTF-8") // URLEncoder.encode(redirect_uri,
+                                                                                       // "UTF-8");
         );
         return "redirect:" + redirect;
     }
@@ -91,18 +91,17 @@ public class SignInController {
             SavedRequest savedRequest = getSavedRequest(request, response);
 
             if (savedRequest != null) {
-                // request.getParameter("client_id");
-                String client_id = savedRequest.getParameterMap().get("client_id")[0];
+                try {
+                    String client_id = savedRequest.getParameterMap().get("client_id")[0];
+                    String response_type = savedRequest.getParameterMap().get("response_type")[0];
+                    String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0];
 
-                // request.getParameter("response_type");
-                String response_type = savedRequest.getParameterMap().get("response_type")[0];
-
-                // request.getParameter("redirect_uri");
-                String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0];
-
-                System.out.println("client_id: " + client_id);
-                System.out.println("response_type: " + response_type);
-                System.out.println("redirect_uri: " + redirect_uri);
+                    if (Arrays.asList(client_id, response_type, redirect_uri).contains(null)) {
+                        return defaultRedirect();
+                    }
+                } catch (Exception ex) {
+                    return defaultRedirect();
+                }
             } else {
                 return defaultRedirect();
             }
