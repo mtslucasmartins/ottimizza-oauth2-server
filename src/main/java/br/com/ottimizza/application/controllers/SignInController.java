@@ -1,5 +1,6 @@
 package br.com.ottimizza.application.controllers;
 
+import java.io.IOException;
 import java.security.Principal;
 
 import javax.inject.Inject;
