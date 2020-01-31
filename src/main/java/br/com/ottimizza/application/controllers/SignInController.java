@@ -79,7 +79,7 @@ public class SignInController {
             "{0}/oauth/authorize?response_type=code&client_id={1}&redirect_uri={2}", 
             SERVER_URL, CLIENT_ID, URLEncoder.encode(DEFAULT_SUCCESS_URL, "UTF-8")  // URLEncoder.encode(redirect_uri, "UTF-8");
         );
-        return "redirect:/" + redirect;
+        return "redirect:" + redirect;
     }
 
     @GetMapping("/login")
