@@ -3,6 +3,7 @@ package br.com.ottimizza.application.controllers;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +73,17 @@ public class SignInController {
         model.addAttribute("title", getSignInTitle());
     }
 
+    private String defaultRedirect() {
+        String client_id = CLIENT_ID;
+        String redirect_uri = DEFAULT_SUCCESS_URL; // URLEncoder.encode(redirect_uri, "UTF-8");
+
+        String redirect = MessageFormat.format(
+            "/oauth/authorize?response_type=code&client_id={0}&redirect_uri={1}", client_id, redirect_uri
+        );
+
+        return "redirect:/" + redirect;
+    }
+
     @GetMapping("/login")
     public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -82,32 +94,22 @@ public class SignInController {
 
             if (savedRequest != null) {
                 // request.getParameter("client_id");
-                String client_id = savedRequest.getParameterMap().get("client_id")[0]; 
+                String client_id = savedRequest.getParameterMap().get("client_id")[0];
 
                 // request.getParameter("response_type");
-                String response_type = savedRequest.getParameterMap().get("response_type")[0]; 
+                String response_type = savedRequest.getParameterMap().get("response_type")[0];
 
                 // request.getParameter("redirect_uri");
-                String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0]; 
+                String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0];
 
                 System.out.println("client_id: " + client_id);
                 System.out.println("response_type: " + response_type);
                 System.out.println("redirect_uri: " + redirect_uri);
-
             } else {
-                String client_id = CLIENT_ID;
-                String redirect_uri = DEFAULT_SUCCESS_URL; // URLEncoder.encode(redirect_uri, "UTF-8");
-
-                String redirect = MessageFormat.format(
-                    "/oauth/authorize?response_type=code&client_id={0}&redirect_uri={1}", 
-                    client_id, redirect_uri
-                );
-
-                return "redirect:/" + redirect;
+                return defaultRedirect();
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            return defaultRedirect();
         }
 
         // if (savedRequest != null) {
