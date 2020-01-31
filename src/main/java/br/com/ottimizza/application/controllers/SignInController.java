@@ -74,13 +74,10 @@ public class SignInController {
     }
 
     private String defaultRedirect() {
-        String client_id = CLIENT_ID;
-        String redirect_uri = DEFAULT_SUCCESS_URL; // URLEncoder.encode(redirect_uri, "UTF-8");
-
         String redirect = MessageFormat.format(
-            "/oauth/authorize?response_type=code&client_id={0}&redirect_uri={1}", client_id, redirect_uri
+            "{0}/oauth/authorize?response_type=code&client_id={1}&redirect_uri={2}", 
+            SERVER_URL, CLIENT_ID, DEFAULT_SUCCESS_URL // URLEncoder.encode(redirect_uri, "UTF-8");
         );
-
         return "redirect:/" + redirect;
     }
 
