@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity(debug = false)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${default-success-redirect}")
+    @Value("${oauth2-config.default-success-redirect}")
     private String DEFAULT_SUCCESS_URL;
 
     @Autowired
