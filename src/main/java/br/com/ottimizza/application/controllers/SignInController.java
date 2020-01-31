@@ -2,12 +2,14 @@ package br.com.ottimizza.application.controllers;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.text.MessageFormat;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
@@ -22,16 +24,27 @@ public class SignInController {
     @Inject
     SecurityService securityService;
 
-    // String DEFAULT_LOGO_URL = "https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png";
-    String DEFAULT_LOGO_URL = "/assets/img/logos/tareffa-white.png";
+    @Value("${oauth2-config.server-url}")
+    private String SERVER_URL;
 
+    @Value("${oauth2-config.client-id}")
+    private String CLIENT_ID;
+
+    @Value("${oauth2-config.default-success-redirect}")
+    private String DEFAULT_SUCCESS_URL;
+
+    // String DEFAULT_LOGO_URL =
+    // "https://ottimizza.com.br/wp-content/themes/ottimizza/images/logo-inverse.png";
+    String DEFAULT_LOGO_URL = "/assets/img/logos/tareffa-white.png";
 
     private String getSignInLogo() {
         return System.getenv("SIGNIN_LOGO");
     }
+
     private String getSignInBackground() {
         return System.getenv("SIGNIN_BACKGROUND");
     }
+
     private String getSignInTitle() {
         return System.getenv("SIGNIN_TITLE");
     }
@@ -60,41 +73,64 @@ public class SignInController {
     }
 
     @GetMapping("/login")
-    public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         getCustomAttributes(model, request, response);
 
         try {
             SavedRequest savedRequest = getSavedRequest(request, response);
 
-            String client_id = savedRequest.getParameterMap().get("client_id")[0]; // request.getParameter("client_id"); 
-            String response_type = savedRequest.getParameterMap().get("response_type")[0]; // request.getParameter("response_type"); 
-            String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0]; // request.getParameter("redirect_uri"); 
-    
-            System.out.println("client_id: " + client_id);
-            System.out.println("response_type: " + response_type);
-            System.out.println("redirect_uri: " + redirect_uri);       
+            if (savedRequest != null) {
+                // request.getParameter("client_id");
+                String client_id = savedRequest.getParameterMap().get("client_id")[0]; 
+
+                // request.getParameter("response_type");
+                String response_type = savedRequest.getParameterMap().get("response_type")[0]; 
+
+                // request.getParameter("redirect_uri");
+                String redirect_uri = savedRequest.getParameterMap().get("redirect_uri")[0]; 
+
+                System.out.println("client_id: " + client_id);
+                System.out.println("response_type: " + response_type);
+                System.out.println("redirect_uri: " + redirect_uri);
+
+            } else {
+                String client_id = CLIENT_ID;
+                String redirect_uri = DEFAULT_SUCCESS_URL; // URLEncoder.encode(redirect_uri, "UTF-8");
+
+                String redirect = MessageFormat.format(
+                    "/oauth/authorize?response_type=code&client_id={0}&redirect_uri={1}", 
+                    client_id, redirect_uri
+                );
+
+                return "redirect:/" + redirect;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
 
         // if (savedRequest != null) {
-        //     try {
-        //         String logoParameterValue = savedRequest.getParameterMap().get("logo")[0];
-        //         if (logoParameterValue != null && !logoParameterValue.equals(""))
-        //             logoURL = logoParameterValue;
-        //     } catch (Exception ex) {
-        //     }
+        // try {
+        // String logoParameterValue = savedRequest.getParameterMap().get("logo")[0];
+        // if (logoParameterValue != null && !logoParameterValue.equals(""))
+        // logoURL = logoParameterValue;
+        // } catch (Exception ex) {
         // }
-        
-        // if (principal != null) { 
-        //     //depends on your security config, maybe you want to check the security context instead if you allow anonym access
-        //     String redirect_uri = request.getParameter("redirect_uri"); 
-        //     //here you must get all the other attributes thats needed for the authorize url
-        //     if (redirect_uri == null) {
-        //         redirect_uri = "https://accounts.ottimizza.com.br";
-        //     }           
-        //     return "redirect:/oauth/authorize?response_type=token&state=6c2bb162-0f26-4caa-abbe-b65f7e5c6a2e&client_id=admin&redirect_uri=" + URLEncoder.encode(redirect_uri, "UTF-8");
+        // }
+
+        // if (principal != null) {
+        // //depends on your security config, maybe you want to check the security
+        // context instead if you allow anonym access
+        // String redirect_uri = request.getParameter("redirect_uri");
+        // //here you must get all the other attributes thats needed for the authorize
+        // url
+        // if (redirect_uri == null) {
+        // redirect_uri = "https://accounts.ottimizza.com.br";
+        // }
+        // return
+        // "redirect:/oauth/authorize?response_type=token&state=6c2bb162-0f26-4caa-abbe-b65f7e5c6a2e&client_id=admin&redirect_uri="
+        // + URLEncoder.encode(redirect_uri, "UTF-8");
         // }
         // return "login";
         return "login.html";

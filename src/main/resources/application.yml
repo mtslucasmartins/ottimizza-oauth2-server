@@ -58,7 +58,7 @@ spring:
     cache: false
 
 oauth2-config:
-  client-id: ${CLIENT_ID:76179baad962d1b8ce4d}
-  client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}
+  client-id: ${CLIENT_ID:58a94562a7a7502d4c1b}
+  client-secret: ${CLIENT_SECRET:d792ec02541816ca1095c917f2de73195fe86303}
   server-url: ${SERVER_URL:https://development-oauth-server.herokuapp.com}
-  default-success-redirect: ${DEFAULT_SUCCESS_REDIRECT:https://development-accounts.ottimizza.com.br}
+  default-success-redirect: ${DEFAULT_SUCCESS_REDIRECT:https://development-accounts.ottimizza.com.br/auth/callback}
