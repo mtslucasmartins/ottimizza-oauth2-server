@@ -1,5 +1,7 @@
 package br.com.ottimizza.application.controllers;
 
+import java.security.Principal;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,8 +59,38 @@ public class SignInController {
     }
 
     @GetMapping("/login")
-    public String loginPage(Model model, HttpServletRequest request, HttpServletResponse response) {
+    public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws IOException {
         getCustomAttributes(model, request, response);
+
+        String client_id = request.getParameter("client_id"); 
+        String response_type = request.getParameter("response_type"); 
+        String redirect_uri = request.getParameter("redirect_uri"); 
+
+        System.out.println("client_id: " + client_id);
+        System.out.println("response_type: " + response_type);
+        System.out.println("redirect_uri: " + redirect_uri);
+
+        // SavedRequest savedRequest = getSavedRequest(request, response);
+
+        // if (savedRequest != null) {
+        //     try {
+        //         String logoParameterValue = savedRequest.getParameterMap().get("logo")[0];
+        //         if (logoParameterValue != null && !logoParameterValue.equals(""))
+        //             logoURL = logoParameterValue;
+        //     } catch (Exception ex) {
+        //     }
+        // }
+        
+        // if (principal != null) { 
+        //     //depends on your security config, maybe you want to check the security context instead if you allow anonym access
+        //     String redirect_uri = request.getParameter("redirect_uri"); 
+        //     //here you must get all the other attributes thats needed for the authorize url
+        //     if (redirect_uri == null) {
+        //         redirect_uri = "https://accounts.ottimizza.com.br";
+        //     }           
+        //     return "redirect:/oauth/authorize?response_type=token&state=6c2bb162-0f26-4caa-abbe-b65f7e5c6a2e&client_id=admin&redirect_uri=" + URLEncoder.encode(redirect_uri, "UTF-8");
+        // }
+        // return "login";
         return "login.html";
     }
 
