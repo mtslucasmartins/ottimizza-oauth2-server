@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.controllers;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -73,17 +74,17 @@ public class SignInController {
         model.addAttribute("title", getSignInTitle());
     }
 
-    private String defaultRedirect() {
+    private String defaultRedirect() throws Exception {
         String redirect = MessageFormat.format(
             "{0}/oauth/authorize?response_type=code&client_id={1}&redirect_uri={2}", 
-            SERVER_URL, CLIENT_ID, DEFAULT_SUCCESS_URL // URLEncoder.encode(redirect_uri, "UTF-8");
+            SERVER_URL, CLIENT_ID, URLEncoder.encode(DEFAULT_SUCCESS_URL, "UTF-8")  // URLEncoder.encode(redirect_uri, "UTF-8");
         );
         return "redirect:/" + redirect;
     }
 
     @GetMapping("/login")
     public String loginPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws Exception {
         getCustomAttributes(model, request, response);
 
         try {
