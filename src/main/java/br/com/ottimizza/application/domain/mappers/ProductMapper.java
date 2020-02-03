@@ -24,6 +24,10 @@ public class ProductMapper { // @formatter:off
         return ProductDTO.builder()
             .id(product.getId())
             .name(product.getName())
+            .description(product.getDescription())
+            .appUrl(product.getAppUrl())
+            .imageUrl(product.getImageUrl())
+            .group(product.getGroup())
             .build();
     }
 
@@ -37,6 +41,10 @@ public class ProductMapper { // @formatter:off
         return Product.builder()
             .id(product.getId())
             .name(product.getName())
+            .description(product.getDescription())
+            .appUrl(product.getAppUrl())
+            .imageUrl(product.getImageUrl())
+            .group(product.getGroup())
             .build();
     }
 
