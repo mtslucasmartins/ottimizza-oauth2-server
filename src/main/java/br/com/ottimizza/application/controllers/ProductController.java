@@ -1,11 +1,14 @@
 package br.com.ottimizza.application.controllers;
 
+import java.math.BigInteger;
 import java.security.Principal;
 
 import javax.inject.Inject;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,11 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> save(@RequestBody ProductDTO productDTO, Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<ProductDTO>(productService.save(productDTO, principal)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> save(@PathVariable("id") BigInteger id, @RequestBody ProductDTO productDTO, Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericResponse<ProductDTO>(productService.patch(id, productDTO, principal)));
     }
     
 }
