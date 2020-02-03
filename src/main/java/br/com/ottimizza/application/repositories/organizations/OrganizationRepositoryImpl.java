@@ -17,7 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import com.querydsl.jpa.impl.JPAQuery;
-
+import com.querydsl.core.BooleanBuilder;
 // Sort
 import com.querydsl.core.types.Order;
 import org.springframework.data.domain.Sort;
@@ -40,8 +40,12 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
     @Override
     public Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
-        filter.setOrganizationId(authorizedUser.getOrganization().getId());
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
+        BooleanBuilder builder = new BooleanBuilder();
+        filter.setOrganizationId(authorizedUser.getOrganization().getId());
+        // query.where(builder
+        //     .or(organization.id.eq(filter.getId()))
+        //    .or(organization.organization.id.eq(filter.getOrganizationId())));
         totalElements = filter(query, filter);
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);
         paginate(query, pageable);
@@ -96,6 +100,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             }
             if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
                 query.where(organization.cnpj.like(filter.getCnpj()));
+            }
+            if (filter.getActive() != null) {
+                query.where(organization.active.eq(filter.getActive()));
             }
             if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
                 query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));

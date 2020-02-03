@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // @formatter:off
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationDTO implements Serializable {
@@ -38,6 +38,9 @@ public class OrganizationDTO implements Serializable {
     private Integer type;
 
     @Getter @Setter
+    private Boolean active;
+
+    @Getter @Setter
     private String cnpj;
 
     @Getter @Setter
@@ -53,46 +56,48 @@ public class OrganizationDTO implements Serializable {
     private BigInteger organizationId;
 
     public Organization toEntity(boolean removeNonDigitsFromCNPJ) {
-        Organization organization = new Organization();
-        
-        if (removeNonDigitsFromCNPJ && this.cnpj != null) 
-            this.cnpj = this.cnpj.replaceAll("\\D", "");
-
-        organization.setId(this.id);
-        organization.setExternalId(this.externalId);
-        organization.setName(this.name);
-        organization.setCnpj(this.cnpj);
-        organization.setEmail(this.email);
-        organization.setType(this.type);
-        organization.setCodigoERP(this.codigoERP);
-        organization.setAvatar(this.avatar);
-        
-        if (this.organizationId != null) {  
-            Organization accounting = new Organization();
-            accounting.setId(this.organizationId);
-            organization.setOrganization(accounting);
-        }
-
-        return organization;
+        return Organization.builder()
+            .id(this.getId())
+            .externalId(this.getExternalId())
+            .name(this.getName())
+            .cnpj(
+                removeNonDigitsFromCNPJ && this.cnpj != null
+                ? this.cnpj.replaceAll("\\D", "")
+                : this.cnpj
+            )
+            .type(this.getType())
+            .active(this.getActive())
+            .codigoERP(this.getCodigoERP())
+            .email(this.getEmail())
+            .avatar(this.getAvatar())
+            .organization(
+                this.organizationId != null
+                ? Organization.builder().id(this.organizationId).build()
+                : null
+            )
+            .build();
     }
     public Organization toEntity() {
         return this.toEntity(true);
     }
 
-    public static OrganizationDTO fromEntity(Organization organization) {
-        // @formatter:off
-        OrganizationDTO dto = new OrganizationDTO()
-            .withId(organization.getId())
-            .withExternalId(organization.getExternalId())
-            .withName(organization.getName())
-            .withCnpj(organization.getCnpj())
-            .withType(organization.getType())
-            .withCodigoERP(organization.getCodigoERP())
-            .withEmail(organization.getEmail())
-            .withAvatar(organization.getAvatar())
-            .withOrganizationId(organization.getOrganization());
-        // @formatter:on
-        return dto;
+    public static OrganizationDTO fromEntity(Organization organization) { // @formatter:off
+        return OrganizationDTO.builder()
+            .id(organization.getId())
+            .externalId(organization.getExternalId())
+            .name(organization.getName())
+            .cnpj(organization.getCnpj())
+            .type(organization.getType())
+            .active(organization.getActive())
+            .codigoERP(organization.getCodigoERP())
+            .email(organization.getEmail())
+            .avatar(organization.getAvatar())
+            .organizationId(
+                organization.getOrganization() != null && organization.getOrganization().getId() != null
+                ? organization.getOrganization().getId()
+                : null
+            )
+            .build();
     }
 
     public static List<OrganizationDTO> fromEntities(List<Organization> organizations) {
@@ -111,6 +116,9 @@ public class OrganizationDTO implements Serializable {
 
         if (this.avatar != null && !this.avatar.equals(""))
             organization.setAvatar(this.avatar);
+
+        if (this.active != null)
+            organization.setActive(this.active);
 
         if (this.email != null && !this.email.equals(""))
             organization.setEmail(this.email);
