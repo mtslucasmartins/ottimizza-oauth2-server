@@ -24,7 +24,7 @@ public class ProductService {
     } 
 
     public ProductDTO save(ProductDTO productDTO, Principal principal) throws Exception {
-        return ProductMapper.fromEntity(productRepository.save(ProductMapper.fromDTO(productDTO));
+        return ProductMapper.fromEntity(productRepository.save(ProductMapper.fromDTO(productDTO)));
     } 
 
 }
