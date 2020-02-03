@@ -32,14 +32,19 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_sequence")
     private BigInteger id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "app_url")
     private String appUrl;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "group_name")
     private String group;
 
 }
