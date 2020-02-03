@@ -23,4 +23,8 @@ public class ProductService {
                                 .stream().map(ProductMapper::fromEntity).collect(Collectors.toList());
     } 
 
+    public ProductDTO save(ProductDTO productDTO, Principal principal) throws Exception {
+        return ProductMapper.fromEntity(productRepository.save(ProductMapper.fromDTO(productDTO));
+    } 
+
 }
