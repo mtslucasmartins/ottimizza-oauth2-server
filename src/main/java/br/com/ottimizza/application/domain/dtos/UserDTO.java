@@ -150,8 +150,8 @@ public class UserDTO implements Serializable {
             .withUsername(user.getUsername())
             .withFirstName(user.getFirstName())
             .withLastName(user.getLastName())
-            .withActive(user.isActive())
-            .withActivated(user.isActivated())
+            .withActive(user.getActive())
+            .withActivated(user.getActivated())
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
@@ -171,8 +171,8 @@ public class UserDTO implements Serializable {
             .withEmail(user.getEmail())
             .withPhone(user.getPhone())
             .withType(user.getType())
-            .withActive(user.isActive())
-            .withActivated(user.isActivated())
+            .withActive(user.getActive())
+            .withActivated(user.getActivated())
             .withAvatar(user.getAvatar())
             .withOrganization(user.getOrganization() == null ? null : OrganizationDTO.fromEntity(user.getOrganization()));
         // @formatter:on
