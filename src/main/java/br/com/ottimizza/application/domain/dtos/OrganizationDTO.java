@@ -114,9 +114,13 @@ public class OrganizationDTO implements Serializable {
         if (this.codigoERP != null && !this.codigoERP.equals(""))
             organization.setCodigoERP(this.codigoERP);
 
-        if (this.avatar != null && !this.avatar.equals(""))
-            organization.setAvatar(this.avatar);
-
+        if (this.avatar != null) {
+            if (this.avatar.trim().equals("")) {
+                organization.setAvatar(null);
+            } else {
+                organization.setAvatar(this.avatar.trim());
+            }
+        }
         if (this.active != null)
             organization.setActive(this.active);
 
