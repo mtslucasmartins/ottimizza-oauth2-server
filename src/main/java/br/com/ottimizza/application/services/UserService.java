@@ -34,6 +34,7 @@ import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundExceptio
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationID;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
@@ -175,6 +176,7 @@ public class UserService {
         }
 
         UserOrganization userOrganization = new UserOrganization();
+        userOrganization.setId(new UserOrganizationID(user.getId(), organization.getId()));
         userOrganization.setUser(user);
         userOrganization.setOrganization(organization);
 
