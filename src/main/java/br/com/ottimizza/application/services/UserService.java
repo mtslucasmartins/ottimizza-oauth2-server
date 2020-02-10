@@ -185,7 +185,7 @@ public class UserService {
         return OrganizationDTO.fromEntity(organization);
     }
     
-    public OrganizationDTO appendOrganization(BigInteger id, BigInteger organizationId, Principal principal)
+    public OrganizationDTO removeOrganization(BigInteger id, BigInteger organizationId, Principal principal)
             throws OrganizationNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
         User user = findById(id);
