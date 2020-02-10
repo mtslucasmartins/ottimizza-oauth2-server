@@ -184,6 +184,25 @@ public class UserService {
 
         return OrganizationDTO.fromEntity(organization);
     }
+    
+    public OrganizationDTO appendOrganization(BigInteger id, BigInteger organizationId, Principal principal)
+            throws OrganizationNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        User user = findById(id);
+
+        Organization organization = Optional.ofNullable(organizationRepository.fetchById(organizationId))
+                                            .orElseThrow(() -> new OrganizationNotFoundException(
+                                            "Não foi encontrada nenhuma organização com o ID informado!"));
+
+        UserOrganization userOrganization = new UserOrganization();
+        userOrganization.setId(new UserOrganizationID(user.getId(), organization.getId()));
+        userOrganization.setUser(user);
+        userOrganization.setOrganization(organization);
+
+        userOrganizationRepository.delete(userOrganization);
+
+        return OrganizationDTO.fromEntity(organization);
+    }
 
     public Page<OrganizationDTO> fetchOrganizations(BigInteger id, OrganizationDTO filter,
             SearchCriteria<OrganizationDTO> searchCriteria, Principal principal)
