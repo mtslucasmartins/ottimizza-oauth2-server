@@ -134,8 +134,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
 
         predicateList.add(predicate);
-        // predicateList.addAll();
-        predicates(filter, builder, from);
+        predicateList.addAll(predicates(filter, builder, from));
         
         Predicate[] predicates = new Predicate[predicateList.size()];
         predicateList.toArray(predicates);
