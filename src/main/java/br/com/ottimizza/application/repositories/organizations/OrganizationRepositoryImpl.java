@@ -86,7 +86,32 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } 
+    public Long countOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<Organization> from = query.from(Organization.class);
+        List<Predicate> predicateList = new ArrayList<Predicate>();
 
+        // Subquery...
+        Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
+        Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
+        organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
+        organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId())); 
+    
+        Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
+        predicateList.add(predicate);
+
+        Predicate[] predicates = new Predicate[predicateList.size()];
+        predicateList.toArray(predicates);
+        query.select(builder.count(from));
+        query.where(predicates);
+
+        TypedQuery<Long> typedQuery = em.createQuery(query);
+        typedQuery.setFirstResult((int) pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        return em.createQuery(query).getSingleResult();
+    }
     public Page<Organization> fetchOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Organization> query = builder.createQuery(Organization.class);
@@ -110,7 +135,10 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, 0);
+        return new PageImpl<>(
+            typedQuery.getResultList(), pageable, 
+            countOrganizationsByCustomerId(filter, pageable, authenticated)
+        );
     }
 
     // @SuppressWarnings("unused")
