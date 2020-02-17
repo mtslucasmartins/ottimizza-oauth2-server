@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -151,19 +152,27 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     public List<Predicate> predicates(OrganizationDTO filter, CriteriaBuilder cb, Root<Organization> root) 
-            throws Exception { // @formatter:off
+            throws Exception { // @formatter:off@Getter @Setter
+        List<String> filterable = Arrays.asList(
+            "id", "name", "type", "active", "cnpj", "codigoERP", "email", "avatar", "organizationId"
+        );
         final List<Predicate> predicates = new ArrayList<Predicate>();
         for (Field field : filter.getClass().getDeclaredFields()) {
-            String name = field.getName();
-            Object value = field.get(filter);
-            if (value != null) {
-                if (value instanceof String) {
-                    Path<String> path = root.get(name);
-                    predicates.add(cb.like(unaccent(cb, path), MessageFormat.format("%{0}%", (String) value).toUpperCase()));
-                } else {
-                    Path path = root.get(name);
-                    predicates.add(cb.equal(path, value));
+            try {
+                String name = field.getName();
+                Object value = field.get(filter);
+                if (filterable.contains(name) && value != null) {
+                    if (value instanceof String) {
+                        Path<String> path = root.get(name);
+                        predicates.add(
+                            cb.like(unaccent(cb, path), MessageFormat.format("%{0}%", (String) value).toUpperCase()));
+                    } else {
+                        Path path = root.get(name);
+                        predicates.add(cb.equal(path, value));
+                    }
                 }
+            } catch (IllegalAccessException illegalAccess)  {
+
             }
         }
         return predicates;
