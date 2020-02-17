@@ -5,6 +5,7 @@ import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.QOrganization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.QUserOrganization;
+import br.com.ottimizza.application.model.user_organization.UserOrganization;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,9 +13,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.core.BooleanBuilder;
@@ -75,6 +85,52 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } 
+
+    public Page<Organization> fetchOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Organization> query = builder.createQuery(Organization.class);
+        Root<Organization> from = query.from(Organization.class);
+        List<Predicate> predicateList = new ArrayList<Predicate>();
+
+        Join<Organization, UserOrganization> join = from.join("users_organizations");
+        Path<BigInteger> userId = join.get("user").get("id");
+        Predicate predicate = builder.equal(userId, authenticated.getId());
+        predicateList.add(predicate);
+
+        Predicate[] predicates = new Predicate[predicateList.size()];
+        predicateList.toArray(predicates);
+        query.where(predicates);
+
+        TypedQuery<Organization> typedQuery = em.createQuery(query);
+        typedQuery.setFirstResult((int) pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<>(typedQuery.getResultList(), pageable, 0);
+    }
+
+    // @SuppressWarnings("unused")
+    // private Page<User> fetchCustomers(UserDTO filter, Pageable pageable, User authenticated) {
+    //     CriteriaBuilder builder = em.getCriteriaBuilder();
+    //     CriteriaQuery<User> query = builder.createQuery(User.class);
+    //     Root<User> from = query.from(User.class);
+
+    //     Subquery<UserOrganization> usersSubquery = query.subquery(UserOrganization.class);
+    //     Root<UserOrganization> fromUsers = usersSubquery.from(UserOrganization.class);
+    //     // select fk_users_id from uses_organizations.
+    //     usersSubquery.select(fromUsers.get("user").get("id")); 
+    //     // Subquery to get all organizations by user id 
+    //     Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
+    //     Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
+    //     // select fk_organizations_id from uses_organizations.
+    //     organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
+    //     organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId()));
+    //     // get all users where organization id in subquery to get all organizations by authenticated id.
+    //     usersSubquery.where(builder.in(fromUsers.get("organization").get("id")).value(organizationsSubquery));
+
+    //     return new PageImpl<User>(new ArrayList<>(), pageable, 0);
+    // }
+
+
 
     @Override
     public Page<Organization> fetchAll(OrganizationDTO filter, Pageable pageable, User authenticated) {

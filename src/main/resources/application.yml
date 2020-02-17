@@ -26,7 +26,7 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: ${HIBERNATE_SHOW_SQL:false}
     properties:
       hibernate:
         generate_statistics: ${HIBERNATE_STATISTICS:false}
