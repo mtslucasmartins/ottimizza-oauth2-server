@@ -12,7 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -86,7 +89,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         paginate(query, pageable);
         return new PageImpl<Organization>(query.fetch(), pageable, totalElements);
     } 
-    public Long countOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) {
+    public Long countOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) throws Exception {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<Organization> from = query.from(Organization.class);
@@ -100,6 +103,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     
         Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
         predicateList.add(predicate);
+        predicateList.addAll(predicates(filter, builder, from));
 
         Predicate[] predicates = new Predicate[predicateList.size()];
         predicateList.toArray(predicates);
@@ -112,7 +116,9 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
 
         return em.createQuery(query).getSingleResult();
     }
-    public Page<Organization> fetchOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) {
+    
+    public Page<Organization> fetchOrganizationsByCustomerId(OrganizationDTO filter, Pageable pageable, User authenticated) 
+            throws Exception {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Organization> query = builder.createQuery(Organization.class);
         Root<Organization> from = query.from(Organization.class);
@@ -125,8 +131,11 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId())); 
     
         Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
-        predicateList.add(predicate);
 
+        predicateList.add(predicate);
+        // predicateList.addAll();
+        predicates(filter, builder, from);
+        
         Predicate[] predicates = new Predicate[predicateList.size()];
         predicateList.toArray(predicates);
         query.where(predicates);
@@ -139,6 +148,25 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             typedQuery.getResultList(), pageable, 
             countOrganizationsByCustomerId(filter, pageable, authenticated)
         );
+    }
+
+    public List<Predicate> predicates(OrganizationDTO filter, CriteriaBuilder cb, Root<Organization> root) 
+            throws Exception { // @formatter:off
+        final List<Predicate> predicates = new ArrayList<Predicate>();
+        for (Field field : filter.getClass().getDeclaredFields()) {
+            String name = field.getName();
+            Object value = field.get(filter);
+            if (value != null) {
+                if (value instanceof String) {
+                    Path<String> path = root.get(name);
+                    predicates.add(cb.like(unaccent(cb, path), MessageFormat.format("%{0}%", (String) value).toUpperCase()));
+                } else {
+                    Path path = root.get(name);
+                    predicates.add(cb.equal(path, value));
+                }
+            }
+        }
+        return predicates;
     }
 
     // @SuppressWarnings("unused")
@@ -219,6 +247,10 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
             query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), propertyPath));
         }
         return query;
+    }
+
+    private Expression<String> unaccent(CriteriaBuilder cb, Path<String> path) {
+        return cb.function("unaccent", String.class, cb.upper(path));
     }
     
 }
