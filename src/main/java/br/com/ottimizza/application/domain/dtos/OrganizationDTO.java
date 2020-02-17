@@ -26,34 +26,34 @@ public class OrganizationDTO implements Serializable {
     static final long serialVersionUID = 1L;
     
     @Getter @Setter
-    BigInteger id;
+    public BigInteger id;
 
     @Getter @Setter
-    String externalId;
+    public String externalId;
 
     @Getter @Setter
-    String name;
+    public String name;
 
     @Getter @Setter
-    Integer type;
+    public Integer type;
 
     @Getter @Setter
-    Boolean active;
+    public Boolean active;
 
     @Getter @Setter
-    String cnpj;
+    public String cnpj;
 
     @Getter @Setter
-    String codigoERP;
+    public String codigoERP;
 
     @Getter @Setter
-    String email;
+    public String email;
 
     @Getter @Setter
-    String avatar;
+    public String avatar;
 
     @Getter @Setter
-    BigInteger organizationId;
+    public BigInteger organizationId;
 
     public Organization toEntity(boolean removeNonDigitsFromCNPJ) {
         return Organization.builder()
