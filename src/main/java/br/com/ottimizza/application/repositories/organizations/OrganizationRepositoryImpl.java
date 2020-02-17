@@ -172,7 +172,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                     }
                 }
             } catch (IllegalAccessException illegalAccess)  {
-
+                System.out.println("\n\n\nException::::\n" + illegalAccess.getMessage());
             }
         }
         return predicates;
