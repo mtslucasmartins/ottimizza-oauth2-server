@@ -170,6 +170,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                         Path path = root.get(name);
                         predicates.add(cb.equal(path, value));
                     }
+                    System.out.println("field: " + name);
                 }
             } catch (IllegalAccessException illegalAccess)  {
                 System.out.println("\n\n\nException::::\n" + illegalAccess.getMessage());
