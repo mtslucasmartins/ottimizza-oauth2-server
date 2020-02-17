@@ -25,6 +25,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.core.BooleanBuilder;
@@ -92,9 +93,13 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         Root<Organization> from = query.from(Organization.class);
         List<Predicate> predicateList = new ArrayList<Predicate>();
 
-        Join<Organization, UserOrganization> join = from.join("users_organizations");
-        Path<BigInteger> userId = join.get("user").get("id");
-        Predicate predicate = builder.equal(userId, authenticated.getId());
+        // Subquery...
+        Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
+        Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
+        organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
+        organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId())); 
+    
+        Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
         predicateList.add(predicate);
 
         Predicate[] predicates = new Predicate[predicateList.size()];
