@@ -86,7 +86,7 @@ public class OrganizationService {
         }
         if (authenticated.getType().equals(User.Type.CUSTOMER)) {
             // results = organizationRepository.fetchAllByCustomerId(filter, pageRequest, authenticated);
-            results = organizationRepository.fetchOrganizationsByCustomerId(filter, pageRequest, authenticated);
+            results = organizationRepository.fetchAllByCustomerId(filter, pageRequest, authenticated);
         }
         return results.map(OrganizationDTO::fromEntity);
     }
