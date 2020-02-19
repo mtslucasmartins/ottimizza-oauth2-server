@@ -5,6 +5,7 @@ import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.QOrganization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.QUserOrganization;
+import br.com.ottimizza.application.utils.QueryDSLUtils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,10 +18,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.core.BooleanBuilder;
 // Sort
 import com.querydsl.core.types.Order;
 import org.springframework.data.domain.Sort;
+
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 
@@ -41,11 +42,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     @Override
     public Page<Organization> fetchAllByAccountantId(OrganizationDTO filter, Pageable pageable, User authorizedUser) {
         JPAQuery<Organization> query = new JPAQuery<Organization>(em).from(organization);
-        BooleanBuilder builder = new BooleanBuilder();
         filter.setOrganizationId(authorizedUser.getOrganization().getId());
-        // query.where(builder
-        //     .or(organization.id.eq(filter.getId()))
-        //    .or(organization.organization.id.eq(filter.getOrganizationId())));
         totalElements = filter(query, filter);
         sort(query, pageable, Organization.class, QORGANIZATION_NAME);
         paginate(query, pageable);
@@ -96,7 +93,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                 query.where(organization.externalId.like(filter.getExternalId()));
             }
             if (filter.getName() != null && !filter.getName().isEmpty()) {
-                query.where(organization.name.like("%" + filter.getName() + "%"));
+                query.where(QueryDSLUtils.unnacent(organization.name, "%" + filter.getName() + "%"));
             }
             if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
                 query.where(organization.cnpj.like(filter.getCnpj()));
@@ -131,5 +128,5 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         }
         return query;
     }
-    
+
 }

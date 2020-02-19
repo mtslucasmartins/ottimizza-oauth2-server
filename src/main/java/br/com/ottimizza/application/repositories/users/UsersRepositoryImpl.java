@@ -4,6 +4,7 @@ import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.QUserOrganization;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
+import br.com.ottimizza.application.utils.QueryDSLUtils;
 import br.com.ottimizza.application.model.user.QUser;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     @PersistenceContext
     EntityManager em;
 
+    private static final String QUSER_NAME = "user";
+
     private QUser user = QUser.user;
 
     private QUserOrganization userOrganization = QUserOrganization.userOrganization;
@@ -43,32 +46,11 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     public Page<User> fetchAll(UserDTO filter, Pageable pageable) {
         long totalElements = 0;
         JPAQuery<User> query = new JPAQuery<User>(em).from(user);
-        if (filter.getId() != null) {
-            query.where(user.id.eq(filter.getId()));
-        }
-        if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
-            query.where(user.email.like("%" + filter.getEmail() + "%"));
-        }
-        if (filter.getUsername() != null && !filter.getUsername().isEmpty()) {
-            query.where(user.email.like(filter.getUsername()));
-        }
-        if (filter.getType() != null && filter.getType() > 0) {
-            query.where(user.type.eq(filter.getType()));
-        }
-        if (filter.getActive() != null) {
-            query.where(user.active.eq(filter.getActive()));
-        }
 
-        PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
-        for (Sort.Order order : pageable.getSort()) {
-            PathBuilder<Object> path = entityPath.get(order.getProperty());
-            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), path));
-        }
-
-        totalElements = query.fetchCount();
-        query.limit(pageable.getPageSize());
-        query.offset(pageable.getPageSize() * pageable.getPageNumber());
-
+        totalElements = filter(query, filter);  
+        sort(query, pageable, User.class, QUSER_NAME);
+        paginate(query, pageable);
+        
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
 
@@ -76,33 +58,11 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     public Page<User> fetchAll(UserDTO filter, Pageable pageable, User authorizedUser) {
         long totalElements = 0;
         JPAQuery<User> query = new JPAQuery<User>(em).from(user);
-        if (filter.getId() != null) {
-            query.where(user.id.eq(filter.getId()));
-        }
-        if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
-            query.where(user.email.like("%" + filter.getEmail() + "%"));
-        }
-        if (filter.getUsername() != null && !filter.getUsername().isEmpty()) {
-            query.where(user.email.like(filter.getUsername()));
-        }
-        if (filter.getType() != null && filter.getType() > 0) {
-            query.where(user.type.eq(filter.getType()));
-        }
-        if (filter.getActive() != null) {
-            query.where(user.active.eq(filter.getActive()));
-        }
-
-        query.where(user.organization.eq(authorizedUser.getOrganization()));
-
-        PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
-        for (Sort.Order order : pageable.getSort()) {
-            PathBuilder<Object> path = entityPath.get(order.getProperty());
-            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), path));
-        }
-
-        totalElements = query.fetchCount();
-        query.limit(pageable.getPageSize());
-        query.offset(pageable.getPageSize() * pageable.getPageNumber());
+        
+        totalElements = filter(query, filter);  
+        sort(query, pageable, User.class, QUSER_NAME);
+        paginate(query, pageable);
+        
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
 
@@ -120,60 +80,55 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
                                                     .where(userOrganization.user.id.eq(authorizedUser.getId()))
                                   ))));
 
-        if (filter.getId() != null) {
-            query.where(user.id.eq(filter.getId()));
-        }
-        if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
-            query.where(user.email.like("%" + filter.getEmail() + "%"));
-        }
-        if (filter.getUsername() != null && !filter.getUsername().isEmpty()) {
-            query.where(user.email.like(filter.getUsername()));
-        }
-        if (filter.getType() != null && filter.getType() > 0) {
-            query.where(user.type.eq(filter.getType()));
-        }
-        if (filter.getActive() != null) {
-            query.where(user.active.eq(filter.getActive()));
-        }
-
-
-        PathBuilder<User> entityPath = new PathBuilder<>(User.class, "user");
-        for (Sort.Order order : pageable.getSort()) {
-            PathBuilder<Object> path = entityPath.get(order.getProperty());
-            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), path));
-        }
-
-        totalElements = query.fetchCount();
-        query.limit(pageable.getPageSize());
-        query.offset(pageable.getPageSize() * pageable.getPageNumber());
+        totalElements = filter(query, filter);  
+        sort(query, pageable, User.class, QUSER_NAME);
+        paginate(query, pageable);
+        
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
 
-    @SuppressWarnings("unused")
-    private Page<User> fetchCustomers(UserDTO filter, Pageable pageable, User authenticated) {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root<User> from = query.from(User.class);
-
-        Subquery<UserOrganization> usersSubquery = query.subquery(UserOrganization.class);
-        Root<UserOrganization> fromUsers = usersSubquery.from(UserOrganization.class);
-        // select fk_users_id from uses_organizations.
-        usersSubquery.select(fromUsers.get("user").get("id")); 
-        // Subquery to get all organizations by user id 
-        Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
-        Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
-        // select fk_organizations_id from uses_organizations.
-        organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
-        organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId()));
-        // get all users where organization id in subquery to get all organizations by authenticated id.
-        usersSubquery.where(builder.in(fromUsers.get("organization").get("id")).value(organizationsSubquery));
-
-        return new PageImpl<User>(new ArrayList<>(), pageable, 0);
+    private <T> long filter(JPAQuery<T> query, UserDTO filter) {
+        if (filter != null){
+            if (filter.getId() != null) {
+                query.where(user.id.eq(filter.getId()));
+            }
+            if (filter.getFirstName() != null && !filter.getFirstName().isEmpty()) {
+                query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
+            }
+            if (filter.getLastName() != null && !filter.getLastName().isEmpty()) {
+                query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
+            }
+            if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
+                query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getEmail() + "%"));
+            }
+            if (filter.getUsername() != null && !filter.getUsername().isEmpty()) {
+                query.where(QueryDSLUtils.unnacent(user.username, "%" + filter.getUsername() + "%"));
+            }
+            if (filter.getActive() != null) {
+                query.where(user.active.eq(filter.getActive()));
+            }
+            if (filter.getType() != null) {
+                query.where(user.type.eq(filter.getType()));
+            }
+            if (filter.getOrganizationId() != null) {
+                query.where(user.organization.id.eq(filter.getOrganizationId()));
+            }
+        }
+        return query.fetchCount();
     }
 
-    private Expression<String> unaccent(CriteriaBuilder cb, Path<String> path) {
-        return cb.function("unaccent", String.class, cb.upper(path));
+    private <T> JPAQuery<T> paginate(JPAQuery<T> query, Pageable pageable) {
+        query.limit(pageable.getPageSize());
+        query.offset(pageable.getPageSize() * pageable.getPageNumber());
+        return query;
     }
 
-
+    private <T> JPAQuery<T> sort(JPAQuery<T> query, Pageable pageable, Class<T> clazz, String value) {
+        PathBuilder<T> entityPath = new PathBuilder<T>(clazz, value);
+        for (Sort.Order order : pageable.getSort()) {
+            PathBuilder<Object> propertyPath = entityPath.get(order.getProperty());
+            query.orderBy(new OrderSpecifier(Order.valueOf(order.getDirection().name()), propertyPath));
+        }
+        return query;
+    }
 }
