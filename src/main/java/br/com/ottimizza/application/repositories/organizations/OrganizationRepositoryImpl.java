@@ -33,10 +33,12 @@ import javax.persistence.criteria.Subquery;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Ops;
 // Sort
 import com.querydsl.core.types.Order;
 import org.springframework.data.domain.Sort;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 
 @Repository // @formatter:off
@@ -123,22 +125,22 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Organization> query = builder.createQuery(Organization.class);
         Root<Organization> from = query.from(Organization.class);
-        List<Predicate> predicateList = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<Predicate>();
 
-        // Subquery...
+        // Subquery: 
+        // select _uo.fk_organizations_id from users_organizations _uo
+        // where _uo.fk_users_id = :authenticated.id
         Subquery<UserOrganization> organizationsSubquery = query.subquery(UserOrganization.class);
         Root<UserOrganization> fromOrganizations = organizationsSubquery.from(UserOrganization.class);
         organizationsSubquery.select(fromOrganizations.get("organization").get("id")); 
         organizationsSubquery.where(builder.equal(fromOrganizations.get("user").get("id"), authenticated.getId())); 
     
-        Predicate predicate = builder.in(from.get("id")).value(organizationsSubquery);
+        // where o.id in :subquery
+        predicates.add(builder.in(from.get("id")).value(organizationsSubquery));
+        // and :filters
+        predicates.addAll(predicates(filter, builder, from));
 
-        predicateList.add(predicate);
-        predicateList.addAll(predicates(filter, builder, from));
-        
-        Predicate[] predicates = new Predicate[predicateList.size()];
-        predicateList.toArray(predicates);
-        query.where(predicates);
+        query.where(predicates.toArray(new Predicate[predicates.size()]));
 
         TypedQuery<Organization> typedQuery = em.createQuery(query);
         typedQuery.setFirstResult((int) pageable.getOffset());
@@ -151,16 +153,13 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     public List<Predicate> predicates(OrganizationDTO filter, CriteriaBuilder cb, Root<Organization> root) 
-            throws Exception { // @formatter:off@Getter @Setter
-        List<String> filterable = Arrays.asList(
-            "id", "name", "type", "active", "cnpj", "codigoERP", "email", "avatar", "organizationId"
-        );
+            throws Exception { // @formatter:off
         final List<Predicate> predicates = new ArrayList<Predicate>();
         for (Field field : filter.getClass().getDeclaredFields()) {
             try {
                 String name = field.getName();
                 Object value = field.get(filter);
-                if (filterable.contains(name) && value != null) {
+                if (validateFilterableFields(name) && value != null) {
                     if (value instanceof String) {
                         Path<String> path = root.get(name);
                         predicates.add(
@@ -169,13 +168,19 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                         Path path = root.get(name);
                         predicates.add(cb.equal(path, value));
                     }
-                    System.out.println("field: " + name);
                 }
             } catch (IllegalAccessException illegalAccess)  {
                 System.out.println("\n\n\nException::::\n" + illegalAccess.getMessage());
             }
         }
         return predicates;
+    }
+
+    private boolean validateFilterableFields(String field) {
+        List<String> filterable = Arrays.asList(
+            "id", "name", "type", "active", "cnpj", "codigoERP", "email", "avatar", "organizationId"
+        );
+        return filterable.contains(field);
     }
 
     // @SuppressWarnings("unused")
@@ -214,15 +219,33 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
     }
 
     private <T> long filter(JPAQuery<T> query, OrganizationDTO filter) {
+        // Map<String, Operator> operators = ImmutableMap.of(
+        //     "==", Ops.EQ, "!=", Ops.NE, ">", Ops.GT, "<", Ops.LT,
+        //     ">=", Ops.GOE, "<=", Ops.LOE, "like", Ops.LIKE);
+
+        // Expressions.predicate(operators.get(""), "", Expressions.constant(""));
+
+        // for (Field field : filter.getClass().getDeclaredFields()) {
+        //     try {
+        //         Object value = field.get(filter);
+        //     } catch (IllegalAccessException illegalAccess) {
+
+        //     } catch (Exception ec) {}
+        // }
+
         if (filter != null){
             if (filter.getId() != null) {
+                Expressions.booleanTemplate("unaccent({0}) like ", organization.name, "%" + filter.getName() + "%");
                 query.where(organization.id.eq(filter.getId()));
             }
             if (filter.getExternalId() != null && !filter.getExternalId().isEmpty()) {
                 query.where(organization.externalId.like(filter.getExternalId()));
             }
             if (filter.getName() != null && !filter.getName().isEmpty()) {
-                query.where(organization.name.like("%" + filter.getName() + "%"));
+                // query.where(organization.name.like("%" + filter.getName() + "%"));
+                query.where(Expressions.booleanTemplate(
+                    "upper(unaccent({0})) like unaccent({1})", organization.name, "%" + filter.getName().toUpperCase() + "%"
+                ));
             }
             if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
                 query.where(organization.cnpj.like(filter.getCnpj()));
