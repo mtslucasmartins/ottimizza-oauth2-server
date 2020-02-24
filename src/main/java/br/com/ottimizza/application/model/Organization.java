@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -80,8 +81,18 @@ public class Organization implements Serializable {
 
     @PrePersist
     public void prePersist() {
+        if (this.active == null) {
+            this.active = true;
+        }
         this.setExternalId(UUID.randomUUID().toString());
         this.setCnpj(cnpj.replaceAll("\\D", ""));
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (this.active == null) {
+            this.active = true;
+        }
     }
 
     public static class Type {
