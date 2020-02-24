@@ -21,6 +21,7 @@ import br.com.ottimizza.application.services.UserService;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -80,6 +81,14 @@ public class UsersController {
             @RequestBody OrganizationDTO organizationDTO, Principal principal) throws Exception {
         return ResponseEntity.ok(
                 new GenericResponse<OrganizationDTO>(userService.appendOrganization(id, organizationDTO, principal))
+        );
+    }
+
+    @DeleteMapping("/{id}/organizations/{organizationId}") 
+    public HttpEntity<?> appendOrganization(@PathVariable("id") BigInteger id,
+                                            @PathVariable("organizationId") BigInteger organizationId, Principal principal) throws Exception {
+        return ResponseEntity.ok(
+                new GenericResponse<OrganizationDTO>(userService.removeOrganization(id, organizationId, principal))
         );
     }
 

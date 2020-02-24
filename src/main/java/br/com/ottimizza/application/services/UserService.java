@@ -34,6 +34,7 @@ import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundExceptio
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationID;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
@@ -73,8 +74,14 @@ public class UserService {
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
 
+        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
+            filter.setOrganizationId(authorizedUser.getOrganization().getId());
+            return userRepository.fetchAll(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
+                .map(UserDTO::fromEntityWithOrganization);
+        }
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
-            return userRepository.fetchAllCustomers(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
+            return userRepository.fetchAllCustomers(
+                filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
                     .map(UserDTO::fromEntityWithOrganization);
         }
 
@@ -175,10 +182,30 @@ public class UserService {
         }
 
         UserOrganization userOrganization = new UserOrganization();
+        userOrganization.setId(new UserOrganizationID(user.getId(), organization.getId()));
         userOrganization.setUser(user);
         userOrganization.setOrganization(organization);
 
         userOrganizationRepository.save(userOrganization);
+
+        return OrganizationDTO.fromEntity(organization);
+    }
+    
+    public OrganizationDTO removeOrganization(BigInteger id, BigInteger organizationId, Principal principal)
+            throws OrganizationNotFoundException, Exception {
+        User authorizedUser = findByUsername(principal.getName());
+        User user = findById(id);
+
+        Organization organization = Optional.ofNullable(organizationRepository.fetchById(organizationId))
+                                            .orElseThrow(() -> new OrganizationNotFoundException(
+                                            "Não foi encontrada nenhuma organização com o ID informado!"));
+
+        UserOrganization userOrganization = new UserOrganization();
+        userOrganization.setId(new UserOrganizationID(user.getId(), organization.getId()));
+        userOrganization.setUser(user);
+        userOrganization.setOrganization(organization);
+
+        userOrganizationRepository.delete(userOrganization);
 
         return OrganizationDTO.fromEntity(organization);
     }
