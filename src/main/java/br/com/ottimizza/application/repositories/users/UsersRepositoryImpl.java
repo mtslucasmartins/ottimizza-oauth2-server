@@ -99,7 +99,7 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
                 query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
             }
             if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
-                query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getEmail() + "%"));
+                query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
             }
             if (filter.getUsername() != null && !filter.getUsername().isEmpty()) {
                 query.where(QueryDSLUtils.unnacent(user.username, "%" + filter.getUsername() + "%"));

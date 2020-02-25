@@ -96,13 +96,13 @@ public class OrganizationRepositoryImpl implements OrganizationRepositoryCustom 
                 query.where(QueryDSLUtils.unnacent(organization.name, "%" + filter.getName() + "%"));
             }
             if (filter.getCnpj() != null && !filter.getCnpj().isEmpty()) {
-                query.where(organization.cnpj.like(filter.getCnpj()));
+                query.where(organization.cnpj.like(filter.getCnpj().replaceAll("\\D", "")));
             }
             if (filter.getActive() != null) {
                 query.where(organization.active.eq(filter.getActive()));
             }
             if (filter.getCodigoERP() != null && !filter.getCodigoERP().isEmpty()) {
-                query.where(organization.codigoERP.like(filter.getCodigoERP() + "%"));
+                query.where(organization.codigoERP.like(filter.getCodigoERP()));
             }
             if (filter.getType() != null) {
                 query.where(organization.type.eq(filter.getType()));
