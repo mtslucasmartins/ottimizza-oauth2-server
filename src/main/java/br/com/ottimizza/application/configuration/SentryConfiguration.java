@@ -41,33 +41,32 @@ public class SentryConfiguration {
                     rootCause = rootCause.getCause();
                 }
 
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println(rootCause.toString());
-                System.out.println();
-                System.out.println();
-                System.out.println();
-
-                if (!rootCause.getMessage().contains("HTTP 401")) {
+                if (validateIgnoredMessages(rootCause.getMessage()) && validateIgnoredClasses(rootCause.toString())) {
                     super.resolveException(request, response, handler, ex);
-                }
-
-                for (String ignoredMessage : ignoredMessages) {
-                    if (!ignoredMessage.contains(rootCause.getMessage())) {
-                        super.resolveException(request, response, handler, ex);
-                    }
-                }
-                for (String ignoredClass : ignoredClasses) {
-                    if (!ignoredClass.contains(rootCause.toString())) {
-                        super.resolveException(request, response, handler, ex);
-                    }
                 }
 
                 return null;
             }   
 
         };
+    }
+
+    private boolean validateIgnoredMessages(String message) {
+        for (String ignoredMessage : ignoredMessages) {
+            if (ignoredMessage.contains(message)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean validateIgnoredClasses(String resume) {
+        for (String ignoredClass : ignoredClasses) {
+            if (!ignoredClass.contains(resume)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // @Bean
