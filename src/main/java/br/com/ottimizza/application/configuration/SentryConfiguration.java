@@ -37,6 +37,14 @@ public class SentryConfiguration {
                     rootCause = rootCause.getCause();
                 }
 
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println(rootCause.toString());
+                System.out.println();
+                System.out.println();
+                System.out.println();
+
                 if (!rootCause.getMessage().contains("HTTP 401")) {
                     super.resolveException(request, response, handler, ex);
                 }
@@ -45,7 +53,9 @@ public class SentryConfiguration {
                     if (ignoredMessage.contains(rootCause.getMessage())) {
                         super.resolveException(request, response, handler, ex);
                     }
-                } 
+                }
+
+                
 
                 return null;
             }   
