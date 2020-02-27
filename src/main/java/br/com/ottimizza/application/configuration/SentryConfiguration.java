@@ -1,5 +1,8 @@
 package br.com.ottimizza.application.configuration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +16,12 @@ import io.sentry.spring.SentryExceptionResolver;
 
 @Configuration
 public class SentryConfiguration {
+
+    List<String> ignoredMessages = Arrays.asList(
+        "Invalid authorization code", 
+        "Invalid refresh token (expired)", 
+        "Token was not recognised"
+    );
 
     @Bean
     public HandlerExceptionResolver sentryExceptionResolver() {
@@ -28,17 +37,16 @@ public class SentryConfiguration {
                     rootCause = rootCause.getCause();
                 }
 
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println(rootCause.getMessage());
-                System.out.println();
-                System.out.println();
-                System.out.println();
-
                 if (!rootCause.getMessage().contains("HTTP 401")) {
                     super.resolveException(request, response, handler, ex);
                 }
+
+                for (String ignoredMessage : ignoredMessages) {
+                    if (ignoredMessage.contains(rootCause.getMessage())) {
+                        super.resolveException(request, response, handler, ex);
+                    }
+                } 
+
                 return null;
             }   
 
