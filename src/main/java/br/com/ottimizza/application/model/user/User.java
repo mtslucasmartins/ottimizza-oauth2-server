@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -90,6 +92,20 @@ public class User implements Serializable {
     @ManyToOne
     @JoinColumn(name = "fk_accounting_id", nullable = true)
     private Organization organization;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
 
     public static class Type {
         public static final Integer ADMINISTRATOR = 0;
