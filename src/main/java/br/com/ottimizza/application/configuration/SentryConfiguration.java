@@ -54,17 +54,15 @@ public class SentryConfiguration {
                 }
 
                 for (String ignoredMessage : ignoredMessages) {
-                    if (ignoredMessage.contains(rootCause.getMessage())) {
+                    if (!ignoredMessage.contains(rootCause.getMessage())) {
                         super.resolveException(request, response, handler, ex);
                     }
                 }
                 for (String ignoredClass : ignoredClasses) {
-                    if (ignoredClass.contains(rootCause.toString())) {
+                    if (!ignoredClass.contains(rootCause.toString())) {
                         super.resolveException(request, response, handler, ex);
                     }
                 }
-
-                
 
                 return null;
             }   
