@@ -1,10 +1,12 @@
 package br.com.ottimizza.application.services;
 
+import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -67,7 +69,39 @@ public class InvitationService {
             throw new IllegalArgumentException("Informe o e-mail para enviar o convite!");
         }
 
-        if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+        if (inviteDetails.getType() == null || (inviteDetails.getType() < 0 || inviteDetails.getType() > 2)) {
+            throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
+        }
+
+        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
+            inviteDetails.setToken(UUID.randomUUID().toString());
+
+            String email = inviteDetails.getEmail();
+            Organization reference = findOrganization(inviteDetails.getOrganization());
+
+            if (reference == null) {
+                reference = authenticated.getOrganization();
+                inviteDetails.setOrganization(reference);
+            } else {
+                inviteDetails.setOrganization(reference);
+                // garante que se o usuario escolher uma empresa cliente, 
+                // o usuario criado sera um cliente (Tipo 2).
+                inviteDetails.setType(reference.getType()); 
+            }
+
+            // busca um convite existente.
+            UserOrganizationInvite existent = findInviteByEmailAndOrganizationId(email, reference.getId());
+
+            if (existent != null) {
+                inviteDetails = existent; // se já existir usa a referencia.
+            } else { // senao, cria um novo convite.
+                inviteDetails = userOrganizationInviteRepository.save(inviteDetails);
+            }
+
+            // envia email. :)
+            this.sendInvitation(inviteDetails, authenticated);
+
+        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
             inviteDetails.setToken(UUID.randomUUID().toString());
             
             if (inviteDetails.getOrganization() == null) {
@@ -109,6 +143,34 @@ public class InvitationService {
                                             .orElseThrow(() -> new UserNotFoundException(""));
         return userOrganizationInviteRepository.fetchInvitedUsersByAccountingId(
             email, authenticated.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
+    }
+
+    private Organization findOrganization(Organization organization) throws OrganizationNotFoundException {
+        if (organization != null) {
+            if (organization.getId() != null) {
+                BigInteger id = organization.getId();
+                Optional.of(organizationRepository.fetchById(id)).orElseThrow(() -> 
+                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o ID informado!")
+                );
+            } else if (organization.getCnpj() != null && !organization.getCnpj().equals("")) {
+                String cnpj = organization.getCnpj().replaceAll("\\D", "");
+                Optional.of(organizationRepository.fetchByCnpj(cnpj)).orElseThrow(() -> 
+                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o CNPJ informado!")
+                );
+            }
+        }
+        return null;
+    }
+
+    private UserOrganizationInvite findInviteByEmailAndOrganizationId(String email, BigInteger organizationId) {
+        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
+            email, organizationId
+        );
+        if (invites.size() == 0) {
+            return null;
+        } else {
+            return invites.get(0);
+        }
     }
 
     @Async
