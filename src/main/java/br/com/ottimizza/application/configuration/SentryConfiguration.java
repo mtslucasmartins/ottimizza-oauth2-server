@@ -23,6 +23,10 @@ public class SentryConfiguration {
         "Token was not recognised"
     );
 
+    List<String> ignoredClasses = Arrays.asList(
+        "java.lang.IllegalArgumentException"
+    );
+
     @Bean
     public HandlerExceptionResolver sentryExceptionResolver() {
         return new SentryExceptionResolver() {
@@ -51,6 +55,11 @@ public class SentryConfiguration {
 
                 for (String ignoredMessage : ignoredMessages) {
                     if (ignoredMessage.contains(rootCause.getMessage())) {
+                        super.resolveException(request, response, handler, ex);
+                    }
+                }
+                for (String ignoredClass : ignoredClasses) {
+                    if (ignoredClass.contains(rootCause.toString())) {
                         super.resolveException(request, response, handler, ex);
                     }
                 }
