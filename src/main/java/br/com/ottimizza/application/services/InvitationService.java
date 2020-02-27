@@ -69,17 +69,19 @@ public class InvitationService {
             throw new IllegalArgumentException("Informe o e-mail para enviar o convite!");
         }
 
+        if (inviteDetails.getType() == null || (inviteDetails.getType() < 0 || inviteDetails.getType() > 2)) {
+            throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
+        }
+
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
             inviteDetails.setToken(UUID.randomUUID().toString());
 
             String email = inviteDetails.getEmail();
             Organization reference = findOrganization(inviteDetails.getOrganization());
 
-            if (inviteDetails.getOrganization() == null) {
+            if (reference == null) {
                 reference = authenticated.getOrganization();
                 inviteDetails.setOrganization(reference);
-                // Se usuario não informar o tipo, será considerado 0 (ADMINISTRATOR).
-                inviteDetails.setType(inviteDetails.getType() == null ? 0 : inviteDetails.getType());
             } else {
                 inviteDetails.setOrganization(reference);
                 // garante que se o usuario escolher uma empresa cliente, 
@@ -144,16 +146,18 @@ public class InvitationService {
     }
 
     private Organization findOrganization(Organization organization) throws OrganizationNotFoundException {
-        if (organization.getId() != null) {
-            BigInteger id = organization.getId();
-            Optional.of(organizationRepository.fetchById(id)).orElseThrow(() -> 
-                new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o ID informado!")
-            );
-        } else if (organization.getCnpj() != null && !organization.getCnpj().equals("")) {
-            String cnpj = organization.getCnpj().replaceAll("\\D", "");
-            Optional.of(organizationRepository.fetchByCnpj(cnpj)).orElseThrow(() -> 
-                new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o CNPJ informado!")
-            );
+        if (organization != null) {
+            if (organization.getId() != null) {
+                BigInteger id = organization.getId();
+                Optional.of(organizationRepository.fetchById(id)).orElseThrow(() -> 
+                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o ID informado!")
+                );
+            } else if (organization.getCnpj() != null && !organization.getCnpj().equals("")) {
+                String cnpj = organization.getCnpj().replaceAll("\\D", "");
+                Optional.of(organizationRepository.fetchByCnpj(cnpj)).orElseThrow(() -> 
+                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o CNPJ informado!")
+                );
+            }
         }
         return null;
     }
