@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import br.com.ottimizza.application.domain.mappers.OrganizationMapper;
 
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
@@ -190,6 +191,9 @@ public class UserDTO implements Serializable {
      * 
      */
     public User patch(User user) {
+    	if(this.organization != null && this.organization.id != null)
+    		user.setOrganization(OrganizationMapper.fromDTO(this.organization));
+    	
         if (this.username != null && !this.username.equals(""))
             user.setUsername(this.username);
 
