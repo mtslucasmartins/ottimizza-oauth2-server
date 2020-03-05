@@ -92,7 +92,7 @@ public class OrganizationDTO implements Serializable {
         // @formatter:on
         return dto;
     }
-
+    
     public static List<OrganizationDTO> fromEntities(List<Organization> organizations) {
         return organizations.stream().map(organization -> fromEntity(organization)).collect(Collectors.toList());
     }

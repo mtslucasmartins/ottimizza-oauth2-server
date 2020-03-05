@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.domain.mappers.OrganizationMapper;
 
 import br.com.ottimizza.application.domain.dtos.criterias.*;
 
@@ -219,6 +220,9 @@ public class UserDTO implements Serializable {
         if (this.avatar != null && !this.avatar.equals(""))
             user.setAvatar(this.avatar);
 
+        if(this.organization != null & !this.organization.getId().equals(""))
+        	user.setOrganization(OrganizationMapper.fromDTO(this.organization));
+        
         // realiza update sem saber a senha antiga. para migração de clientes da Depaula
         // if (this.password != null && !this.password.equals("")) {
         if (this.newPassword != null && !this.newPassword.equals("")) {
