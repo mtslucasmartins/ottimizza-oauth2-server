@@ -79,7 +79,7 @@ public class OrganizationService {
         Pageable pageRequest = OrganizationDTO.getPageRequest(criteria);
         Page<Organization> results = new PageImpl<Organization>(new ArrayList<Organization>(), pageRequest, 0);
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
-            results = organizationRepository.fetchAll(filter, pageRequest, authenticated);
+        	results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
         }
         if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
             results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
