@@ -44,8 +44,12 @@ function appendCssClass(el, c) {
   el.className = el.className.split(" ").append(c).join(" ");
 }
 
-document.getElementById('form-login')
-  .addEventListener('submit', function(e) {
-    e.preventDefault();
-    document.getElementById('btn-login').disabled = true;
-  }, true);
+//
+//
+//
+let form = document.getElementById('form-login')
+let submitButton = document.getElementById('btn-login');
+
+form.addEventListener('submit', function() {
+  submitButton.setAttribute('disabled', 'disabled');
+}, false);
