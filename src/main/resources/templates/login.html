@@ -66,7 +66,7 @@
                     <div class="card-content">
                       <div class="card-body login-img">
                         <div class="row m-0">
-                          <form s="f" th:action="@{/login}" method="post"
+                          <form id="form-login" s="f" th:action="@{/login}" method="post"
                             class="col-lg-12 col-md-12 bg-white px-4 pt-4 pb-5">
                             <h4 class="mb-2 card-title">Entrar</h4>
                             <p class="card-text mb-3">
@@ -97,7 +97,7 @@
                               <div class="container-fluid p-0">
                                 <div class="row m-0 justify-content-between">
                                   <div></div>
-                                  <button type="submit" class="btn btn-primary text-uppercase " tabindex="5">
+                                  <button id="btn-login" type="submit" class="btn btn-primary text-uppercase " tabindex="5">
                                     <span class="text-decoration-none text-white">Entrar</span>
                                   </button>
                                 </div>
