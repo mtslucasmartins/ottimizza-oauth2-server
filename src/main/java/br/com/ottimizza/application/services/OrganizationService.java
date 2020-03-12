@@ -79,7 +79,10 @@ public class OrganizationService {
         Pageable pageRequest = OrganizationDTO.getPageRequest(criteria);
         Page<Organization> results = new PageImpl<Organization>(new ArrayList<Organization>(), pageRequest, 0);
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
-        	results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
+            if (filter.getType() != null && filter.getType() == Organization.Type.CLIENT) {
+                filter.setOrganizationId(authenticated.getOrganization().getId());
+            }
+        	results = organizationRepository.fetchAll(filter, pageRequest, authenticated);
         }
         if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
             results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
@@ -95,10 +98,14 @@ public class OrganizationService {
             throws IllegalArgumentException, OrganizationAlreadyRegisteredException, Exception {
         User authenticated = userService.findByUsername(principal.getName());
         Organization organization = organizationDTO.toEntity();
-        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) { 
-        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
-            organization.setType(Organization.Type.CLIENT);
+
+        if (organization.getType() == Organization.Type.CLIENT) {
             organization.setOrganization(authenticated.getOrganization());
+        }
+        
+        if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+            organization.setType(Organization.Type.CLIENT);
+            
         } else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
             throw new AccessDeniedException("Você não tem permissão para criar empresas!");
         }

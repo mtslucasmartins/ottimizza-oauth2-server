@@ -43,3 +43,13 @@ function removeCssClass(el, c) {
 function appendCssClass(el, c) {
   el.className = el.className.split(" ").append(c).join(" ");
 }
+
+function onFormSubmit(event) {
+  // prevents form submission
+  event.preventDefault();
+
+  // sets submiting as true, to prevent double click
+  document.getElementById('btn-login').disabled = true;
+
+  return true;
+}
