@@ -73,7 +73,7 @@ public class OrganizationService {
         return OrganizationDTO.fromEntity(findById(id, authenticated));
     }
 
-    public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, SearchCriteria criteria, Principal principal)
+    public Page<OrganizationDTO> fetchAll(OrganizationDTO filter, SearchCriteria criteria, boolean ignoreAccountingFilter, Principal principal)
             throws OrganizationNotFoundException, Exception {
         User authenticated = userService.findByUsername(principal.getName());
         Pageable pageRequest = OrganizationDTO.getPageRequest(criteria);
@@ -81,12 +81,12 @@ public class OrganizationService {
         
         // Filtros de Usuários da Ottimizza (Administradores).
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
-            if (filter.getOrganizationId() == null) {
+            if (filter.getOrganizationId() == null && !ignoreAccountingFilter) {
                 filter.setOrganizationId(authenticated.getOrganization().getId());
             }
         	results = organizationRepository.fetchAll(filter, pageRequest, authenticated);
         }
-        
+
         if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
             results = organizationRepository.fetchAllByAccountantId(filter, pageRequest, authenticated);
         }
