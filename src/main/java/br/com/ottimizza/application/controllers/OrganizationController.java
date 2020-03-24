@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.responses.ErrorResponse;
@@ -46,9 +47,11 @@ public class OrganizationController {
     @GetMapping
     public HttpEntity<?> fetchAll(@ModelAttribute OrganizationDTO filter,
                                   @ModelAttribute SearchCriteria searchCriteria,
+                                  @RequestParam(name = "ignoreAccountingFilter", required= false, defaultValue = "false")
+                                  boolean ignoreAccountingFilter,
                                   Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericPageableResponse<OrganizationDTO>(
-            organizationService.fetchAll(filter, searchCriteria, principal)));
+            organizationService.fetchAll(filter, searchCriteria, ignoreAccountingFilter, principal)));
     }
     
     @GetMapping("/{id}")
