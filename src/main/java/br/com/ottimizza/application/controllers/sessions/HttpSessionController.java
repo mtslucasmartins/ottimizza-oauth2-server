@@ -22,7 +22,7 @@ import br.com.ottimizza.application.configuration.session.CustomSession;
 public class HttpSessionController {
 
     @Inject
-    FindByIndexNameSessionRepository<Session> sessionRepository;
+    FindByIndexNameSessionRepository<?> sessionRepository;
 
     @GetMapping
     public ResponseEntity<?> fetch(OAuth2Authentication authentication) throws Exception {
