@@ -22,12 +22,13 @@ import br.com.ottimizza.application.configuration.session.CustomSession;
 public class HttpSessionController {
 
     @Inject
-    FindByIndexNameSessionRepository<CustomSession> sessionRepository;
+    FindByIndexNameSessionRepository<?> sessionRepository;
 
     @GetMapping
     public ResponseEntity<?> fetch(OAuth2Authentication authentication) throws Exception {
+        Map<String, Session> sessions = (Map<String, Session>) sessionRepository.findByPrincipalName(authentication.getName());
 
-        return ResponseEntity.ok(sessionRepository.findByPrincipalName(authentication.getName())
+        return ResponseEntity.ok(sessions
             // .entrySet()
             //     .stream()
             //         .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
