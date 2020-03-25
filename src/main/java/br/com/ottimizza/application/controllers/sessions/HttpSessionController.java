@@ -27,7 +27,7 @@ public class HttpSessionController {
     @GetMapping
     public ResponseEntity<?> fetch(OAuth2Authentication authentication) throws Exception {
 
-        return ResponseEntity.ok(sessionRepository.findByPrincipalName(authentication.getName()));
+        return ResponseEntity.ok(sessionRepository.findByPrincipalName(authentication.getName())
             // .entrySet()
             //     .stream()
             //         .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
