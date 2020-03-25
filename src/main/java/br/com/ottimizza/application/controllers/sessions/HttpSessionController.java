@@ -18,7 +18,10 @@ public class HttpSessionController {
 
     @GetMapping
     public ResponseEntity<?> fetch(OAuth2Authentication authentication) throws Exception {
+
+        System.out.println("Principal Name: " + authentication.getName());
+
         return ResponseEntity.ok(sessionRepository.findByPrincipalName(authentication.getName()));
-    }   
+    } 
 
 }
