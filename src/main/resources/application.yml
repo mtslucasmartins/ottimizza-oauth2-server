@@ -49,6 +49,15 @@ spring:
           ssl:
             enable: true
     test-connection: false # was true
+  
+  redis:
+    url: ${REDIS_URL:redis://h:pe3d42aebcfefdd777f9e34ad0f85a7b41bd67694aa2ffac47ba7febb968dded8@ec2-52-200-69-76.compute-1.amazonaws.com:18309}
+
+  session:
+    store-type: redis
+    redis:
+      # flush-mode: on-save # Sessions flush mode.
+      # namespace: spring:session  # Namespace for keys used to store sessions.
 
   servlet:
     multipart:
@@ -58,15 +67,6 @@ spring:
       max-file-size: 200MB
   thymeleaf:
     cache: false
-
-  redis:
-    url: ${REDIS_URL:redis://h:pe3d42aebcfefdd777f9e34ad0f85a7b41bd67694aa2ffac47ba7febb968dded8@ec2-52-200-69-76.compute-1.amazonaws.com:18309}
-
-  session:
-    store-type: redis
-    redis:
-      # flush-mode: on-save # Sessions flush mode.
-      # namespace: spring:session  # Namespace for keys used to store sessions.
 
 
 oauth2-config:

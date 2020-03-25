@@ -103,6 +103,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>5.2.0.RELEASE</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.maxmind.geoip2/geoip2 -->
         <dependency>
