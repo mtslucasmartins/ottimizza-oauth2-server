@@ -1,5 +1,7 @@
 package br.com.ottimizza.application.configuration;
 
+import br.com.ottimizza.application.configuration.session.handlers.CompositeAuthenticationSuccessHandler;
+import br.com.ottimizza.application.configuration.session.handlers.SpringSessionPrincipalNameSuccessHandler;
 import br.com.ottimizza.application.services.impl.UserDetailsService;
 
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity(debug = false)
@@ -43,6 +46,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        
+        CompositeAuthenticationSuccessHandler successHandler = createHandler();
+        
         //@formatter:off
         String[] resources = Arrays.asList(new String[] {
                 "/assets/**", "/css/**", "/js/**", "/images/**"
@@ -86,6 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
             .and()
                 .formLogin()
+				    .successHandler(successHandler)
                 .loginPage("/login")
                 // .defaultSuccessUrl(DEFAULT_SUCCESS_URL, false)
                 // .success
@@ -100,4 +107,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //@formatter:on
     }
 
+    private CompositeAuthenticationSuccessHandler createHandler() {
+		SpringSessionPrincipalNameSuccessHandler setUsernameHandler =
+				new SpringSessionPrincipalNameSuccessHandler();
+		SavedRequestAwareAuthenticationSuccessHandler defaultHandler =
+				new SavedRequestAwareAuthenticationSuccessHandler();
+
+		CompositeAuthenticationSuccessHandler successHandler =
+				new CompositeAuthenticationSuccessHandler(setUsernameHandler, defaultHandler);
+		return successHandler;
+    }
+    
 }
