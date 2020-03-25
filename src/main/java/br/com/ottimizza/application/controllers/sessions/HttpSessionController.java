@@ -28,12 +28,12 @@ public class HttpSessionController {
     public ResponseEntity<?> fetch(OAuth2Authentication authentication) throws Exception {
 
         return ResponseEntity.ok(sessionRepository.findByPrincipalName(authentication.getName())
-            .entrySet()
-                .stream()
-                    .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
-                        e.getKey(), new CustomSession(e.getValue())
-                    ))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+            // .entrySet()
+            //     .stream()
+            //         .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
+            //             e.getKey(), new CustomSession(e.getValue())
+            //         ))
+            //     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     } 
 
