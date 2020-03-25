@@ -29,12 +29,12 @@ public class HttpSessionController {
         Map<String, Session> sessions = (Map<String, Session>) sessionRepository.findByPrincipalName(authentication.getName());
 
         return ResponseEntity.ok(sessions
-            // .entrySet()
-            //     .stream()
-            //         .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
-            //             e.getKey(), new CustomSession(e.getValue())
-            //         ))
-            //     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+            .entrySet()
+                .stream()
+                    .map(e -> new AbstractMap.SimpleEntry<String, CustomSession>(
+                        e.getKey(), new CustomSession(e.getValue())
+                    ))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     } 
 
