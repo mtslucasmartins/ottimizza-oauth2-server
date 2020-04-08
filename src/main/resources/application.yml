@@ -66,4 +66,4 @@ oauth2-config:
 tareffa:
   service:
     name: tareffa-service
-    url: ${TAREFFA_URL:https://development-api-ordemservicos.herokuapp.com}    
+    url: ${TAREFFA_URL:https://development-api.tareffa.com.br}    
