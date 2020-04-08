@@ -146,13 +146,22 @@ public class PasswordRecoveryController {
         //ENVIA NOVA SENHA PARA O TAREFFA
         //SENHA: newPassoword
         //EMAIL: passwordResetToken.getUser().getUsername()
-        String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
-        String encodedCredentials = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
-        
-        tareffaClient.updateUserPasswordTareffa(
-            encodedCredentials, 
-            new UsuarioTareffa(passwordResetToken.getUser().getUsername(), newPassoword)
-        );
+        try {
+            new Thread() {
+                @Override
+                public void run() {
+                    
+                    String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
+                    String encodedCredentials = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+
+                    tareffaClient.updateUserPasswordTareffa(
+                        encodedCredentials, 
+                        new UsuarioTareffa(passwordResetToken.getUser().getUsername(), newPassoword)
+                    );
+                    
+                }
+            }.start();
+        } catch (Exception e) {}
 
         // if (result != null) {
         //     // model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
