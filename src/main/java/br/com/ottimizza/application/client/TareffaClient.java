@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "${tareffa.service.name}", url = "tareffa.service.url")
+@FeignClient(name = "${tareffa.service.name}", url = "${tareffa.service.url}")
 public interface TareffaClient {
     
     @PostMapping("/services/usuarios/password")
