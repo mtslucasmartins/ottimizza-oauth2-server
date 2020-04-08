@@ -1,6 +1,7 @@
 
 package br.com.ottimizza.application.controllers;
 
+import br.com.ottimizza.application.client.TareffaClient;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -32,6 +33,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 
 // Models 
 import br.com.ottimizza.application.model.PasswordResetToken;
+import br.com.ottimizza.application.model.tareffa.UsuarioTareffa;
 import br.com.ottimizza.application.model.user.User;
 
 // Repositories
@@ -41,6 +43,7 @@ import br.com.ottimizza.application.repositories.users.UsersRepository;
 // Services
 import br.com.ottimizza.application.services.SecurityService;
 import br.com.ottimizza.application.services.MailContentBuilder;
+import java.util.Base64;
 
 @Controller
 public class PasswordRecoveryController {
@@ -48,6 +51,12 @@ public class PasswordRecoveryController {
     @Value("${oauth2-config.server-url}")
     private String hostname;
 
+    @Value("${oauth2-config.client-id}")
+    private String OAUTH2_CLIENT_ID;
+
+    @Value("${oauth2-config.client-secret}")
+    private String OAUTH2_CLIENT_SECRET;
+    
     @Inject
     private UsersRepository userRepository;
 
@@ -62,6 +71,9 @@ public class PasswordRecoveryController {
 
     @Autowired
     private JavaMailSender mailSender;
+    
+    @Inject
+    TareffaClient tareffaClient;
 
     @GetMapping(value = "/password_reset") //@formatter:off
     public String passwordResetPage(@RequestParam(name = "username", defaultValue = "") String username, 
@@ -118,9 +130,9 @@ public class PasswordRecoveryController {
                                      SecurityContextHolderAwareRequestWrapper securityContext) 
                                      throws Exception {
 
-        if (!newPassoword.equals(newPassowordCheck)) {
+        //if (!newPassoword.equals(newPassowordCheck)) {
             // response.sendRedirect("/password_reset?error=password_mismatch");
-        }
+        //}
 
         PasswordResetToken passwordResetToken = passwordRecoveryRepository.findByToken(token);
 
@@ -128,6 +140,18 @@ public class PasswordRecoveryController {
         userRepository.updatePassword(
             new BCryptPasswordEncoder().encode(newPassoword), 
             passwordResetToken.getUser().getUsername()
+        );
+        
+        
+        //ENVIA NOVA SENHA PARA O TAREFFA
+        //SENHA: newPassoword
+        //EMAIL: passwordResetToken.getUser().getUsername()
+        String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
+        String encodedCredentials = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+        
+        tareffaClient.updateUserPasswordTareffa(
+            encodedCredentials, 
+            new UsuarioTareffa(passwordResetToken.getUser().getUsername(), newPassoword)
         );
 
         // if (result != null) {

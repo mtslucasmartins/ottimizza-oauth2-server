@@ -62,3 +62,8 @@ oauth2-config:
   client-secret: ${CLIENT_SECRET:d792ec02541816ca1095c917f2de73195fe86303}
   server-url: ${SERVER_URL:https://development-oauth-server.herokuapp.com}
   default-success-redirect: ${DEFAULT_SUCCESS_REDIRECT:https://development-accounts.ottimizza.com.br/auth/callback}
+
+tareffa:
+  service:
+    name: tareffa-service
+    url: ${TAREFFA_URL:https://development-api-ordemservicos.herokuapp.com}    
