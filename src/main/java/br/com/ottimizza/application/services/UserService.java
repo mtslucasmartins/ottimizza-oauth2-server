@@ -359,15 +359,13 @@ public class UserService {
                         // substitui os dados encontrados e cria um usuário admin 
                         
                         // realiza calculo para fazer requests a cada 20s, para não estourar limite de uso 3 req/min 
-                        long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
+                        //long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
 
                         try {
                             // se timeout > 0, pausa o processo pelo tempo determinado em milisegundos..
-                            TimeUnit.MILLISECONDS.sleep(timeout);
-
-                            DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
-                            lastCallToAPI = new Date();
-
+                            //TimeUnit.MILLISECONDS.sleep(timeout);
+                            //DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
+                            //lastCallToAPI = new Date();
                            /* if (info.getEmail() != null && !info.getEmail().isEmpty()) {
                             	accounting.setEmail(info.getEmail());
                             } else {
