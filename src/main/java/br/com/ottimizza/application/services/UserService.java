@@ -368,15 +368,25 @@ public class UserService {
                             DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
                             lastCallToAPI = new Date();
 
-                            if (info.getEmail() != null && !info.getEmail().isEmpty()) {
-                                accounting.setEmail(info.getEmail());
+                           /* if (info.getEmail() != null && !info.getEmail().isEmpty()) {
+                            	accounting.setEmail(info.getEmail());
                             } else {
                                 accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                             }
 
                             if (info.getNome() != null && !info.getNome().isEmpty()) {
                                 accounting.setName(info.getNome());
-                            } 
+                            }
+                            */
+                            if (object.getEmail() != null && !object.getEmail().isEmpty()) {
+                            	accounting.setEmail(object.getEmail());
+                            } else {
+                                accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
+                            }
+
+                            if (object.getOrganizationName() != null && !object.getOrganizationName().isEmpty()) {
+                                accounting.setName(object.getOrganizationName());
+                            }
                         } catch (Exception e) {
                             accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                         }
