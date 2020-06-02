@@ -9,23 +9,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.client.ReceitaWSClient;
-import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
 import br.com.ottimizza.application.domain.dtos.ImportDataModel;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.UserShortDTO;
 import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
@@ -33,10 +31,14 @@ import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredExcep
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user.UserAuthorities;
+import br.com.ottimizza.application.model.user.UserAuthoritiesId;
+import br.com.ottimizza.application.model.user.UserProducts;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationID;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
+import br.com.ottimizza.application.repositories.UserProductsRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 import br.com.ottimizza.application.repositories.users_organizations.UserOrganizationRepository;
@@ -61,6 +63,9 @@ public class UserService {
 
     @Inject
     OrganizationRepository organizationRepository;
+    
+    @Inject
+    UserProductsRepository userProductsRepository;
 
     public User findById(BigInteger id) throws UserNotFoundException, Exception {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
@@ -540,6 +545,32 @@ public class UserService {
             throw new UserAlreadyRegisteredException("A user with that email address is already registered.");
         }
         return true;
+    }
+    
+    public Page<UserShortDTO> fetchUserShortDTO(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
+            throws Exception {
+    	return userRepository.fetchUserShort(filter, UserDTO.getPageRequest(searchCriteria));
+    	
+    }
+    
+    public List<BigInteger> fetchIds(UserDTO filter) throws Exception {
+    	return userRepository.fetchIds(filter);
+    }
+    
+    public void saveUserProducts(UserProducts userProd) throws Exception {
+    	userProductsRepository.saveUserProducts(userProd.getUsersId(), userProd.getProductsId());
+    }
+    
+    public void deleteUserProducts(UserProducts userProd) throws Exception {
+    	userProductsRepository.deleteUserProducts(userProd.getUsersId(), userProd.getProductsId());
+    }
+    
+    public void saveUserAuthorities(UserAuthorities userAuthorities) throws Exception {
+    	userProductsRepository.saveUserAuhtorities(userAuthorities.getUsersId(), userAuthorities.getAuthoritiesId());
+    }
+    
+    public void deleteUserAuthorities(UserAuthorities userAuthorities) throws Exception {
+    	userProductsRepository.deleteUserAuhtorities(userAuthorities.getUsersId(), userAuthorities.getAuthoritiesId());
     }
 
 }
