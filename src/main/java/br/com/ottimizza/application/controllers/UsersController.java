@@ -152,7 +152,7 @@ public class UsersController {
     }
     
     @DeleteMapping("/products")
-    public HttpEntity<?> deleteUsersProducts(@RequestBody UserProducts userProducts) throws Exception {
+    public HttpEntity<?> deleteUsersProducts(@ModelAttribute UserProducts userProducts) throws Exception {
     	try{
     		userService.deleteUserProducts(userProducts);
     		return ResponseEntity.ok("Permição de acesso excluida do usuário!");
@@ -176,7 +176,7 @@ public class UsersController {
     }
     
     @DeleteMapping("/authorities")
-    public HttpEntity<?> deleteUsersAuhtorities(@RequestBody UserAuthorities userAuthorities) throws Exception {
+    public HttpEntity<?> deleteUsersAuhtorities(@ModelAttribute UserAuthorities userAuthorities) throws Exception {
     	try{
     		userService.deleteUserAuthorities(userAuthorities);
     		return ResponseEntity.ok("Permição excluida do usuário!");
