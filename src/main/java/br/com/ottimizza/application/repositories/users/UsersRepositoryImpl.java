@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.repositories.users;
 
 import java.math.BigInteger;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import br.com.ottimizza.application.domain.dtos.UserShortDTO;
 import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.user.QUser;
 import br.com.ottimizza.application.model.user.QUserAuthorities;
-import br.com.ottimizza.application.model.user.QUserAuthoritiesId;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.QUserOrganization;
 import br.com.ottimizza.application.repositories.UserProductsRepository;
@@ -95,7 +95,7 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     }
     
     @Override
-	public Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable) {
+	public Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, User userAuthorized) {
 		long totalElements = 0;
         JPAQuery<UserShortDTO> query = new JPAQuery<UserShortDTO>(em).from(user);
         List<UserShortDTO> list = new ArrayList<UserShortDTO>();
@@ -105,6 +105,7 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
         	paginate(query, pageable);
         	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
+        	query.where(user.organization.id.eq(userAuthorized.getOrganization().getId()));
         	list = query.fetch();
         	List<UserShortDTO> listNoAuthority = new ArrayList<UserShortDTO>();
         	for(UserShortDTO user : list) {
