@@ -550,7 +550,8 @@ public class UserService {
     public Page<UserShortDTO> fetchUserShortDTO(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
             throws Exception {
     	User authorizedUser = findByUsername(principal.getName());
-    	return userRepository.fetchUserShort(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser);
+    	//System.out.println("User "+ authorizedUser.toString());
+    	return userRepository.fetchUserShort(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser.getOrganization().getId());
     	
     }
     

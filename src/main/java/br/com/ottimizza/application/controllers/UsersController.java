@@ -127,7 +127,7 @@ public class UsersController {
     
     //JD em diante
     
-    @GetMapping("/getinfo")
+    @GetMapping("/getInfo")
     public HttpEntity<?> fetchUserShortDTO(@ModelAttribute UserDTO filter,
                                   		   @ModelAttribute SearchCriteria criteria, 
                                   		   Principal principal) throws Exception {

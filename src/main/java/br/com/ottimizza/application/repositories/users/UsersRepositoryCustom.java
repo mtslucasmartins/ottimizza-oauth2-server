@@ -18,7 +18,7 @@ public interface UsersRepositoryCustom {
 
     Page<User> fetchAllCustomers(UserDTO filter, Pageable pageable, User authorizedUser);
     
-    Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, User userAuthorized);
+    Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, BigInteger organizationId);
     
     List<BigInteger> fetchIds(UserDTO filter); 
 

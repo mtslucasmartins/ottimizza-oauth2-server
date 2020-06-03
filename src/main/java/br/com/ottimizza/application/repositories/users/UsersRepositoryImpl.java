@@ -95,17 +95,16 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     }
     
     @Override
-	public Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, User userAuthorized) {
+	public Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, BigInteger organizationId) {
 		long totalElements = 0;
         JPAQuery<UserShortDTO> query = new JPAQuery<UserShortDTO>(em).from(user);
         List<UserShortDTO> list = new ArrayList<UserShortDTO>();
-        
         if(filter.getAuthority() == null || filter.getAuthority().equalsIgnoreCase("NENHUM")) {
         	totalElements = filter(query, filter);
         	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
         	paginate(query, pageable);
+        	query.where(user.organization.id.eq(organizationId));
         	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
-        	query.where(user.organization.id.eq(userAuthorized.getOrganization().getId()));
         	list = query.fetch();
         	List<UserShortDTO> listNoAuthority = new ArrayList<UserShortDTO>();
         	for(UserShortDTO user : list) {
