@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import br.com.ottimizza.application.model.Authority;
+import br.com.ottimizza.application.model.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class UserShortDTO {
 	
 	private String avatar;
 
-	private List<String> products;
+	private List<BigInteger> products;
 	
 	private List<Authority> authorities;
 
@@ -40,7 +41,5 @@ public class UserShortDTO {
 		super();
 		this.id = id;
 	}
-	
-	
 	
 }

@@ -30,9 +30,9 @@ import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundExcept
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
+import br.com.ottimizza.application.model.product.Product;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user.UserAuthorities;
-import br.com.ottimizza.application.model.user.UserAuthoritiesId;
 import br.com.ottimizza.application.model.user.UserProducts;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationID;
@@ -550,13 +550,16 @@ public class UserService {
     public Page<UserShortDTO> fetchUserShortDTO(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
             throws Exception {
     	User authorizedUser = findByUsername(principal.getName());
-    	//System.out.println("User "+ authorizedUser.toString());
     	return userRepository.fetchUserShort(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser.getOrganization().getId());
     	
     }
     
     public List<BigInteger> fetchIds(UserDTO filter) throws Exception {
     	return userRepository.fetchIds(filter);
+    }
+    
+    public List<?> fetchAllProducts() throws Exception {
+    	return userProductsRepository.fetchAllProducts();
     }
     
     public void saveUserProducts(UserProducts userProd) throws Exception {

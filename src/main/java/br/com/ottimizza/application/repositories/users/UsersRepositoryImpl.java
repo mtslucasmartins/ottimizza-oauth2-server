@@ -1,7 +1,6 @@
 package br.com.ottimizza.application.repositories.users;
 
 import java.math.BigInteger;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +21,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
+import br.com.ottimizza.application.domain.dtos.ProductDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.dtos.UserShortDTO;
 import br.com.ottimizza.application.model.Authority;
@@ -100,17 +100,18 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         JPAQuery<UserShortDTO> query = new JPAQuery<UserShortDTO>(em).from(user);
         List<UserShortDTO> list = new ArrayList<UserShortDTO>();
         if(filter.getAuthority() == null || filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+        	query.where(user.organization.id.eq(organizationId));
         	totalElements = filter(query, filter);
         	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
         	paginate(query, pageable);
-        	query.where(user.organization.id.eq(organizationId));
+        	
         	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
         	list = query.fetch();
         	List<UserShortDTO> listNoAuthority = new ArrayList<UserShortDTO>();
         	for(UserShortDTO user : list) {
         		try {
-    				List<Authority> authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
-    				List<String>    products    = usersRepository.fetchProductsByUserId(user.getId());
+    				List<Authority>     authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
+    				List<BigInteger>    products    = usersRepository.fetchProductsByUserId(user.getId());
     				user.setAuthorities(authorities);
     				user.setProducts(products);
     				if(authorities.isEmpty() && filter.getAuthority().equalsIgnoreCase("NENHUM")) {
@@ -130,15 +131,17 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         else {
         	query.innerJoin(userAuthorities).on(userAuthorities.id.authoritiesId.like(filter.getAuthority())
         			.and(userAuthorities.usersId.id.eq(user.id)));
+        	query.where(user.organization.id.eq(organizationId));
         	totalElements = filter(query, filter);  
         	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
         	paginate(query, pageable);
+        	
         	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
         	list = query.fetch();
         	for(UserShortDTO user : list) {
         		try {
-    				List<Authority> authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
-    				List<String>    products    = usersRepository.fetchProductsByUserId(user.getId());
+    				List<Authority>     authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
+    				List<BigInteger>    products    = usersRepository.fetchProductsByUserId(user.getId());
     				user.setAuthorities(authorities);
     				user.setProducts(products);
     			}

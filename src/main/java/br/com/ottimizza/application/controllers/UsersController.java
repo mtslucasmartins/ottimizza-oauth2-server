@@ -28,10 +28,10 @@ import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user.UserAuthorities;
-import br.com.ottimizza.application.model.user.UserAuthoritiesId;
 import br.com.ottimizza.application.model.user.UserProducts;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.services.UserService;
+import net.minidev.json.JSONObject;
 
 @RestController // @formatter:off
 @RequestMapping(value = "/api/v1/users")
@@ -139,51 +139,72 @@ public class UsersController {
     	return ResponseEntity.ok(userService.fetchIds(filter));
     }
     
+    @GetMapping("/products")
+    public HttpEntity<?> fetchAllProducts() throws Exception {
+    	return ResponseEntity.ok(userService.fetchAllProducts());
+    }
+    
     @PostMapping("/products")
     public HttpEntity<?> saveUsersProducts(@RequestBody UserProducts userProducts) throws Exception {
+    	JSONObject response = new JSONObject();
     	try{
     		userService.saveUserProducts(userProducts);
-    		return ResponseEntity.ok("Permição de acesso concedida ao usuário!");
+    		response.put("status", "success");
+    		response.put("record", userProducts);
+    		return ResponseEntity.ok(response);
     	}
     	catch(Exception ex) {
-    		ex.getMessage();
-    		return ResponseEntity.ok("Erro ao inserir");
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
     	}
     }
     
     @DeleteMapping("/products")
     public HttpEntity<?> deleteUsersProducts(@ModelAttribute UserProducts userProducts) throws Exception {
+    	JSONObject response = new JSONObject();
     	try{
     		userService.deleteUserProducts(userProducts);
-    		return ResponseEntity.ok("Permição de acesso excluida do usuário!");
+    		response.put("status", "success");
+    		response.put("record", userProducts);
+    		return ResponseEntity.ok(response);
     	}
     	catch(Exception ex) {
-    		ex.getMessage();
-    		return ResponseEntity.ok("Erro ao deletar");
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
     	}
     }
     
     @PostMapping("/authorities")
     public HttpEntity<?> saveUsersAuhtorities(@RequestBody UserAuthorities userAuthorities) throws Exception {
+    	JSONObject response = new JSONObject();
     	try{
     		userService.saveUserAuthorities(userAuthorities);
-    		return ResponseEntity.ok("Permição concedida ao usuário!");
+    		response.put("status", "success");
+    		response.put("record", userAuthorities);
+    		return ResponseEntity.ok(response);
     	}
     	catch(Exception ex) {
-    		ex.getMessage();
-    		return ResponseEntity.ok("Erro ao inserir");
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
     	}
     }
     
     @DeleteMapping("/authorities")
     public HttpEntity<?> deleteUsersAuhtorities(@ModelAttribute UserAuthorities userAuthorities) throws Exception {
+    	JSONObject response = new JSONObject();
     	try{
     		userService.deleteUserAuthorities(userAuthorities);
-    		return ResponseEntity.ok("Permição excluida do usuário!");
+    		response.put("status", "success");
+    		response.put("record", userAuthorities);
+    		return ResponseEntity.ok(response);
     	}
     	catch(Exception ex) {
-    		ex.getMessage();
-    		return ResponseEntity.ok("Erro ao deletar");
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
     	}
     }
     

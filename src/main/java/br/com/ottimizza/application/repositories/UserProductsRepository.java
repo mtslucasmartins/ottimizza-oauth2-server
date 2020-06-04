@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import br.com.ottimizza.application.domain.dtos.ProductShortDTO;
 import br.com.ottimizza.application.model.Authority;
 import br.com.ottimizza.application.model.user.UserProducts;
 import br.com.ottimizza.application.model.user.UserProductsId;
@@ -22,8 +23,11 @@ public interface UserProductsRepository extends JpaRepository<UserProducts, User
 	@Query(value = "SELECT a.name FROM users_authorities ua INNER JOIN authorities a ON (a.name = ua.fk_authorities_id) WHERE ua.fk_users_id = :id", nativeQuery = true)
     List<Authority> fetchAuthoritiesByUserId(@Param("id") BigInteger id);
     
-    @Query(value = "SELECT p.name FROM products p INNER JOIN users_products up ON (up.fk_products_id = p.id) WHERE up.fk_users_id = :id", nativeQuery = true)
-    List<String> fetchProductsByUserId(@Param("id") BigInteger id);
+    @Query(value = "SELECT p.id  FROM products p INNER JOIN users_products up ON (up.fk_products_id = p.id) WHERE up.fk_users_id = :id", nativeQuery = true)
+    List<BigInteger> fetchProductsByUserId(@Param("id") BigInteger id);
+    
+    @Query(value = "SELECT new br.com.ottimizza.application.domain.dtos.ProductShortDTO(p.id , p.name) FROM Product p")
+    List<ProductShortDTO> fetchAllProducts();
     
     @Modifying
     @Transactional
