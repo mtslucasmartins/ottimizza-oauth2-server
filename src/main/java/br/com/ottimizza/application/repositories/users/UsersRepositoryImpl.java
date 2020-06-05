@@ -187,10 +187,10 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     	else {
     		query.innerJoin(userAuthorities).on(userAuthorities.id.authoritiesId.like(filter.getAuthority())
         			.and(userAuthorities.usersId.id.eq(user.id)));
-    		if (filter.getUsername() != null) query.where(user.username.contains(filter.getUsername()));
-    		if (filter.getFirstName() != null) query.where(user.firstName.contains(filter.getFirstName()));
-    		if (filter.getLastName() != null) query.where(user.lastName.contains(filter.getLastName()));
-    		if (filter.getEmail() != null) query.where(user.email.contains(filter.getEmail()));
+    		if (filter.getUsername() != null)  query.where(QueryDSLUtils.unnacent(user.username, "%" + filter.getUsername() + "%"));
+    		if (filter.getFirstName() != null) query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
+    		if (filter.getLastName() != null)  query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
+    		if (filter.getEmail() != null)     query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
     	
     		query.where(user.organization.id.eq(organizationId));
     		query.select(user.id);
