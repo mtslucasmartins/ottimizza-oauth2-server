@@ -21,7 +21,6 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import br.com.ottimizza.application.domain.dtos.ProductDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.dtos.UserShortDTO;
 import br.com.ottimizza.application.model.Authority;
@@ -164,6 +163,7 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     		if (filter.getFirstName() != null) query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
     		if (filter.getLastName() != null)  query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
     		if (filter.getEmail() != null)     query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
+    		if (filter.getType() != null)	   query.where(user.type.eq(filter.getType()));
     		query.where(user.organization.id.eq(organizationId));
     		query.select(user.id);
     		result = query.fetch();
@@ -191,7 +191,7 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
     		if (filter.getFirstName() != null) query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
     		if (filter.getLastName() != null)  query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
     		if (filter.getEmail() != null)     query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
-    	
+    		if (filter.getType() != null)	   query.where(user.type.eq(filter.getType()));
     		query.where(user.organization.id.eq(organizationId));
     		query.select(user.id);
     		result = query.fetch();
