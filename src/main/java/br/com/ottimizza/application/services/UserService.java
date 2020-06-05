@@ -554,8 +554,9 @@ public class UserService {
     	
     }
     
-    public List<BigInteger> fetchIds(UserDTO filter) throws Exception {
-    	return userRepository.fetchIds(filter);
+    public List<BigInteger> fetchIds(UserDTO filter, Principal principal) throws Exception {
+    	User authorizedUser = findByUsername(principal.getName());
+    	return userRepository.fetchIds(filter, authorizedUser.getOrganization().getId());
     }
     
     public List<?> fetchAllProducts() throws Exception {

@@ -20,6 +20,6 @@ public interface UsersRepositoryCustom {
     
     Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, BigInteger organizationId);
     
-    List<BigInteger> fetchIds(UserDTO filter); 
+    List<BigInteger> fetchIds(UserDTO filter, BigInteger oganizationId); 
 
 }

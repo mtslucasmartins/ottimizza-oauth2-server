@@ -154,14 +154,50 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
 	}
     
     @Override
-    public List<BigInteger> fetchIds(UserDTO filter) {
+    public List<BigInteger> fetchIds(UserDTO filter, BigInteger organizationId) {
     	JPAQuery<BigInteger> query = new JPAQuery<BigInteger>(em).from(user);
-    	if (filter.getUsername() != null) query.where(user.username.contains(filter.getUsername()));
-    	if (filter.getFirstName() != null) query.where(user.firstName.contains(filter.getFirstName()));
-    	if (filter.getLastName() != null) query.where(user.lastName.contains(filter.getLastName()));
-    	if (filter.getEmail() != null) query.where(user.email.contains(filter.getEmail()));
-    	query.select(user.id);
-    	return query.fetch();
+    	List<BigInteger> result = new ArrayList<BigInteger>();
+    	List<BigInteger> listNoAuthority = new ArrayList<BigInteger>();
+    	
+    	if(filter.getAuthority() == null || filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+    		if (filter.getUsername() != null) query.where(user.username.contains(filter.getUsername()));
+    		if (filter.getFirstName() != null) query.where(user.firstName.contains(filter.getFirstName()));
+    		if (filter.getLastName() != null) query.where(user.lastName.contains(filter.getLastName()));
+    		if (filter.getEmail() != null) query.where(user.email.contains(filter.getEmail()));
+    		query.where(user.organization.id.eq(organizationId));
+    		query.select(user.id);
+    		result = query.fetch();
+    		for(BigInteger userId : result) {
+    			try {
+    				List<Authority> authorities = usersRepository.fetchAuthoritiesByUserId(userId);
+    				if(authorities.isEmpty() && filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+    					listNoAuthority.add(userId);
+    				}
+    			}
+    			catch(Exception ex) {
+    				ex.getMessage();
+    			}
+    		}
+    		if(filter.getAuthority() == null)
+        		return result;
+        		
+        	else
+        		return listNoAuthority;
+    	}
+    	else {
+    		query.innerJoin(userAuthorities).on(userAuthorities.id.authoritiesId.like(filter.getAuthority())
+        			.and(userAuthorities.usersId.id.eq(user.id)));
+    		if (filter.getUsername() != null) query.where(user.username.contains(filter.getUsername()));
+    		if (filter.getFirstName() != null) query.where(user.firstName.contains(filter.getFirstName()));
+    		if (filter.getLastName() != null) query.where(user.lastName.contains(filter.getLastName()));
+    		if (filter.getEmail() != null) query.where(user.email.contains(filter.getEmail()));
+    	
+    		query.where(user.organization.id.eq(organizationId));
+    		query.select(user.id);
+    		result = query.fetch();
+    		
+    		return result;
+    	}
     }
     
     private <T> long filter(JPAQuery<T> query, UserDTO filter) {

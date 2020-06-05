@@ -135,8 +135,8 @@ public class UsersController {
     }
     
     @GetMapping("/usersIds")
-    public HttpEntity<?> fetchIds(@ModelAttribute UserDTO filter) throws Exception{
-    	return ResponseEntity.ok(userService.fetchIds(filter));
+    public HttpEntity<?> fetchIds(@ModelAttribute UserDTO filter, Principal principal) throws Exception{
+    	return ResponseEntity.ok(userService.fetchIds(filter, principal));
     }
     
     @GetMapping("/products")
