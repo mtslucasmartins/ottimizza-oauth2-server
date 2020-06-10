@@ -66,6 +66,8 @@ public class UserService {
     
     @Inject
     UserProductsRepository userProductsRepository;
+   
+    
 
     public User findById(BigInteger id) throws UserNotFoundException, Exception {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
@@ -578,5 +580,5 @@ public class UserService {
     public void deleteUserAuthorities(UserAuthorities userAuthorities) throws Exception {
     	userProductsRepository.deleteUserAuhtorities(userAuthorities.getUsersId(), userAuthorities.getAuthoritiesId());
     }
-
+    
 }
