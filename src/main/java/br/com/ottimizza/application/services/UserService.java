@@ -561,8 +561,8 @@ public class UserService {
     	return userRepository.fetchIds(filter, authorizedUser.getOrganization().getId());
     }
     
-    public List<?> fetchAllProducts() throws Exception {
-    	return userProductsRepository.fetchAllProducts();
+    public List<?> fetchAllProducts(String group) throws Exception {
+    	return userProductsRepository.fetchAllProducts(group);
     }
     
     public void saveUserProducts(UserProducts userProd) throws Exception {

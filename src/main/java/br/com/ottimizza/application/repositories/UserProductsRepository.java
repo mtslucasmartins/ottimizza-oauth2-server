@@ -26,8 +26,8 @@ public interface UserProductsRepository extends JpaRepository<UserProducts, User
     @Query(value = "SELECT p.id  FROM products p INNER JOIN users_products up ON (up.fk_products_id = p.id) WHERE up.fk_users_id = :id", nativeQuery = true)
     List<BigInteger> fetchProductsByUserId(@Param("id") BigInteger id);
     
-    @Query(value = "SELECT new br.com.ottimizza.application.domain.dtos.ProductShortDTO(p.id , p.name) FROM Product p")
-    List<ProductShortDTO> fetchAllProducts();
+    @Query(value = "SELECT new br.com.ottimizza.application.domain.dtos.ProductShortDTO(p.id , p.name) FROM Product p WHERE p.group = :group")
+    List<ProductShortDTO> fetchAllProducts(@Param("group")String group);
     
     @Modifying
     @Transactional

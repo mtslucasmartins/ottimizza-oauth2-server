@@ -139,9 +139,9 @@ public class UsersController {
     	return ResponseEntity.ok(userService.fetchIds(filter, principal));
     }
     
-    @GetMapping("/products")
-    public HttpEntity<?> fetchAllProducts() throws Exception {
-    	return ResponseEntity.ok(userService.fetchAllProducts());
+    @GetMapping("/products/{group}")
+    public HttpEntity<?> fetchAllProducts(@PathVariable("group") String group) throws Exception {
+    	return ResponseEntity.ok(userService.fetchAllProducts(group));
     }
     
     @PostMapping("/products")
