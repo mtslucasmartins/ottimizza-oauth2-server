@@ -85,7 +85,7 @@ public class InvitationService {
        	
        
         
-        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
+        /*if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
             inviteDetails.setToken(UUID.randomUUID().toString());
 
             String email = inviteDetails.getEmail();
@@ -113,7 +113,9 @@ public class InvitationService {
             // envia email. :)
             this.sendInvitation(inviteDetails, authenticated);
 
-        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+        }
+        if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {*/
+        	
             inviteDetails.setToken(UUID.randomUUID().toString());
             
             if (inviteDetails.getOrganization() == null) {
@@ -135,7 +137,7 @@ public class InvitationService {
                 inviteDetails.setOrganization(organization);
             }
             List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
-                inviteDetails.getEmail(), authenticated.getOrganization().getId()
+                inviteDetails.getEmail(), inviteDetails.getOrganization().getId()
             );
 
             if (invites.size() == 0) {
@@ -145,8 +147,8 @@ public class InvitationService {
             }
 
             this.sendInvitation(inviteDetails, authenticated);
-        }
-        return inviteDetails;
+        //}
+            return inviteDetails;
     }
     
     public Page<UserOrganizationInvite> fetchInvitedUsers(String email, Integer pageIndex, Integer pageSize, Principal principal)
