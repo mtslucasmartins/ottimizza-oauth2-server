@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.services;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
+import br.com.ottimizza.application.repositories.UserProductsRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 
@@ -26,6 +28,9 @@ public class SignUpService {
 
     @Inject
     UsersRepository userRepository;
+    
+    @Inject
+    UserProductsRepository userProductsRepository;
 
     @Inject
     OrganizationService organizationService;
@@ -105,10 +110,16 @@ public class SignUpService {
         migrateUsersOrganizationsFromInvitesByUser(user);
 
         // Adiciona autoridades ao usuário.
-        userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
-        userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
-        userRepository.addAuthority(user.getId(), Authorities.READ.getName());
+        if(inviteTokenDetails.getAuthorities().contains("ADMIN")) userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
+        if(inviteTokenDetails.getAuthorities().contains("WRITE")) userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
+        if(inviteTokenDetails.getAuthorities().contains("READ"))  userRepository.addAuthority(user.getId(), Authorities.READ.getName());
 
+        // Da permisao aos produtos ao usuario
+        String[] productsIds = inviteTokenDetails.getProducts().split(";");
+        for(String id : productsIds) {
+        	userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+        }
+        
         return user;
     }
 
