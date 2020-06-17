@@ -95,9 +95,10 @@ public class SignUpService {
 
         user.setType(inviteTokenDetails.getType());
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        if (inviteTokenDetails.getType().equals(User.Type.ACCOUNTANT)) {
+        if (inviteTokenDetails.getType().equals(User.Type.ACCOUNTANT) || inviteTokenDetails.getType().equals(User.Type.ADMINISTRATOR)) {
             user.setOrganization(inviteTokenDetails.getOrganization());
-        } else {
+        } 
+        if (inviteTokenDetails.getOrganization().getType() == 2){
             user.setOrganization(inviteTokenDetails.getOrganization().getOrganization());
         }
 
