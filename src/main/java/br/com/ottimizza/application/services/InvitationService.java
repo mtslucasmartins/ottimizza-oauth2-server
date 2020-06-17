@@ -73,14 +73,20 @@ public class InvitationService {
             throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
         }
         
-        
-        UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
-        User user = userRepository.findByEmail(inviteDetails.getEmail());
-        if(invitedUser != null && inviteDetails.getType() == 1){
-        	throw new IllegalArgumentException("Email nao valido convite");
-       	}
-        else if(user != null) {
-        	throw new IllegalArgumentException("Email nao valido usuario");
+        if(inviteDetails.getType() == 1) {
+        	UserOrganizationInvite invitedUser = findInviteByEmail(inviteDetails.getEmail());
+        	User user = userRepository.findByEmail(inviteDetails.getEmail());
+        	if(invitedUser != null) throw new IllegalArgumentException("Email nao valido convite");
+        	
+        	else if(user != null) 	throw new IllegalArgumentException("Email nao valido usuario");
+        }
+        else {
+        	UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
+        	User user = userRepository.findByEmail(inviteDetails.getEmail());
+        	if(invitedUser != null) throw new IllegalArgumentException("Email nao valido convite");
+        	
+           	else if(user != null) throw new IllegalArgumentException("Email nao valido usuario");
+        	
         }
        	
        
@@ -180,6 +186,15 @@ public class InvitationService {
         List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
             email, organizationId
         );
+        if (invites.size() == 0) {
+            return null;
+        } else {
+            return invites.get(0);
+        }
+    }
+    
+    private UserOrganizationInvite findInviteByEmail(String email) {
+        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(email);
         if (invites.size() == 0) {
             return null;
         } else {
