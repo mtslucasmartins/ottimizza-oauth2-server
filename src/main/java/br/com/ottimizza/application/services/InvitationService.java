@@ -73,16 +73,16 @@ public class InvitationService {
             throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
         }
         
-        if(inviteDetails.getType() == 1) {
-        	UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
-        	User user = userRepository.findByEmail(inviteDetails.getEmail());
-        	if(invitedUser != null){
-        		throw new IllegalArgumentException("Email nao valido convite");
-       		}
-        	else if(user != null) {
-        		throw new IllegalArgumentException("Email nao valido usuario");
-        	}
+        
+        UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
+        User user = userRepository.findByEmail(inviteDetails.getEmail());
+        if(invitedUser != null && inviteDetails.getType() == 1){
+        	throw new IllegalArgumentException("Email nao valido convite");
        	}
+        else if(user != null) {
+        	throw new IllegalArgumentException("Email nao valido usuario");
+        }
+       	
        
         
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
