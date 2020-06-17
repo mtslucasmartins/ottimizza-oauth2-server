@@ -76,9 +76,12 @@ public class InvitationService {
         if(inviteDetails.getType() == 1) {
         	UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
         	User user = userRepository.findByEmail(inviteDetails.getEmail());
-        	if(invitedUser != null || user != null){
-        		throw new IllegalArgumentException("Email não valido");
+        	if(invitedUser != null){
+        		throw new IllegalArgumentException("Email nao valido convite");
        		}
+        	else if(user != null) {
+        		throw new IllegalArgumentException("Email nao valido usuario");
+        	}
        	}
        
         
@@ -114,21 +117,21 @@ public class InvitationService {
             inviteDetails.setToken(UUID.randomUUID().toString());
             
             if (inviteDetails.getOrganization() == null) {
-                inviteDetails.setType(User.Type.ACCOUNTANT);
+                //inviteDetails.setType(User.Type.ACCOUNTANT);
                 inviteDetails.setOrganization(authenticated.getOrganization());
             } else if (inviteDetails.getOrganization().getId() != null) {
                 Organization organization = organizationRepository.fetchById(inviteDetails.getOrganization().getId());
                 if (organization == null) {
                     throw new IllegalArgumentException("Não foi encontrada nenhuma empresa com o ID informado!");
                 }
-                inviteDetails.setType(organization.getType());
+                //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             } else if (inviteDetails.getOrganization().getCnpj() != null && !inviteDetails.getOrganization().getCnpj().equals("")) {
                 Organization organization = organizationRepository.fetchByCnpj(inviteDetails.getOrganization().getCnpj());
                 if (organization == null) {
                     throw new IllegalArgumentException("Não foi encontrada nenhuma empresa com o CNPJ informado!");
                 }
-                inviteDetails.setType(organization.getType());
+                //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             }
             List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
