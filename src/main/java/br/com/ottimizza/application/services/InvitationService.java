@@ -72,8 +72,26 @@ public class InvitationService {
         if (inviteDetails.getType() == null || (inviteDetails.getType() < 0 || inviteDetails.getType() > 2)) {
             throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
         }
-
-        if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
+        
+        if(inviteDetails.getType() == 1) {
+        	UserOrganizationInvite invitedUser = findInviteByEmail(inviteDetails.getEmail());
+        	User user = userRepository.findByEmail(inviteDetails.getEmail());
+        	if(invitedUser != null) throw new IllegalArgumentException("Email nao valido convite");
+        	
+        	else if(user != null) 	throw new IllegalArgumentException("Email nao valido usuario");
+        }
+        else {
+        	UserOrganizationInvite invitedUser = findInviteByEmailAndOrganizationId(inviteDetails.getEmail(), inviteDetails.getOrganization().getId());
+        	User user = userRepository.findByEmail(inviteDetails.getEmail());
+        	if(invitedUser != null) throw new IllegalArgumentException("Email nao valido convite");
+        	
+           	else if(user != null) throw new IllegalArgumentException("Email nao valido usuario");
+        	
+        }
+       	
+       
+        
+        /*if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
             inviteDetails.setToken(UUID.randomUUID().toString());
 
             String email = inviteDetails.getEmail();
@@ -101,29 +119,31 @@ public class InvitationService {
             // envia email. :)
             this.sendInvitation(inviteDetails, authenticated);
 
-        } else if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+        }
+        if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {*/
+        	
             inviteDetails.setToken(UUID.randomUUID().toString());
             
             if (inviteDetails.getOrganization() == null) {
-                inviteDetails.setType(User.Type.ACCOUNTANT);
+                //inviteDetails.setType(User.Type.ACCOUNTANT);
                 inviteDetails.setOrganization(authenticated.getOrganization());
             } else if (inviteDetails.getOrganization().getId() != null) {
                 Organization organization = organizationRepository.fetchById(inviteDetails.getOrganization().getId());
                 if (organization == null) {
                     throw new IllegalArgumentException("Não foi encontrada nenhuma empresa com o ID informado!");
                 }
-                inviteDetails.setType(organization.getType());
+                //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             } else if (inviteDetails.getOrganization().getCnpj() != null && !inviteDetails.getOrganization().getCnpj().equals("")) {
                 Organization organization = organizationRepository.fetchByCnpj(inviteDetails.getOrganization().getCnpj());
                 if (organization == null) {
                     throw new IllegalArgumentException("Não foi encontrada nenhuma empresa com o CNPJ informado!");
                 }
-                inviteDetails.setType(organization.getType());
+                //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             }
             List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
-                inviteDetails.getEmail(), authenticated.getOrganization().getId()
+                inviteDetails.getEmail(), inviteDetails.getOrganization().getId()
             );
 
             if (invites.size() == 0) {
@@ -133,8 +153,8 @@ public class InvitationService {
             }
 
             this.sendInvitation(inviteDetails, authenticated);
-        }
-        return inviteDetails;
+        //}
+            return inviteDetails;
     }
     
     public Page<UserOrganizationInvite> fetchInvitedUsers(String email, Integer pageIndex, Integer pageSize, Principal principal)
@@ -166,6 +186,15 @@ public class InvitationService {
         List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
             email, organizationId
         );
+        if (invites.size() == 0) {
+            return null;
+        } else {
+            return invites.get(0);
+        }
+    }
+    
+    private UserOrganizationInvite findInviteByEmail(String email) {
+        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(email);
         if (invites.size() == 0) {
             return null;
         } else {
