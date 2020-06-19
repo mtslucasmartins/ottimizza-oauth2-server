@@ -83,18 +83,19 @@ public class SignUpService {
 
     public User register(User user, Organization organization, String token)
             throws OrganizationAlreadyRegisteredException, UserAlreadyRegisteredException, Exception {
-
+    	
         if (token.equals("")) {
             return this.register(user, organization);
         }
 
         UserOrganizationInvite inviteTokenDetails = getInviteTokenDetails(token);
-
+        
         user.setUsername(inviteTokenDetails.getEmail());
         user.setEmail(inviteTokenDetails.getEmail());
 
         user.setType(inviteTokenDetails.getType());
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        
         if (inviteTokenDetails.getType().equals(User.Type.ACCOUNTANT) || inviteTokenDetails.getType().equals(User.Type.ADMINISTRATOR)) {
             user.setOrganization(inviteTokenDetails.getOrganization());
         } 
@@ -107,18 +108,23 @@ public class SignUpService {
 
         // creates the userF.
         user = userRepository.save(user);
-
+        
         migrateUsersOrganizationsFromInvitesByUser(user);
+        
 
         // Adiciona autoridades ao usuário.
-        if(inviteTokenDetails.getAuthorities().contains("ADMIN")) userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
-        if(inviteTokenDetails.getAuthorities().contains("WRITE")) userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
-        if(inviteTokenDetails.getAuthorities().contains("READ"))  userRepository.addAuthority(user.getId(), Authorities.READ.getName());
-
+        if(inviteTokenDetails.getAuthorities().length() > 0) {
+        	if(inviteTokenDetails.getAuthorities().contains("ADMIN")) userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
+        	if(inviteTokenDetails.getAuthorities().contains("WRITE")) userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
+        	if(inviteTokenDetails.getAuthorities().contains("READ"))  userRepository.addAuthority(user.getId(), Authorities.READ.getName());
+        }
+        
         // Da permisao aos produtos ao usuario
-        String[] productsIds = inviteTokenDetails.getProducts().split(";");
-        for(String id : productsIds) {
-        	userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+        if(inviteTokenDetails.getProducts().length() > 0) {
+        	String[] productsIds = inviteTokenDetails.getProducts().split(";");
+        	for(String id : productsIds) {
+        		userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+        	}
         }
         
         return user;

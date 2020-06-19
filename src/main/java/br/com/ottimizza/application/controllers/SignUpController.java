@@ -1,11 +1,13 @@
 package br.com.ottimizza.application.controllers;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
@@ -47,7 +49,7 @@ public class SignUpController {
     }
 
     @PostMapping("/register")
-    public String signup(@RequestParam(name = "token", defaultValue = "") String token, User user,
+    public String signup(@RequestParam(name = "token", defaultValue = "") String token,  User user,
             Organization organization, Model model) {
         try {
             System.out.println("Registering new user...");
@@ -56,7 +58,8 @@ public class SignUpController {
 
             // if no exceptions was thrown adds a success attribute.
             model.addAttribute("success", "true");
-
+            
+            
         } catch (UserAlreadyRegisteredException ex) {
             model.addAttribute("error_message", "Um usuário com este endereço de email já está cadastrado!");
         } catch (OrganizationAlreadyRegisteredException ex) {
