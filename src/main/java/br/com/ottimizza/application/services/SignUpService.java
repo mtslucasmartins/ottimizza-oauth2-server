@@ -113,15 +113,18 @@ public class SignUpService {
         
 
         // Adiciona autoridades ao usuário.
-        if(inviteTokenDetails.getAuthorities().contains("ADMIN")) userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
-        if(inviteTokenDetails.getAuthorities().contains("WRITE")) userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
-        if(inviteTokenDetails.getAuthorities().contains("READ"))  userRepository.addAuthority(user.getId(), Authorities.READ.getName());
-        
+        if(inviteTokenDetails.getAuthorities().length() > 0) {
+        	if(inviteTokenDetails.getAuthorities().contains("ADMIN")) userRepository.addAuthority(user.getId(), Authorities.ADMIN.getName());
+        	if(inviteTokenDetails.getAuthorities().contains("WRITE")) userRepository.addAuthority(user.getId(), Authorities.WRITE.getName());
+        	if(inviteTokenDetails.getAuthorities().contains("READ"))  userRepository.addAuthority(user.getId(), Authorities.READ.getName());
+        }
         
         // Da permisao aos produtos ao usuario
-        String[] productsIds = inviteTokenDetails.getProducts().split(";");
-        for(String id : productsIds) {
-        	userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+        if(inviteTokenDetails.getProducts().length() > 0) {
+        	String[] productsIds = inviteTokenDetails.getProducts().split(";");
+        	for(String id : productsIds) {
+        		userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+        	}
         }
         
         return user;
