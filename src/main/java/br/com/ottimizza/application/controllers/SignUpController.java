@@ -49,7 +49,7 @@ public class SignUpController {
     }
 
     @PostMapping("/register")
-    public String signup(@RequestParam(name = "token", defaultValue = "") String token,@RequestParam(name = "user", defaultValue = "")  User user,
+    public String signup(@RequestParam(name = "token", defaultValue = "") String token,  User user,
             Organization organization, Model model) {
         try {
             System.out.println("Registering new user...");
