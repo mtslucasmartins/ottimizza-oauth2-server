@@ -68,7 +68,6 @@ public class SignUpController {
             System.out.println(ex.getMessage());
         }
 
-        System.out.println(model);
         return "signup.html";
     }
 
