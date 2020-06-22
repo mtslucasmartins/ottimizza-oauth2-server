@@ -37,5 +37,9 @@ public class ProductService {
                                            .orElseThrow(() -> new ProductNotFoundException("Nenhum produto encontrado."));
         return ProductMapper.fromEntity(productRepository.save(productDTO.patch(current)));
     } 
+    
+    public Short checkUserPermission(BigInteger userId, String externalId) {
+    	return productRepository.checkUserPermission(userId, externalId);
+    }
 
 }

@@ -9,18 +9,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.domain.responses.ErrorResponse;
-import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.domain.responses.GenericResponse;
-import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
-import br.com.ottimizza.application.model.OAuthClientDetails;
-import br.com.ottimizza.application.model.user.User;
-import br.com.ottimizza.application.services.OAuthService;
-import br.com.ottimizza.application.services.UserService;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -32,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +30,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.responses.ErrorResponse;
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
+import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
+import br.com.ottimizza.application.model.OAuthClientDetails;
+import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.services.OAuthService;
+import br.com.ottimizza.application.services.UserService;
+import br.com.ottimizza.application.services.product.ProductService;
 
 @RestController
 public class AuthController {
@@ -48,6 +49,8 @@ public class AuthController {
     @Inject
     private UserService userService;
 
+    @Inject ProductService productService;
+   
     @Inject
     private OAuthService oauthService;
 
@@ -67,16 +70,23 @@ public class AuthController {
     private String OAUTH2_CLIENT_SECRET;
 
     @GetMapping("/oauth/userinfo") // @formatter:off
-    public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
-    	User authorizedUser = userService.findByUsername(principal.getName());
+    public ResponseEntity<?> getUserInfo(OAuth2Authentication authentication) throws Exception {
+    	User authorizedUser = userService.findByUsername(authentication.getName());
+    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) {
+    		return ResponseEntity.status(403).body("{}");
+    	}
         return ResponseEntity.ok(new GenericResponse<UserDTO>(
-                UserDTO.fromEntityWithOrganization(userService.findByUsername(principal.getName()))
+                UserDTO.fromEntityWithOrganization(authorizedUser)
         ));
     }
 
     @GetMapping("/oauth/tokeninfo")
-    public Principal getTokenInfo(Principal principal) {
-        return principal;
+    public ResponseEntity<?> getTokenInfo(OAuth2Authentication authentication) throws Exception {
+    	User authorizedUser = userService.findByUsername(authentication.getName());
+    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) {
+    		return ResponseEntity.status(403).body("{}");
+    	}
+        return ResponseEntity.ok(authentication.getPrincipal());
     }
 
     @ResponseBody
