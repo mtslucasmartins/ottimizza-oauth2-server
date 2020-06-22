@@ -17,6 +17,7 @@ import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
 import br.com.ottimizza.application.model.OAuthClientDetails;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.services.OAuthService;
 import br.com.ottimizza.application.services.UserService;
 
@@ -67,6 +68,7 @@ public class AuthController {
 
     @GetMapping("/oauth/userinfo") // @formatter:off
     public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
+    	User authorizedUser = userService.findByUsername(principal.getName());
         return ResponseEntity.ok(new GenericResponse<UserDTO>(
                 UserDTO.fromEntityWithOrganization(userService.findByUsername(principal.getName()))
         ));
