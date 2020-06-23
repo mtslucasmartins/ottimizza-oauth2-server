@@ -68,12 +68,16 @@ public class AuthController {
 
     @Value("${oauth2-config.client-secret}")
     private String OAUTH2_CLIENT_SECRET;
+    
+    @Value("${oauth2-config.signin-title}")
+    private String SIGNIN_TITLE;
 
     @GetMapping("/oauth/userinfo") // @formatter:off
     public ResponseEntity<?> getUserInfo(OAuth2Authentication authentication) throws Exception {
     	User authorizedUser = userService.findByUsername(authentication.getName());
-    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) {
-    		return ResponseEntity.status(403).body("{}");
+    	if(!SIGNIN_TITLE.contains("Tareffa")) {
+    		if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
+    			return ResponseEntity.status(403).body("{}");
     	}
         return ResponseEntity.ok(new GenericResponse<UserDTO>(
                 UserDTO.fromEntityWithOrganization(authorizedUser)
@@ -83,8 +87,9 @@ public class AuthController {
     @GetMapping("/oauth/tokeninfo")
     public ResponseEntity<?> getTokenInfo(OAuth2Authentication authentication) throws Exception {
     	User authorizedUser = userService.findByUsername(authentication.getName());
-    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) {
-    		return ResponseEntity.status(403).body("{}");
+    	if(!SIGNIN_TITLE.contains("Tareffa")) {
+    		if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
+    			return ResponseEntity.status(403).body("{}");
     	}
         return ResponseEntity.ok(authentication.getPrincipal());
     }
