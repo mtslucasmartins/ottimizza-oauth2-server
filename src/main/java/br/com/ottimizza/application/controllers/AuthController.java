@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,8 +74,8 @@ public class AuthController {
     }
 
     @GetMapping("/oauth/tokeninfo")
-    public Principal getTokenInfo(Principal principal) {
-        return principal;
+    public ResponseEntity<?> getTokenInfo(OAuth2Authentication authentication) {
+        return ResponseEntity.ok(authentication.getPrincipal());
     }
 
     @ResponseBody
