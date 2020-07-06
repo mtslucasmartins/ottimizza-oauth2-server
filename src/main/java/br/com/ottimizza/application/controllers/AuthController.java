@@ -182,12 +182,13 @@ public class AuthController {
     }
     
     @GetMapping("/oauth/check_products/{id}")
-    public ResponseEntity<?> checkUserProducts(OAuth2Authentication authentication) throws Exception {
+    public ResponseEntity<?> checkUserProducts(OAuth2Authentication authentication,
+    										   @PathVariable("id") String clientId) throws Exception {
     	User authorizedUser = userService.findByUsername(authentication.getName());
-    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
+    	if(productService.checkUserPermission(authorizedUser.getId(), clientId) == 0) 
     		return ResponseEntity.status(403).body("{}");
     	
-        return ResponseEntity.ok(authentication.getPrincipal());
+        return ResponseEntity.status(200).body("{}");
     }
 
     
