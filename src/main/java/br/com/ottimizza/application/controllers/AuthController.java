@@ -73,25 +73,15 @@ public class AuthController {
     private String SIGNIN_TITLE;
 
     @GetMapping("/oauth/userinfo") // @formatter:off
-    public ResponseEntity<?> getUserInfo(OAuth2Authentication authentication) throws Exception {
-    	User authorizedUser = userService.findByUsername(authentication.getName());
-    	if(!SIGNIN_TITLE.contains("Tareffa")) {
-    		if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
-    			return ResponseEntity.status(403).body("{}");
-    	}
+    public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<UserDTO>(
-                UserDTO.fromEntityWithOrganization(authorizedUser)
+                UserDTO.fromEntityWithOrganization(userService.findByUsername(principal.getName()))
         ));
     }
 
     @GetMapping("/oauth/tokeninfo")
-    public ResponseEntity<?> getTokenInfo(OAuth2Authentication authentication) throws Exception {
-    	User authorizedUser = userService.findByUsername(authentication.getName());
-    	if(!SIGNIN_TITLE.contains("Tareffa")) {
-    		if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
-    			return ResponseEntity.status(403).body("{}");
-    	}
-        return ResponseEntity.ok(authentication.getPrincipal());
+    public Principal getTokenInfo(Principal principal) {
+        return principal;
     }
 
     @ResponseBody
@@ -190,5 +180,15 @@ public class AuthController {
         GenericResponse<String> response = new GenericResponse<String>(oauthService.fetchAccessTokensByClientId(clientId));
         return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/oauth/check_products/{id}")
+    public ResponseEntity<?> checkUserProducts(OAuth2Authentication authentication) throws Exception {
+    	User authorizedUser = userService.findByUsername(authentication.getName());
+    	if(productService.checkUserPermission(authorizedUser.getId(), authentication.getOAuth2Request().getClientId()) == 0) 
+    		return ResponseEntity.status(403).body("{}");
+    	
+        return ResponseEntity.ok(authentication.getPrincipal());
+    }
+
     
 }
