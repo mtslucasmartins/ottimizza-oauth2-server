@@ -181,7 +181,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     
-    @GetMapping("/oauth/check_products/{id}")
+    @GetMapping("/api/v1/check_products/{id}")
     public ResponseEntity<?> checkUserProducts(OAuth2Authentication authentication,
     										   @PathVariable("id") String clientId) throws Exception {
     	User authorizedUser = userService.findByUsername(authentication.getName());
@@ -190,6 +190,4 @@ public class AuthController {
     	
         return ResponseEntity.ok("{}");
     }
-
-    
 }
