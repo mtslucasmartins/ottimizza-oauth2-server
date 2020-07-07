@@ -188,7 +188,7 @@ public class AuthController {
     	if(productService.checkUserPermission(authorizedUser.getId(), clientId) == 0) 
     		return ResponseEntity.status(403).body("{}");
     	
-        return ResponseEntity.status(200).body("{}");
+        return ResponseEntity.ok("{}");
     }
 
     
