@@ -49,5 +49,8 @@ public class Product implements Serializable {
     
     @Column(name = "product_order")
     private Short productOrder;
+    
+    @Column(name = "external_id")
+    private String external_id;
 
 }
