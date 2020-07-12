@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ottimizza.application.domain.dtos.ProductDTO;
 import br.com.ottimizza.application.domain.dtos.responses.GenericResponse;
+import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.services.UserService;
 import br.com.ottimizza.application.services.product.ProductService;
 
 @RestController
@@ -25,10 +27,14 @@ public class ProductController {
 
     @Inject
     ProductService productService;
+    
+    @Inject
+    UserService userService;
 
     @GetMapping
     public ResponseEntity<?> findAllByGroup(@RequestParam("group") String group, Principal principal) throws Exception {
-        return ResponseEntity.ok(new GenericResponse<ProductDTO>(productService.findByGroup(group, principal)));
+    	User authorizedUser = userService.findByUsername(principal.getName());
+        return ResponseEntity.ok(new GenericResponse<ProductDTO>(productService.findByGroup(group, principal, authorizedUser.getId())));
     }
 
     @PostMapping

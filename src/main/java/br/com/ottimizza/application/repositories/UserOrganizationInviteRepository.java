@@ -22,6 +22,7 @@ public interface UserOrganizationInviteRepository
     @Query("SELECT i FROM UserOrganizationInvite i WHERE LOWER(i.email) = LOWER(:email) AND i.organization.id = :organizationId")
     List<UserOrganizationInvite> findByEmailAndOrganizationId(@Param("email") String email,
             @Param("organizationId") BigInteger organizationId);
+    
 
     @Query(value = "                                                                                    "
             + "  SELECT uoi.* FROM users_organizations_invites uoi                                      "

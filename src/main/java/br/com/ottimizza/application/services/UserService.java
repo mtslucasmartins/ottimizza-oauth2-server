@@ -9,34 +9,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.ottimizza.application.client.ReceitaWSClient;
-import br.com.ottimizza.application.domain.dtos.DadosReceitaWS;
 import br.com.ottimizza.application.domain.dtos.ImportDataModel;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.UserShortDTO;
 import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
 import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.UserAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
 import br.com.ottimizza.application.model.Organization;
+import br.com.ottimizza.application.model.product.Product;
 import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user.UserAuthorities;
+import br.com.ottimizza.application.model.user.UserProducts;
 import br.com.ottimizza.application.model.user_organization.UserOrganization;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationID;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.repositories.UserOrganizationInviteRepository;
+import br.com.ottimizza.application.repositories.UserProductsRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
 import br.com.ottimizza.application.repositories.users.UsersRepository;
 import br.com.ottimizza.application.repositories.users_organizations.UserOrganizationRepository;
@@ -61,6 +63,11 @@ public class UserService {
 
     @Inject
     OrganizationRepository organizationRepository;
+    
+    @Inject
+    UserProductsRepository userProductsRepository;
+   
+    
 
     public User findById(BigInteger id) throws UserNotFoundException, Exception {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
@@ -74,17 +81,12 @@ public class UserService {
             throws UserNotFoundException, Exception {
         User authorizedUser = findByUsername(principal.getName());
 
-        if (authorizedUser.getType().equals(User.Type.ACCOUNTANT)) {
-            filter.setOrganizationId(authorizedUser.getOrganization().getId());
-            return userRepository.fetchAll(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
-                .map(UserDTO::fromEntityWithOrganization);
-        }
         if (authorizedUser.getType().equals(User.Type.CUSTOMER)) {
             return userRepository.fetchAllCustomers(
                 filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
                     .map(UserDTO::fromEntityWithOrganization);
         }
-
+        filter.setOrganizationId(authorizedUser.getOrganization().getId());
         return userRepository.fetchAll(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser)
                 .map(UserDTO::fromEntityWithOrganization);
     }
@@ -359,24 +361,32 @@ public class UserService {
                         // substitui os dados encontrados e cria um usuário admin 
                         
                         // realiza calculo para fazer requests a cada 20s, para não estourar limite de uso 3 req/min 
-                        long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
+                        //long timeout = lastCallToAPI == null ? 0 : 20000 - (new Date().getTime() - lastCallToAPI.getTime());
 
                         try {
                             // se timeout > 0, pausa o processo pelo tempo determinado em milisegundos..
-                            TimeUnit.MILLISECONDS.sleep(timeout);
-
-                            DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
-                            lastCallToAPI = new Date();
-
-                            if (info.getEmail() != null && !info.getEmail().isEmpty()) {
-                                accounting.setEmail(info.getEmail());
+                            //TimeUnit.MILLISECONDS.sleep(timeout);
+                            //DadosReceitaWS info = receitaWSClient.getInfo(accounting.getCnpj()).getBody();
+                            //lastCallToAPI = new Date();
+                           /* if (info.getEmail() != null && !info.getEmail().isEmpty()) {
+                            	accounting.setEmail(info.getEmail());
                             } else {
                                 accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                             }
 
                             if (info.getNome() != null && !info.getNome().isEmpty()) {
                                 accounting.setName(info.getNome());
-                            } 
+                            }
+                            */
+                            if (object.getEmail() != null && !object.getEmail().isEmpty()) {
+                            	accounting.setEmail(object.getEmail());
+                            } else {
+                                accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
+                            }
+
+                            if (object.getOrganizationName() != null && !object.getOrganizationName().isEmpty()) {
+                                accounting.setName(object.getOrganizationName());
+                            }
                         } catch (Exception e) {
                             accounting.setEmail(MessageFormat.format("c{0}@ottimizza.com.br", accounting.getCnpj()));
                         }
@@ -533,5 +543,37 @@ public class UserService {
         }
         return true;
     }
-
+    
+    public Page<UserShortDTO> fetchUserShortDTO(UserDTO filter, SearchCriteria searchCriteria, Principal principal)
+            throws Exception {
+    	User authorizedUser = findByUsername(principal.getName());
+    	return userRepository.fetchUserShort(filter, UserDTO.getPageRequest(searchCriteria), authorizedUser.getOrganization().getId());
+    	
+    }
+    
+    public List<BigInteger> fetchIds(UserDTO filter, Principal principal) throws Exception {
+    	User authorizedUser = findByUsername(principal.getName());
+    	return userRepository.fetchIds(filter, authorizedUser.getOrganization().getId());
+    }
+    
+    public List<?> fetchAllProducts(String group) throws Exception {
+    	return userProductsRepository.fetchAllProducts(group);
+    }
+    
+    public void saveUserProducts(UserProducts userProd) throws Exception {
+    	userProductsRepository.saveUserProducts(userProd.getUsersId(), userProd.getProductsId());
+    }
+    
+    public void deleteUserProducts(UserProducts userProd) throws Exception {
+    	userProductsRepository.deleteUserProducts(userProd.getUsersId(), userProd.getProductsId());
+    }
+    
+    public void saveUserAuthorities(UserAuthorities userAuthorities) throws Exception {
+    	userProductsRepository.saveUserAuhtorities(userAuthorities.getUsersId(), userAuthorities.getAuthoritiesId());
+    }
+    
+    public void deleteUserAuthorities(UserAuthorities userAuthorities) throws Exception {
+    	userProductsRepository.deleteUserAuhtorities(userAuthorities.getUsersId(), userAuthorities.getAuthoritiesId());
+    }
+    
 }

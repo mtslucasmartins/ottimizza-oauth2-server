@@ -35,6 +35,7 @@ import br.com.ottimizza.application.repositories.users.UsersRepository;
 @Service
 public class OrganizationService {
 
+
     @Inject
     UserService userService;
 
