@@ -38,7 +38,7 @@ class OrganizationServiceTest {
             .name("Accounting Firm Co")
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
-        OrganizationDTO created = organizationService.create(organizationDTO, principal);
+        OrganizationDTO created = organizationService.create(organizationDTO,false, principal);
         Assertions.assertNotNull(created);
         Assertions.assertNotNull(created.getId());
 	}
@@ -51,7 +51,7 @@ class OrganizationServiceTest {
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(OrganizationAlreadyRegisteredException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO,false, principal);
         });
 	}
 
@@ -62,7 +62,7 @@ class OrganizationServiceTest {
             .name("Accounting Firm Co")
             .cnpj("00000000000101").build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO,false, principal);
         });
 	}
 
@@ -74,7 +74,7 @@ class OrganizationServiceTest {
             .cnpj("00000000000101")
             .type(99).build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -85,7 +85,7 @@ class OrganizationServiceTest {
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -97,7 +97,7 @@ class OrganizationServiceTest {
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -108,7 +108,7 @@ class OrganizationServiceTest {
             .name("Example Company Ltd")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -120,7 +120,7 @@ class OrganizationServiceTest {
             .cnpj("")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -134,7 +134,7 @@ class OrganizationServiceTest {
             .type(Organization.Type.CLIENT).build();
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
