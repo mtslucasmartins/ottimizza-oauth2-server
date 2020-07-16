@@ -51,7 +51,7 @@ class OrganizationServiceTest {
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         Assertions.assertThrows(OrganizationAlreadyRegisteredException.class, () -> {
-            organizationService.create(organizationDTO,false, principal);
+            organizationService.create(organizationDTO, false, principal);
         });
 	}
 
@@ -62,7 +62,7 @@ class OrganizationServiceTest {
             .name("Accounting Firm Co")
             .cnpj("00000000000101").build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO,false, principal);
+        	organizationService.create(organizationDTO, false, principal);
         });
 	}
 

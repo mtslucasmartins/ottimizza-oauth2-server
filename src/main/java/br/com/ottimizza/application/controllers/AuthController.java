@@ -84,6 +84,11 @@ public class AuthController {
         return principal;
     }
 
+    @GetMapping("/oauth/info")
+    public ResponseEntity<?> getInfo(OAuth2Authentication authentication) {
+        return ResponseEntity.ok(authentication.getPrincipal());
+    }
+
     @ResponseBody
     @DeleteMapping("/oauth/revoke_token")
     public void revokeToken(HttpServletRequest request) {

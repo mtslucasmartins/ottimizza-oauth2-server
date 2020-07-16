@@ -147,20 +147,22 @@ public class PasswordRecoveryController {
         //SENHA: newPassoword
         //EMAIL: passwordResetToken.getUser().getUsername()
         try {
-            new Thread() {
-                @Override
-                public void run() {
-                    
-                    String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
-                    String encodedCredentials = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+            // Removida thread para evitar memory leaks
+            // new Thread() {
+            //     @Override
+            //     public void run() {
 
-                    tareffaClient.updateUserPasswordTareffa(
-                        encodedCredentials, 
-                        new UsuarioTareffa(passwordResetToken.getUser().getUsername(), newPassoword)
-                    );
+            // Removida requisição 08/07/20        
+            //        // String credentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
+            //        // String encodedCredentials = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+            //
+            //        // tareffaClient.updateUserPasswordTareffa(
+            //        //     encodedCredentials, 
+            //        //     new UsuarioTareffa(passwordResetToken.getUser().getUsername(), newPassoword)
+            //        // );
                     
-                }
-            }.start();
+            //    }
+            // }.start();
         } catch (Exception e) {}
 
         // if (result != null) {

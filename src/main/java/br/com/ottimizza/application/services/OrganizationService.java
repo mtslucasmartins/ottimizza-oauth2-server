@@ -105,6 +105,7 @@ public class OrganizationService {
 
         // Filtros de Usuários da Ottimizza (Administradores).
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
+
             if (organizationDTO.getOrganizationId() == null && !ignoreAccountingFilter) {
             	 organization.setOrganization(authenticated.getOrganization());
             } else {
@@ -125,7 +126,10 @@ public class OrganizationService {
         	} else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
             	throw new AccessDeniedException("Você não tem permissão para criar empresas!");
         	}
+
         }
+
+        
         checkRequiredFields(organization);
         checkIfOrganizationIsNotParentOfItself(organization);
         checkIfOrganizationIsNotAlreadyRegistered(organization);
