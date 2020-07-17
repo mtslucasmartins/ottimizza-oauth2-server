@@ -98,32 +98,35 @@ public class OrganizationService {
         return results.map(OrganizationDTO::fromEntity);
     }
 
-    public OrganizationDTO create(OrganizationDTO organizationDTO, boolean ignoreAccountingFilter, Principal principal)
+    public OrganizationDTO create(OrganizationDTO organizationDTO,boolean ignoreAccountingFilter, Principal principal)
             throws IllegalArgumentException, OrganizationAlreadyRegisteredException, Exception {
         User authenticated = userService.findByUsername(principal.getName());
         Organization organization = organizationDTO.toEntity();
 
         // Filtros de Usuários da Ottimizza (Administradores).
         if (authenticated.getType().equals(User.Type.ADMINISTRATOR)) {
-            if (organizationDTO.getOrganizationId() == null || !ignoreAccountingFilter) {
-                organization.setOrganization(authenticated.getOrganization());
+
+            if (organizationDTO.getOrganizationId() == null && !ignoreAccountingFilter) {
+            	 organization.setOrganization(authenticated.getOrganization());
             } else {
-                Organization accounting = new Organization();
-                accounting.setId(organizationDTO.getOrganizationId());
-                
-                organization.setOrganization(accounting);
+            	Organization accounting = new Organization();
+            	accounting.setId(organizationDTO.getOrganizationId());
+            	
+            	organization.setOrganization(accounting);
             }
         } else {
-            if (organization.getType() == Organization.Type.CLIENT) {
-                organization.setOrganization(authenticated.getOrganization());
-            }
+        
+        	if (organization.getType() == Organization.Type.CLIENT) {
+        		organization.setOrganization(authenticated.getOrganization());
+        	}
+        
+        	if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
+            	organization.setType(Organization.Type.CLIENT);
             
-            if (authenticated.getType().equals(User.Type.ACCOUNTANT)) {
-                organization.setType(Organization.Type.CLIENT);
-                
-            } else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
-                throw new AccessDeniedException("Você não tem permissão para criar empresas!");
-            }
+        	} else if (authenticated.getType().equals(User.Type.CUSTOMER)) {
+            	throw new AccessDeniedException("Você não tem permissão para criar empresas!");
+        	}
+
         }
 
         

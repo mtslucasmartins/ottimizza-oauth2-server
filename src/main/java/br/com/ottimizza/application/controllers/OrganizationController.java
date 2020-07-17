@@ -63,11 +63,11 @@ public class OrganizationController {
 
     @PostMapping
     public HttpEntity<?> create(@RequestBody OrganizationDTO organizationDTO,
-                                @RequestParam(name = "ignoreAccountingFilter", required=false, defaultValue = "false")
-                                boolean ignoreAccountingFilter,
+    							@RequestParam(name = "ignoreAccountingFilter", required= false, defaultValue = "false")
+    							boolean ignoreAccountingFilter,
                                 Principal principal) throws Exception {
         return ResponseEntity.ok(new GenericResponse<OrganizationDTO>(
-            organizationService.create(organizationDTO, ignoreAccountingFilter, principal)));
+            organizationService.create(organizationDTO,ignoreAccountingFilter, principal)));
     }
 
     @PatchMapping("/{id}")
