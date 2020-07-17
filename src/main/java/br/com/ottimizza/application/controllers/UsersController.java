@@ -5,19 +5,6 @@ import java.security.Principal;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
-import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
-import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.domain.responses.GenericResponse;
-import br.com.ottimizza.application.model.user.User;
-import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
-import br.com.ottimizza.application.services.UserService;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +17,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
+import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.UserShortDTO;
+import br.com.ottimizza.application.domain.dtos.criterias.SearchCriteria;
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
+import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user.UserAuthorities;
+import br.com.ottimizza.application.model.user.UserProducts;
+import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
+import br.com.ottimizza.application.services.UserService;
+import net.minidev.json.JSONObject;
 
 @RestController // @formatter:off
 @RequestMapping(value = "/api/v1/users")
@@ -45,6 +47,8 @@ public class UsersController {
         return ResponseEntity.ok(
             new GenericPageableResponse<UserDTO>(userService.fetchAll(filter, criteria, principal)));
     }
+    
+    
 
     @GetMapping("/{id}")
     public HttpEntity<?> fetchById(@PathVariable("id") BigInteger id, Principal principal) throws Exception {
@@ -120,5 +124,89 @@ public class UsersController {
     public HttpEntity<?> upload(@RequestParam("file") MultipartFile file, Principal principal) throws Exception {
         return ResponseEntity.ok("");
     }
+    
+    //JD em diante
+    
+    @GetMapping("/getInfo")
+    public HttpEntity<?> fetchUserShortDTO(@ModelAttribute UserDTO filter,
+                                  		   @ModelAttribute SearchCriteria criteria, 
+                                  		   Principal principal) throws Exception {
+        return ResponseEntity.ok(new GenericPageableResponse<UserShortDTO>(userService.fetchUserShortDTO(filter, criteria, principal)));
+    }
+    
+    @GetMapping("/usersIds")
+    public HttpEntity<?> fetchIds(@ModelAttribute UserDTO filter, Principal principal) throws Exception{
+    	return ResponseEntity.ok(userService.fetchIds(filter, principal));
+    }
+    
+    @GetMapping("/products/{group}")
+    public HttpEntity<?> fetchAllProducts(@PathVariable("group") String group) throws Exception {
+    	return ResponseEntity.ok(userService.fetchAllProducts(group));
+    }
+    
+    @PostMapping("/products")
+    public HttpEntity<?> saveUsersProducts(@RequestBody UserProducts userProducts) throws Exception {
+    	JSONObject response = new JSONObject();
+    	try{
+    		userService.saveUserProducts(userProducts);
+    		response.put("status", "success");
+    		response.put("record", userProducts);
+    		return ResponseEntity.ok(response);
+    	}
+    	catch(Exception ex) {
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
+    	}
+    }
+    
+    @DeleteMapping("/products")
+    public HttpEntity<?> deleteUsersProducts(@ModelAttribute UserProducts userProducts) throws Exception {
+    	JSONObject response = new JSONObject();
+    	try{
+    		userService.deleteUserProducts(userProducts);
+    		response.put("status", "success");
+    		response.put("record", userProducts);
+    		return ResponseEntity.ok(response);
+    	}
+    	catch(Exception ex) {
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
+    	}
+    }
+    
+    @PostMapping("/authorities")
+    public HttpEntity<?> saveUsersAuhtorities(@RequestBody UserAuthorities userAuthorities) throws Exception {
+    	JSONObject response = new JSONObject();
+    	try{
+    		userService.saveUserAuthorities(userAuthorities);
+    		response.put("status", "success");
+    		response.put("record", userAuthorities);
+    		return ResponseEntity.ok(response);
+    	}
+    	catch(Exception ex) {
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
+    	}
+    }
+    
+    @DeleteMapping("/authorities")
+    public HttpEntity<?> deleteUsersAuhtorities(@ModelAttribute UserAuthorities userAuthorities) throws Exception {
+    	JSONObject response = new JSONObject();
+    	try{
+    		userService.deleteUserAuthorities(userAuthorities);
+    		response.put("status", "success");
+    		response.put("record", userAuthorities);
+    		return ResponseEntity.ok(response);
+    	}
+    	catch(Exception ex) {
+    		response.put("status", "error");
+    		response.put("message", ex.getMessage());
+    		return ResponseEntity.ok(response);
+    	}
+    }
 
+    
 }

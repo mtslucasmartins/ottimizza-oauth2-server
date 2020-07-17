@@ -55,5 +55,14 @@ public class UserOrganizationInvite implements Serializable {
     @Setter
     @Column(name = "type")
     private Integer type;
+    
+    @Getter
+    @Setter
+    @Column(name = "authorities")
+    private String authorities;
 
+    @Getter
+    @Setter
+    @Column(name = "products")
+    private String products;
 }

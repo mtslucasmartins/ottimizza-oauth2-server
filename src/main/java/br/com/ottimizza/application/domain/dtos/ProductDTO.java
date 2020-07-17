@@ -48,4 +48,11 @@ public class ProductDTO implements Serializable {
         return product;
     }
 
+	public ProductDTO(BigInteger id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
+    
 }

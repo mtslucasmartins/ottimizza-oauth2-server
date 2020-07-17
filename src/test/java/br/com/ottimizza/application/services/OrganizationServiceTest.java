@@ -38,7 +38,7 @@ class OrganizationServiceTest {
             .name("Accounting Firm Co")
             .cnpj("00000000000101")
             .type(Organization.Type.ACCOUNTING).build();
-        OrganizationDTO created = organizationService.create(organizationDTO, false, principal);
+        OrganizationDTO created = organizationService.create(organizationDTO,false, principal);
         Assertions.assertNotNull(created);
         Assertions.assertNotNull(created.getId());
 	}
@@ -62,7 +62,7 @@ class OrganizationServiceTest {
             .name("Accounting Firm Co")
             .cnpj("00000000000101").build();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.create(organizationDTO, false, principal);
+        	organizationService.create(organizationDTO, false, principal);
         });
 	}
 

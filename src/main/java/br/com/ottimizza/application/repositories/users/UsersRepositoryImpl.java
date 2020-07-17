@@ -1,28 +1,12 @@
 package br.com.ottimizza.application.repositories.users;
 
-import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.model.user.User;
-import br.com.ottimizza.application.model.user_organization.QUserOrganization;
-import br.com.ottimizza.application.model.user_organization.UserOrganization;
-import br.com.ottimizza.application.utils.QueryDSLUtils;
-import br.com.ottimizza.application.model.user.QUser;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,17 +14,39 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
+
+import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.dtos.UserShortDTO;
+import br.com.ottimizza.application.model.Authority;
+import br.com.ottimizza.application.model.user.QUser;
+import br.com.ottimizza.application.model.user.QUserAuthorities;
+import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.model.user_organization.QUserOrganization;
+import br.com.ottimizza.application.repositories.UserProductsRepository;
+import br.com.ottimizza.application.utils.QueryDSLUtils;
+
 @Repository
 public class UsersRepositoryImpl implements UsersRepositoryCustom {
 
     @PersistenceContext
     EntityManager em;
+    
+    @Inject
+    private UserProductsRepository usersRepository;
 
     private static final String QUSER_NAME = "user";
 
     private QUser user = QUser.user;
 
     private QUserOrganization userOrganization = QUserOrganization.userOrganization;
+    
+    private QUserAuthorities userAuthorities = QUserAuthorities.userAuthorities;
 
     @Override
     public Page<User> fetchAll(UserDTO filter, Pageable pageable) {
@@ -86,7 +92,114 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
         
         return new PageImpl<User>(query.fetch(), pageable, totalElements);
     }
-
+    
+    @Override
+	public Page<UserShortDTO> fetchUserShort(UserDTO filter, Pageable pageable, BigInteger organizationId) {
+		long totalElements = 0;
+        JPAQuery<UserShortDTO> query = new JPAQuery<UserShortDTO>(em).from(user);
+        List<UserShortDTO> list = new ArrayList<UserShortDTO>();
+        if(filter.getAuthority() == null || filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+        	query.where(user.organization.id.eq(organizationId));
+        	totalElements = filter(query, filter);
+        	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
+        	paginate(query, pageable);
+        	
+        	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
+        	list = query.fetch();
+        	List<UserShortDTO> listNoAuthority = new ArrayList<UserShortDTO>();
+        	for(UserShortDTO user : list) {
+        		try {
+    				List<Authority>     authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
+    				List<BigInteger>    products    = usersRepository.fetchProductsByUserId(user.getId());
+    				user.setAuthorities(authorities);
+    				user.setProducts(products);
+    				if(authorities.isEmpty() && filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+    					listNoAuthority.add(user);
+    				}
+    			}
+    			catch(Exception ex) {
+    				ex.getMessage();
+    			}
+    		}
+        	if(filter.getAuthority() == null)
+        		return new PageImpl<UserShortDTO>(list, pageable, totalElements);
+        		
+        	else
+        		return new PageImpl<UserShortDTO>(listNoAuthority, pageable, totalElements);
+        }
+        else {
+        	query.innerJoin(userAuthorities).on(userAuthorities.id.authoritiesId.like(filter.getAuthority())
+        			.and(userAuthorities.usersId.id.eq(user.id)));
+        	query.where(user.organization.id.eq(organizationId));
+        	totalElements = filter(query, filter);  
+        	sort(query, pageable, UserShortDTO.class, QUSER_NAME);
+        	paginate(query, pageable);
+        	
+        	query.select(Projections.constructor(UserShortDTO.class, user.id, user.firstName, user.lastName, user.email, user.avatar));
+        	list = query.fetch();
+        	for(UserShortDTO user : list) {
+        		try {
+    				List<Authority>     authorities = usersRepository.fetchAuthoritiesByUserId(user.getId());
+    				List<BigInteger>    products    = usersRepository.fetchProductsByUserId(user.getId());
+    				user.setAuthorities(authorities);
+    				user.setProducts(products);
+    			}
+    			catch(Exception ex) {
+    				ex.getMessage();
+    			}
+    		}
+        	return new PageImpl<UserShortDTO>(list, pageable, totalElements);
+        }
+	}
+    
+    @Override
+    public List<BigInteger> fetchIds(UserDTO filter, BigInteger organizationId) {
+    	JPAQuery<BigInteger> query = new JPAQuery<BigInteger>(em).from(user);
+    	List<BigInteger> result = new ArrayList<BigInteger>();
+    	List<BigInteger> listNoAuthority = new ArrayList<BigInteger>();
+    	
+    	if(filter.getAuthority() == null || filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+    		if (filter.getUsername() != null)  query.where(QueryDSLUtils.unnacent(user.username, "%" + filter.getUsername() + "%"));
+    		if (filter.getFirstName() != null) query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
+    		if (filter.getLastName() != null)  query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
+    		if (filter.getEmail() != null)     query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
+    		if (filter.getType() != null)	   query.where(user.type.eq(filter.getType()));
+    		query.where(user.organization.id.eq(organizationId));
+    		query.select(user.id);
+    		result = query.fetch();
+    		for(BigInteger userId : result) {
+    			try {
+    				List<Authority> authorities = usersRepository.fetchAuthoritiesByUserId(userId);
+    				if(authorities.isEmpty() && filter.getAuthority().equalsIgnoreCase("NENHUM")) {
+    					listNoAuthority.add(userId);
+    				}
+    			}
+    			catch(Exception ex) {
+    				ex.getMessage();
+    			}
+    		}
+    		if(filter.getAuthority() == null)
+        		return result;
+        		
+        	else
+        		return listNoAuthority;
+    	}
+    	else {
+    		query.innerJoin(userAuthorities).on(userAuthorities.id.authoritiesId.like(filter.getAuthority())
+        			.and(userAuthorities.usersId.id.eq(user.id)));
+    		if (filter.getUsername() != null)  query.where(QueryDSLUtils.unnacent(user.username, "%" + filter.getUsername() + "%"));
+    		if (filter.getFirstName() != null) query.where(QueryDSLUtils.unnacent(user.firstName, "%" + filter.getFirstName() + "%"));
+    		if (filter.getLastName() != null)  query.where(QueryDSLUtils.unnacent(user.lastName, "%" + filter.getLastName() + "%"));
+    		if (filter.getEmail() != null)     query.where(QueryDSLUtils.unnacent(user.email, "%" + filter.getEmail() + "%"));
+    		if (filter.getType() != null)	   query.where(user.type.eq(filter.getType()));
+    		query.where(user.organization.id.eq(organizationId));
+    		query.select(user.id);
+    		result = query.fetch();
+    		
+    		return result;
+    	}
+    }
+    
     private <T> long filter(JPAQuery<T> query, UserDTO filter) {
         if (filter != null){
             if (filter.getId() != null) {

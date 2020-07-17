@@ -46,5 +46,14 @@ public class Product implements Serializable {
 
     @Column(name = "group_name")
     private String group;
+    
+    @Column(name = "about_pdf_url")
+    private String aboutPdfUrl;
+    
+    @Column(name = "product_order")
+    private Short productOrder;
+    
+    @Column(name = "external_id")
+    private String external_id;
 
 }

@@ -87,6 +87,10 @@ public class UserDTO implements Serializable {
     @Setter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private OrganizationDTO organization;
+    
+    @Getter
+    @Setter
+    private String authority;
 
     public User toEntity() {
         User user = new User();

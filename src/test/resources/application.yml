@@ -63,6 +63,7 @@ oauth2-config:
   client-secret: ${CLIENT_SECRET:8faedc0e6e1520d13f06f787d6760c303f3e8768}
   server-url: ${OAUTH2_URL:https://development-oauth-server.herokuapp.com}
   default-success-redirect: ${DEFAULT_SUCCESS_REDIRECT:https://development-accounts.ottimizza.com.br}
+  signin-title: ${SIGNIN_TITLE:Ottimizza}
 
 tareffa:
   service:

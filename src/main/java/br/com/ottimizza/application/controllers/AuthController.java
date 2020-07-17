@@ -9,17 +9,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import br.com.ottimizza.application.domain.dtos.UserDTO;
-import br.com.ottimizza.application.domain.responses.ErrorResponse;
-import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
-import br.com.ottimizza.application.domain.responses.GenericResponse;
-import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
-import br.com.ottimizza.application.model.OAuthClientDetails;
-import br.com.ottimizza.application.services.OAuthService;
-import br.com.ottimizza.application.services.UserService;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -41,6 +30,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.ottimizza.application.domain.dtos.UserDTO;
+import br.com.ottimizza.application.domain.responses.ErrorResponse;
+import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
+import br.com.ottimizza.application.domain.responses.GenericResponse;
+import br.com.ottimizza.application.model.OAuthClientAdditionalInformation;
+import br.com.ottimizza.application.model.OAuthClientDetails;
+import br.com.ottimizza.application.model.user.User;
+import br.com.ottimizza.application.services.OAuthService;
+import br.com.ottimizza.application.services.UserService;
+import br.com.ottimizza.application.services.product.ProductService;
 
 @RestController
 public class AuthController {
@@ -48,6 +49,8 @@ public class AuthController {
     @Inject
     private UserService userService;
 
+    @Inject ProductService productService;
+   
     @Inject
     private OAuthService oauthService;
 
@@ -65,6 +68,9 @@ public class AuthController {
 
     @Value("${oauth2-config.client-secret}")
     private String OAUTH2_CLIENT_SECRET;
+    
+    @Value("${oauth2-config.signin-title}")
+    private String SIGNIN_TITLE;
 
     @GetMapping("/oauth/userinfo") // @formatter:off
     public ResponseEntity<?> getUserInfo(Principal principal) throws Exception {
@@ -180,4 +186,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     
+    @GetMapping("/api/v1/check_products/{id}")
+    public ResponseEntity<?> checkUserProducts(OAuth2Authentication authentication,
+    										   @PathVariable("id") String clientId) throws Exception {
+    	User authorizedUser = userService.findByUsername(authentication.getName());
+    	if(productService.checkUserPermission(authorizedUser.getId(), clientId) == 0) 
+    		return ResponseEntity.status(403).body("{}");
+    	
+        return ResponseEntity.ok("{}");
+    }
 }

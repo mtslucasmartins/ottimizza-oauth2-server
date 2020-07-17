@@ -14,7 +14,9 @@ spring:
   main:
     banner-mode: off
   datasource:
-    url: ${DATABASE_URL}
+    url: jdbc:postgresql://ec2-52-202-192-221.compute-1.amazonaws.com:5432/d18c8durd0b3jh
+    username: ubcfucak2k0f2l
+    password: p27a8c89efb1441a5b450ce93f2709ad33a28daf7ed6c933aed7c4c4170c88875
     driver-class-name: org.postgresql.Driver
   jpa:
     # 'spring.jpa.open-in-view' is enabled by default. 
@@ -62,6 +64,7 @@ oauth2-config:
   client-secret: ${CLIENT_SECRET:d792ec02541816ca1095c917f2de73195fe86303}
   server-url: ${SERVER_URL:https://development-oauth-server.herokuapp.com}
   default-success-redirect: ${DEFAULT_SUCCESS_REDIRECT:https://development-accounts.ottimizza.com.br/auth/callback}
+  signin-title: ${SIGNIN_TITLE:Ottimizza}
 
 tareffa:
   service:
