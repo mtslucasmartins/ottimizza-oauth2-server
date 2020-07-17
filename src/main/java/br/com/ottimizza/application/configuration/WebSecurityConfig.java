@@ -77,12 +77,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         String TOKENINFO_URL = "/oauth/tokeninfo";
         String USERINFO_URL = "/oauth/userinfo";
+        String INFO_URL = "/oauth/info";
 
 
         http
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/user/**", "/api/**", USERINFO_URL, TOKENINFO_URL).permitAll() 
+                .antMatchers("/user/**", "/api/**", USERINFO_URL, TOKENINFO_URL, INFO_URL).permitAll() 
                 .anyRequest().authenticated()
             .and()
                 .formLogin()
