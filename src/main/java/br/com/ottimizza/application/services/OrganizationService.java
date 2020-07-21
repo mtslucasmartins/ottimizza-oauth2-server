@@ -131,6 +131,10 @@ public class OrganizationService {
 
         
         checkRequiredFields(organization);
+
+        // remove formatacao do cnpj.
+        organization.setCnpj(organization.getCnpj().replace("\\D+", ""));
+
         checkIfOrganizationIsNotParentOfItself(organization);
         checkIfOrganizationIsNotAlreadyRegistered(organization);
         return OrganizationDTO.fromEntity(organizationRepository.save(organization));
