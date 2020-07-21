@@ -144,6 +144,10 @@ public class OrganizationService {
             throws OrganizationNotFoundException, OrganizationAlreadyRegisteredException, Exception {
         User authenticated = userService.findByUsername(principal.getName());
         Organization current = organizationDTO.patch(findById(id, authenticated));
+
+        // remove formatacao do cnpj.
+        current.setCnpj(current.getCnpj().replace("\\D+", ""));
+
         checkIfOrganizationIsNotAlreadyRegistered(current);
         return OrganizationMapper.fromEntity(organizationRepository.save(current));
     }
