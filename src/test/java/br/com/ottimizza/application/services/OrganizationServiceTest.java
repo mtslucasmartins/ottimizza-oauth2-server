@@ -106,7 +106,7 @@ class OrganizationServiceTest {
         Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
         OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Example Company Ltd")
-            .cnpj("")
+            .cnpj("00000000000102")
             .type(Organization.Type.ACCOUNTING).build();
             
         OrganizationDTO created = organizationService.create(organizationDTO, false, principal);
