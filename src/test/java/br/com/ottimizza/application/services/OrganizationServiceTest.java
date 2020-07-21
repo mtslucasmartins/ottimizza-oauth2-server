@@ -100,6 +100,22 @@ class OrganizationServiceTest {
             organizationService.create(organizationDTO, false, principal);
         });
 	}
+    
+    @Test
+    public void givenOrganizationDTO_whenSaveAccountingWithFormattedCNPJ_thenSaveWithoutFormat() throws Exception {
+        Mockito.when(principal.getName()).thenReturn(ADMINISTRATOR);
+        OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Example Company Ltd")
+            .cnpj("")
+            .type(Organization.Type.ACCOUNTING).build();
+            
+        OrganizationDTO created = organizationService.create(organizationDTO, false, principal);
+
+        Assertions.assertNotNull(created);
+        Assertions.assertNotNull(created.getId());
+        Assertions.assertTrue(created.getCnpj().replaceAll("\\d+", "").equals(""));
+	}
+
 
     @Test
     public void givenOrganizationDTO_whenSaveAccountingWithNullCNPJ_thenIllegalArgumentException() throws Exception {
