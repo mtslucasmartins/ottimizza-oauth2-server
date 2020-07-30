@@ -46,6 +46,7 @@ public interface OrganizationRepository
     @Query("SELECT o FROM Organization o WHERE o.id = :id AND o.type = 1")
     Organization fetchAccountingById(@Param("id") BigInteger id);
 
+    @Deprecated
     @Query("SELECT " + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              "
             + " FROM Organization o                                              "
             + " WHERE o.cnpj = :cnpj                                             "
@@ -53,6 +54,19 @@ public interface OrganizationRepository
             + " AND (:accountingId is null OR o.organization.id = :accountingId) ")
     boolean cnpjIsAlreadyRegistered(@Param("cnpj") String cnpj, @Param("organizationId") BigInteger organizationId,
             @Param("accountingId") BigInteger accountingId);
+
+    @Query("SELECT                                                               " 
+            + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              "
+            + " FROM Organization o                                              "
+            + " WHERE o.cnpj = :cnpj                                             "
+            + " AND o.type = :type                                               "
+            + " AND (:organizationId is null OR o.id != :organizationId)         "
+            + " AND (:accountingId is null OR o.organization.id = :accountingId) ")
+    boolean cnpjIsAlreadyRegistered(@Param("cnpj") String cnpj, 
+                                    @Param("type") Integer type, 
+                                    @Param("organizationId") BigInteger organizationId,
+                                    @Param("accountingId") BigInteger accountingId);
+
 
     @Query("SELECT o FROM Organization o WHERE o.externalId = :externalId ")
     Optional<Organization> findByExternalId(@Param("externalId") String externalId);
