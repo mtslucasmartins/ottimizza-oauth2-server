@@ -283,7 +283,7 @@ public class OrganizationService {
     public boolean checkIfOrganizationIsNotAlreadyRegistered(Organization organization) 
             throws OrganizationAlreadyRegisteredException {
         BigInteger accountingId = organization.getOrganization() == null ? null : organization.getOrganization().getId();
-        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), organization.getId(), accountingId)) {
+        if (organizationRepository.cnpjIsAlreadyRegistered(organization.getCnpj(), organization.getType(),organization.getId(), accountingId)) {
             throw new OrganizationAlreadyRegisteredException("A organization with that cnpj is already registered.");
         }
         return true;
