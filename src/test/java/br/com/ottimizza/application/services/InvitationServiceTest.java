@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
 import br.com.ottimizza.application.model.Organization;
@@ -28,17 +29,23 @@ import br.com.ottimizza.application.model.user.User;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringbootOauth2ServerApplication.class)
 class InvitationServiceTest {
+	static final String EMAIL = "lucas@ottimizza.com.br";
 
     @Inject
     InvitationService invitationService;
 
     @Test
     public void givenInvitationDTO_whenSaveAccountantInvitationAndRetreive_thenOK() throws Exception { 
+		OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+
         InvitationDTO invitationDTO = InvitationDTO.builder()
-				.email("00000000000101")
+				.email(EMAIL)
 				.type(User.Type.ACCOUNTANT)
 				.userDetails(null)
-				.organization(null)
+				.organization(organizationDTO)
 				.build();
 
         InvitationDTO created = invitationService.inviteAccountant(invitationDTO);
@@ -46,6 +53,61 @@ class InvitationServiceTest {
 		Assertions.assertNotNull(created);
         Assertions.assertNotNull(created.getId());
 	}
+
+	@Test
+    public void givenInvitationDTO_whenNoEmail_thenIllegalArgumentsException() throws Exception { 
+		OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        InvitationDTO invitationDTO = InvitationDTO.builder()
+				.email(null)
+				.type(User.Type.ACCOUNTANT)
+				.userDetails(null)
+				.organization(organizationDTO)
+				.build();
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        	invitationService.inviteAccountant(invitationDTO);
+        });
+	}
+
+	@Test
+    public void givenInvitationDTO_whenNoType_thenIllegalArgumentsException() throws Exception { 
+		OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+        InvitationDTO invitationDTO = InvitationDTO.builder()
+				.email(EMAIL)
+				.type(null)
+				.userDetails(null)
+				.organization(organizationDTO)
+				.build();
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        	invitationService.inviteAccountant(invitationDTO);
+        });
+	}
+
+	@Test
+    public void givenInvitationDTO_whenNoAccountingInformation_thenIllegalArgumentsException() throws Exception {
+		OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("00000000000101")
+            .type(Organization.Type.ACCOUNTING).build(); 
+        InvitationDTO invitationDTO = InvitationDTO.builder()
+				.email(EMAIL)
+				.type(User.Type.ACCOUNTANT)
+				.userDetails(null)
+				.organization(organizationDTO)
+				.build();
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        	invitationService.inviteAccountant(invitationDTO);
+        });
+	}
+
 	// @Test
 	// void inviteAccountant() {
 
