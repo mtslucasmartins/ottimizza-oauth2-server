@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -17,10 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
+import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
+import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.PasswordResetToken;
 import br.com.ottimizza.application.model.user.User;
 
+// @formatter:off
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringbootOauth2ServerApplication.class)
 class InvitationServiceTest {
@@ -28,6 +32,19 @@ class InvitationServiceTest {
     @Inject
     InvitationService invitationService;
 
+    @Test
+    public void givenInvitationDTO_whenSaveAccountantInvitationAndRetreive_thenOK() throws Exception { 
+        InvitationDTO invitationDTO = InvitationDTO.builder()
+				.email("00000000000101")
+				.userDetails(null)
+				.organization(null)
+				.build();
+
+        InvitationDTO created = invitationService.inviteAccountant(invitationDTO);
+        
+		Assertions.assertNotNull(created);
+        Assertions.assertNotNull(created.getId());
+	}
 	// @Test
 	// void inviteAccountant() {
 

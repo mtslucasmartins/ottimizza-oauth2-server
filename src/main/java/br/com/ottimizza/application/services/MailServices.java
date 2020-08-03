@@ -41,6 +41,18 @@ public class MailServices {
         this.templateEngine = templateEngine;
     }
 
+    public String accountantInvitation(String invitationToken) {
+        Context context = new Context();
+        String registerURL = "";
+        try {
+            registerURL = new URIBuilder(MessageFormat.format("{0}/register", hostname))
+                    .addParameter("token", invitationToken).toString();
+        } catch (Exception ex) {
+        }
+        context.setVariable("registerURL", registerURL);
+        return templateEngine.process("mail/accountant_invitation", context);
+    }
+
     public String inviteCustomerTemplate(User invitedBy, String registerToken) {
         Context context = new Context();
         String registerURL = "";
