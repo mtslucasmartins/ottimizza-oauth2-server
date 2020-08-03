@@ -36,7 +36,7 @@ class InvitationServiceTest {
     InvitationService invitationService;
 
     @Test
-    public void givenInvitationDTO_whenSaveAccountantInvitationAndRetreive_thenOK() throws Exception { 
+    public void givenInvitationDTO_whenSaveAccountantInvitation_thenOK() throws Exception { 
 		OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Accounting Firm Co")
             .cnpj("10000000000101")
