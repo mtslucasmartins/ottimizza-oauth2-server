@@ -36,6 +36,7 @@ class InvitationServiceTest {
     public void givenInvitationDTO_whenSaveAccountantInvitationAndRetreive_thenOK() throws Exception { 
         InvitationDTO invitationDTO = InvitationDTO.builder()
 				.email("00000000000101")
+				.type(User.Type.ACCOUNTANT)
 				.userDetails(null)
 				.organization(null)
 				.build();
