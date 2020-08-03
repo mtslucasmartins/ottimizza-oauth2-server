@@ -24,6 +24,7 @@ public class InvitationMapper { // @formatter:off
         return InvitationDTO.builder()
                 .id(invitation.getId())
                 .token(invitation.getToken())
+                .type(invitation.getType())
                 .email(invitation.getEmail())
                 .userDetails(
                     invitation.getUserDetails() == null ? null : fromEntity(invitation.getUserDetails())
@@ -43,6 +44,7 @@ public class InvitationMapper { // @formatter:off
         return UserOrganizationInvite.builder()
                 .id(dto.getId())
                 .token(dto.getToken())
+                .type(dto.getType())
                 .email(dto.getEmail())
                 .userDetails(
                     dto.getUserDetails() == null ? null : fromDTO(dto.getUserDetails())
