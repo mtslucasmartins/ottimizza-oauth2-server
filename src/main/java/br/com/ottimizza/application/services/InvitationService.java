@@ -233,7 +233,7 @@ public class InvitationService {
         Organization accounting = invitation.getOrganization();
         accounting.setType(Organization.Type.ACCOUNTING);
         accounting.setCnpj(accounting.getCnpj().replace("\\D+", ""));
-        invitation.setOrganization(accounting);
+        invitation.setOrganization(organizationRepository.save(accounting));
 
         // Produtos e Autoridades.
         invitation.setProducts("2");
