@@ -267,21 +267,6 @@ public class InvitationService {
             throw new IllegalArgumentException("O email informado já está registrado!");
         }
 
-
-        if(invitation.getType() == User.Type.ACCOUNTANT) {
-        	UserOrganizationInvite existingInvitation = findInviteByEmail(invitation.getEmail());
-            if (existingInvitation != null) {
-                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
-            }
-        } else {
-        	UserOrganizationInvite existingInvitation = findInviteByEmailAndOrganizationId(
-                invitation.getEmail(), invitation.getOrganization().getId()
-            );
-            if (existingInvitation != null) {
-                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
-            }
-        	
-        }
         Organization accounting = invitation.getOrganization();
         if (accounting == null) {
             throw new IllegalArgumentException("Informe os detalhes da contabilidade!");
@@ -296,6 +281,21 @@ public class InvitationService {
         if (organizationRepository.cnpjIsAlreadyRegistered(accounting.getCnpj(), Organization.Type.ACCOUNTING, null, null)) {
             throw new OrganizationAlreadyRegisteredException("Já existe uma contabilidade com o CNPJ informado!");
         }
+
+        if(invitation.getType() == User.Type.ACCOUNTANT) {
+        	UserOrganizationInvite existingInvitation = findInviteByEmail(invitation.getEmail());
+            if (existingInvitation != null) {
+                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
+            }
+        } else {
+        	UserOrganizationInvite existingInvitation = findInviteByEmailAndOrganizationId(
+                invitation.getEmail(), invitation.getOrganization().getId()
+            );
+            if (existingInvitation != null) {
+                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
+            }
+        }
+       
         return true;
     }
 
