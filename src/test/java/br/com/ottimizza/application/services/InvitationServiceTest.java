@@ -38,7 +38,7 @@ class InvitationServiceTest {
     public void givenInvitationDTO_whenSaveAccountantInvitationAndRetreive_thenOK() throws Exception { 
 		OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Accounting Firm Co")
-            .cnpj("00000000000101")
+            .cnpj("10000000000101")
             .type(Organization.Type.ACCOUNTING).build();
 
         InvitationDTO invitationDTO = InvitationDTO.builder()
@@ -58,7 +58,7 @@ class InvitationServiceTest {
     public void givenInvitationDTO_whenNoEmail_thenIllegalArgumentsException() throws Exception { 
 		OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Accounting Firm Co")
-            .cnpj("00000000000101")
+            .cnpj("10000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         InvitationDTO invitationDTO = InvitationDTO.builder()
 				.email(null)
@@ -76,7 +76,7 @@ class InvitationServiceTest {
     public void givenInvitationDTO_whenNoType_thenIllegalArgumentsException() throws Exception { 
 		OrganizationDTO organizationDTO = OrganizationDTO.builder()
             .name("Accounting Firm Co")
-            .cnpj("00000000000101")
+            .cnpj("10000000000101")
             .type(Organization.Type.ACCOUNTING).build();
         InvitationDTO invitationDTO = InvitationDTO.builder()
 				.email(EMAIL)
@@ -92,15 +92,11 @@ class InvitationServiceTest {
 
 	@Test
     public void givenInvitationDTO_whenNoAccountingInformation_thenIllegalArgumentsException() throws Exception {
-		OrganizationDTO organizationDTO = OrganizationDTO.builder()
-            .name("Accounting Firm Co")
-            .cnpj("00000000000101")
-            .type(Organization.Type.ACCOUNTING).build(); 
         InvitationDTO invitationDTO = InvitationDTO.builder()
 				.email(EMAIL)
 				.type(User.Type.ACCOUNTANT)
 				.userDetails(null)
-				.organization(organizationDTO)
+				.organization(null)
 				.build();
 
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
