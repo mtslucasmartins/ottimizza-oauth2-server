@@ -25,8 +25,13 @@ public class InvitationMapper { // @formatter:off
                 .id(invitation.getId())
                 .token(invitation.getToken())
                 .email(invitation.getEmail())
-                .userDetails(fromEntity(invitation.getUserDetails()))
-                .organization(OrganizationMapper.fromEntity(invitation.getOrganization()))
+                .userDetails(
+                    invitation.getUserDetails() == null ? null : fromEntity(invitation.getUserDetails())
+                )
+                .organization(
+                    invitation.getOrganization() == null 
+                        ? null : OrganizationMapper.fromEntity(invitation.getOrganization())
+                )
                 .build();
     }
 
@@ -39,8 +44,13 @@ public class InvitationMapper { // @formatter:off
                 .id(dto.getId())
                 .token(dto.getToken())
                 .email(dto.getEmail())
-                .userDetails(fromDTO(dto.getUserDetails()))
-                .organization(OrganizationMapper.fromDTO(dto.getOrganization()))
+                .userDetails(
+                    dto.getUserDetails() == null ? null : fromDTO(dto.getUserDetails())
+                )
+                .organization(
+                    dto.getOrganization() == null 
+                        ? null : OrganizationMapper.fromDTO(dto.getOrganization())
+                )
                 .build();
     }
 
