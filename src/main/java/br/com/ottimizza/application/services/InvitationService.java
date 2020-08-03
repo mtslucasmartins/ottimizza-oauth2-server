@@ -283,6 +283,9 @@ public class InvitationService {
         	
         }
         Organization accounting = invitation.getOrganization();
+        if (accounting == null) {
+            throw new IllegalArgumentException("Informe os detalhes da contabilidade!");
+        }
         if (accounting.getName() == null || accounting.getName().equals("")) {
             throw new IllegalArgumentException("Informe o nome da contabilidade!");
         }
