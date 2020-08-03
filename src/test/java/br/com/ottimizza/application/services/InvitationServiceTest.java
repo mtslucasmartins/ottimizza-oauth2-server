@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import br.com.ottimizza.application.SpringbootOauth2ServerApplication;
 import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
 import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
+import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.PasswordResetTokenInvalidException;
 import br.com.ottimizza.application.model.Organization;
 import br.com.ottimizza.application.model.PasswordResetToken;
@@ -52,6 +53,25 @@ class InvitationServiceTest {
         
 		Assertions.assertNotNull(created);
         Assertions.assertNotNull(created.getId());
+	}
+
+	@Test
+    public void givenInvitationDTO_whenSaveAccountantInvitation_thenOrganizationAlreadyRegisteredException() throws Exception { 
+		OrganizationDTO organizationDTO = OrganizationDTO.builder()
+            .name("Accounting Firm Co")
+            .cnpj("10000000000101")
+            .type(Organization.Type.ACCOUNTING).build();
+
+        InvitationDTO invitationDTO = InvitationDTO.builder()
+				.email(EMAIL)
+				.type(User.Type.ACCOUNTANT)
+				.userDetails(null)
+				.organization(organizationDTO)
+				.build();
+
+        Assertions.assertThrows(OrganizationAlreadyRegisteredException.class, () -> {
+        	invitationService.inviteAccountant(invitationDTO);
+        });
 	}
 
 	@Test
