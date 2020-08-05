@@ -45,11 +45,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
             .and()
                 .authorizeRequests()
                     .antMatchers("/api/organizations*").authenticated()
+                    .antMatchers("/api/v1/invitations*").permitAll()
                     .antMatchers("/oauth/userinfo", "/oauth/tokeninfo", "/oauth/info", "/oauth/revoke_token").authenticated()
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/user/info", "/user/revoke_token").authenticated()
                     .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
-                    .antMatchers("/api/v1/invitations*").permitAll()
                     .antMatchers("/user/**").authenticated()
                     .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
