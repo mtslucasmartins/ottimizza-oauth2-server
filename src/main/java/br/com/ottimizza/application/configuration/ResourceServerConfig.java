@@ -38,6 +38,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         //             .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
         //         .anyRequest().authenticated();
 
+        final String INVITATIONS_V2_CONTROLLER = "/api/v2/invitations*";
+
         http
             //     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             // .and()
@@ -45,7 +47,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
             .and()
                 .authorizeRequests()
                     .antMatchers("/api/organizations*").authenticated()
-                    .antMatchers("/api/v1/invitations*").permitAll()
+                    .antMatchers(INVITATIONS_V2_CONTROLLER).permitAll()
                     .antMatchers("/oauth/userinfo", "/oauth/tokeninfo", "/oauth/info", "/oauth/revoke_token").authenticated()
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/user/info", "/user/revoke_token").authenticated()
