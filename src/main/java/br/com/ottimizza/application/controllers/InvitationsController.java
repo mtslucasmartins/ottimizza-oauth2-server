@@ -44,9 +44,15 @@ public class InvitationsController {
     }
 
     @PostMapping
-    public ResponseEntity<?> fetch(@RequestBody UserOrganizationInvite invitation, Principal principal)
+    public ResponseEntity<?> sendInvitation(@RequestBody InvitationDTO invitation, Principal principal)
             throws Exception {
-        return ResponseEntity.ok("");
+        if (principal == null) {
+            return ResponseEntity.ok(new GenericResponse<InvitationDTO>(
+                this.invitationService.inviteAccountant(invitation))
+            );
+        } else {
+            return ResponseEntity.ok("{}");
+        }
     }
 
 }

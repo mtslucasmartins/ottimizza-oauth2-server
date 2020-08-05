@@ -49,7 +49,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/user/info", "/user/revoke_token").authenticated()
                     .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/v1/invitations*").permitAll()
+                    .antMatchers("/api/v1/invitations*").permitAll()
                     .antMatchers("/user/**").authenticated()
                     .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
