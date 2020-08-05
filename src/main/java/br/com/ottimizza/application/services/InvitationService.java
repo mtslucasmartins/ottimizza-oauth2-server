@@ -59,10 +59,24 @@ public class InvitationService {
     OrganizationRepository organizationRepository;
 
     @Inject
-    UserOrganizationInviteRepository userOrganizationInviteRepository;
+    UserOrganizationInviteRepository invitationRepository;
     
     @Inject
     MailServices mailServices;
+
+    /**
+     * Método responsável por buscar detalhes do convite, 
+     * para tela de signup com dados já preenchidos
+     * 
+     * @param token          | Token do Convite
+     * @return InvitationDTO | DTO contendo os dados do convite.
+     */
+    public InvitationDTO fetchInvitationByToken(String token) throws IllegalArgumentException, Exception {
+        return InvitationMapper.fromEntity(
+            invitationRepository.fetchByToken(token).orElseThrow(() 
+                    -> new IllegalArgumentException("Convite não encontrado!"))
+        );
+    }
 
     public UserOrganizationInvite invite(UserOrganizationInvite inviteDetails, Principal principal) 
             throws UserNotFoundException, OrganizationNotFoundException, Exception {
@@ -145,12 +159,12 @@ public class InvitationService {
                 //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             }
-            List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
+            List<UserOrganizationInvite> invites = invitationRepository.findByEmailAndOrganizationId(
                 inviteDetails.getEmail(), inviteDetails.getOrganization().getId()
             );
 
             if (invites.size() == 0) {
-                inviteDetails = userOrganizationInviteRepository.save(inviteDetails);
+                inviteDetails = invitationRepository.save(inviteDetails);
             } else {
                 inviteDetails = invites.get(0);
             }
@@ -164,59 +178,13 @@ public class InvitationService {
             throws Exception {
         User authenticated = userRepository.findByUsername(principal.getName())
                                             .orElseThrow(() -> new UserNotFoundException(""));
-        return userOrganizationInviteRepository.fetchInvitedUsersByAccountingId(
+        return invitationRepository.fetchInvitedUsersByAccountingId(
             email, authenticated.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
     }
 
-   
 
-    private UserOrganizationInvite findInviteByEmailAndOrganizationId(String email, BigInteger organizationId) {
-        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
-            email, organizationId
-        );
-        if (invites.size() == 0) {
-            return null;
-        } else {
-            return invites.get(0);
-        }
-    }
-    
-    private UserOrganizationInvite findInviteByEmail(String email) {
-        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(email);
-        if (invites.size() == 0) {
-            return null;
-        } else {
-            return invites.get(0);
-        }
-    }
 
-    @Async
-    private void sendInvitation(UserOrganizationInvite invite, User authorizedUser) {
-        String accountingName = authorizedUser.getOrganization().getName();
-        String subject = MessageFormat.format("Conta {0}.", accountingName);
-        String template = mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken());
-        MailServices.Builder messageBuilder = new MailServices.Builder()
-                .withName(accountingName)
-                .withTo(invite.getEmail())
-                .withCc(authorizedUser.getOrganization().getEmail())
-                .withSubject(subject).withHtml(template);
-        mailServices.send(messageBuilder); 
-    }
-
-    //
-    //
-    //
-    //]
-    //
-    //
-    //
-    public InvitationDTO fetchInvitationByToken(String token) throws IllegalArgumentException, Exception {
-        return InvitationMapper.fromEntity(
-            userOrganizationInviteRepository.fetchByToken(token).orElseThrow(() 
-                    -> new IllegalArgumentException("Convite não encontrado!"))
-        );
-    }
-
+ 
     public InvitationDTO inviteAccountant(InvitationDTO invitationDTO) 
                                             throws IllegalArgumentException, 
                                                     OrganizationAlreadyRegisteredException, 
@@ -239,7 +207,7 @@ public class InvitationService {
         invitation.setProducts("2");
         invitation.setAuthorities("READ;WRITE;ADMIN");
 
-        invitation = userOrganizationInviteRepository.save(invitation);
+        invitation = invitationRepository.save(invitation);
 
         // Envio de E-mail.
         sendAccountantInvitation(invitation);
@@ -247,6 +215,30 @@ public class InvitationService {
         return InvitationMapper.fromEntity(invitation);
     }
 
+    //
+    //
+    private UserOrganizationInvite findInviteByEmailAndOrganizationId(String email, BigInteger organizationId) {
+        List<UserOrganizationInvite> invites = invitationRepository.findByEmailAndOrganizationId(
+            email, organizationId
+        );
+        if (invites.size() == 0) {
+            return null;
+        } else {
+            return invites.get(0);
+        }
+    }
+    
+    private UserOrganizationInvite findInviteByEmail(String email) {
+        List<UserOrganizationInvite> invites = invitationRepository.findByEmail(email);
+        if (invites.size() == 0) {
+            return null;
+        } else {
+            return invites.get(0);
+        }
+    }
+
+    //
+    //
     private boolean validateAccountantInvitation(UserOrganizationInvite invitation) 
             throws IllegalArgumentException, Exception {
         List<Integer> tiposPermitidos = Arrays.asList(
@@ -299,6 +291,8 @@ public class InvitationService {
         return true;
     }
 
+    /*
+     */
     @Async
     private void sendAccountantInvitation(UserOrganizationInvite invitation) {
         String accountingName = invitation.getOrganization().getName();
@@ -307,6 +301,19 @@ public class InvitationService {
         MailServices.Builder messageBuilder = new MailServices.Builder()
                 .withName(accountingName)
                 .withTo(invitation.getEmail())
+                .withSubject(subject).withHtml(template);
+        mailServices.send(messageBuilder); 
+    }
+
+    @Async
+    private void sendInvitation(UserOrganizationInvite invitation, User authenticated) {
+        String accountingName = authenticated.getOrganization().getName();
+        String subject = MessageFormat.format("Conta {0}.", accountingName);
+        String template = mailServices.inviteCustomerTemplate(authenticated, invitation.getToken());
+        MailServices.Builder messageBuilder = new MailServices.Builder()
+                .withName(accountingName)
+                .withTo(invitation.getEmail())
+                .withCc(authenticated.getOrganization().getEmail())
                 .withSubject(subject).withHtml(template);
         mailServices.send(messageBuilder); 
     }
