@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
+import br.com.ottimizza.application.domain.dtos.responses.GenericResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.services.InvitationService;
@@ -24,13 +26,19 @@ public class InvitationsController {
     InvitationService invitationService;
 
     @GetMapping
-    public ResponseEntity<?> fetch(@RequestParam(name = "page_index", defaultValue = "0") int pageIndex,
-                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize, 
+    public ResponseEntity<?> fetch(@RequestParam(name = "page_index", required = false, defaultValue = "0") int pageIndex,
+                                   @RequestParam(name = "page_size", required = false, defaultValue = "10") int pageSize, 
+                                   @RequestParam(name = "token", required = false, defaultValue = "") String token, 
                                    Principal principal) throws Exception {
         // validar se principal null > obrigar token arg
         if (principal == null) {
-            return ResponseEntity.ok("{}");
+            if (!token.equals("")) {
+                return ResponseEntity.ok(new GenericResponse<InvitationDTO>(
+                    this.invitationService.fetchInvitationByToken(token))
+                );
+            }
         }
+
         return ResponseEntity.ok(new GenericPageableResponse<UserOrganizationInvite>(
                 invitationService.fetchInvitedUsers("", pageIndex, pageSize, principal)));
     }
