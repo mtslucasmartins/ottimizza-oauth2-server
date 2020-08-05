@@ -38,7 +38,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         //             .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
         //         .anyRequest().authenticated();
 
-        final String INVITATIONS_V2_CONTROLLER = "/api/v2/invitations*";
+        final String INVITATIONS_V2_CONTROLLER = "/api/v2/invitations**";
 
         http
             //     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

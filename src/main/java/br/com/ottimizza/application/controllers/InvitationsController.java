@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.controllers;
 
 import java.security.Principal;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
 import br.com.ottimizza.application.domain.dtos.responses.GenericResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
+import br.com.ottimizza.application.model.Organization;
+import br.com.ottimizza.application.model.user.User;
 import br.com.ottimizza.application.model.user_organization.UserOrganizationInvite;
 import br.com.ottimizza.application.services.InvitationService;
+import br.com.ottimizza.application.services.SignUpService;
 
 @RestController // @formatter:off
 @RequestMapping("/api/v2/invitations")
@@ -24,6 +28,10 @@ public class InvitationsController {
 
     @Inject
     InvitationService invitationService;
+
+    @Inject
+    SignUpService signUpService;
+
 
     @GetMapping
     public ResponseEntity<?> fetch(@RequestParam(name = "page_index", required = false, defaultValue = "0") int pageIndex,
@@ -54,5 +62,24 @@ public class InvitationsController {
             return ResponseEntity.ok("{}");
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> signup(@RequestParam(name = "token", required = false, defaultValue = "") String token,
+                                    Map<String, Object> args) throws Exception {
+        if (args.get("user") == null) {
+            throw new IllegalArgumentException("Informe os detalhes do usuário!");
+        }         
+        if (args.get("organization") == null) {
+            throw new IllegalArgumentException("Informe os detalhes da organização!");
+        } 
+
+        User user                 = (User) args.get("user");
+        Organization organization = (Organization) args.get("user");
+
+        return ResponseEntity.ok(new GenericResponse<>(
+            signUpService.register(user, organization, token)
+        ));
+    }
+
 
 }
