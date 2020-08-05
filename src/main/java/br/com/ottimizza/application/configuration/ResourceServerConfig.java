@@ -1,6 +1,7 @@
 package br.com.ottimizza.application.configuration;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -48,6 +49,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/user/info", "/user/revoke_token").authenticated()
                     .antMatchers("/user/password_reset*", "/user/password_recovery*").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/v1/invitations*").permitAll()
                     .antMatchers("/user/**").authenticated()
                     .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
