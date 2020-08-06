@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,8 +75,10 @@ public class InvitationsController {
             throw new IllegalArgumentException("Informe os detalhes da organização!");
         } 
 
-        User user                 = (User) args.get("user");
-        Organization organization = (Organization) args.get("user");
+        ObjectMapper mapper = new ObjectMapper();
+
+        User user                 = mapper.convertValue(args.get("user"), User.class);
+        Organization organization = mapper.convertValue(args.get("organization"), Organization.class);
 
         return ResponseEntity.ok(new GenericResponse<>(
             signUpService.register(user, organization, token)
