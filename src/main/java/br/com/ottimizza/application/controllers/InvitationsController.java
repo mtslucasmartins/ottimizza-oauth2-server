@@ -65,7 +65,7 @@ public class InvitationsController {
 
     @PostMapping("/register")
     public ResponseEntity<?> signup(@RequestParam(name = "token", required = false, defaultValue = "") String token,
-                                    Map<String, Object> args) throws Exception {
+                                    @RequestBody Map<String, Object> args) throws Exception {
         if (args.get("user") == null) {
             throw new IllegalArgumentException("Informe os detalhes do usuário!");
         }         
