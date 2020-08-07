@@ -27,29 +27,29 @@ public class SentryConfiguration {
         "java.lang.IllegalArgumentException"
     );
 
-    @Bean
-    public HandlerExceptionResolver sentryExceptionResolver() {
-        return new SentryExceptionResolver() {
-            @Override
-            public ModelAndView resolveException(HttpServletRequest request,
-                    HttpServletResponse response,
-                    Object handler,
-                    Exception ex) {
-                Throwable rootCause = ex;
+    // @Bean
+    // public HandlerExceptionResolver sentryExceptionResolver() {
+    //     return new SentryExceptionResolver() {
+    //         @Override
+    //         public ModelAndView resolveException(HttpServletRequest request,
+    //                 HttpServletResponse response,
+    //                 Object handler,
+    //                 Exception ex) {
+    //             Throwable rootCause = ex;
 
-                while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
-                    rootCause = rootCause.getCause();
-                }
+    //             while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+    //                 rootCause = rootCause.getCause();
+    //             }
 
-                if (validateIgnoredMessages(rootCause.getMessage()) && validateIgnoredClasses(rootCause.toString())) {
-                    super.resolveException(request, response, handler, ex);
-                }
+    //             if (validateIgnoredMessages(rootCause.getMessage()) && validateIgnoredClasses(rootCause.toString())) {
+    //                 super.resolveException(request, response, handler, ex);
+    //             }
 
-                return null;
-            }   
+    //             return null;
+    //         }   
 
-        };
-    }
+    //     };
+    // }
 
     private boolean validateIgnoredMessages(String message) {
         for (String ignoredMessage : ignoredMessages) {
@@ -69,10 +69,10 @@ public class SentryConfiguration {
         return true;
     }
 
-    // @Bean
-    // public HandlerExceptionResolver sentryExceptionResolver() {
-    //     return new io.sentry.spring.SentryExceptionResolver();
-    // }
+    @Bean
+    public HandlerExceptionResolver sentryExceptionResolver() {
+        return new io.sentry.spring.SentryExceptionResolver();
+    }
 
     @Bean
     public ServletContextInitializer sentryServletContextInitializer() {
