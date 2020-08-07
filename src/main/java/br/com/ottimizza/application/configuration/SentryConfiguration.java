@@ -24,7 +24,7 @@ public class SentryConfiguration {
     );
 
     List<String> ignoredClasses = Arrays.asList(
-        "java.lang.IllegalArgumentException"
+        // "java.lang.IllegalArgumentException"
     );
 
     @Bean
@@ -69,10 +69,10 @@ public class SentryConfiguration {
         return true;
     }
 
-    @Bean
-    public HandlerExceptionResolver sentryExceptionResolver() {
-        return new io.sentry.spring.SentryExceptionResolver();
-    }
+    // @Bean
+    // public HandlerExceptionResolver sentryExceptionResolver() {
+    //     return new io.sentry.spring.SentryExceptionResolver();
+    // }
 
     @Bean
     public ServletContextInitializer sentryServletContextInitializer() {
