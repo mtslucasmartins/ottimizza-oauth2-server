@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.ottimizza.application.domain.dtos.OrganizationDTO;
+import br.com.ottimizza.application.domain.dtos.UserDTO;
 import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
 import br.com.ottimizza.application.domain.dtos.responses.GenericResponse;
 import br.com.ottimizza.application.domain.responses.GenericPageableResponse;
@@ -77,8 +79,11 @@ public class InvitationsController {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        User user                 = mapper.convertValue(args.get("user"), User.class);
-        Organization organization = mapper.convertValue(args.get("organization"), Organization.class);
+        UserDTO userDTO                 = mapper.convertValue(args.get("user"), UserDTO.class);
+        OrganizationDTO organizationDTO = mapper.convertValue(args.get("organization"), OrganizationDTO.class);
+
+        User user = userDTO.toEntity();
+        Organization organization = organizationDTO.toEntity();
 
         return ResponseEntity.ok(new GenericResponse<>(
             signUpService.register(user, organization, token)
