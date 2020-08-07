@@ -123,7 +123,9 @@ public class SignUpService {
         if(inviteTokenDetails.getProducts().length() > 0) {
         	String[] productsIds = inviteTokenDetails.getProducts().split(";");
         	for(String id : productsIds) {
-        		userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+                if (!id.equals("")) {
+        		    userProductsRepository.saveUserProducts(user.getId(), BigInteger.valueOf(Integer.parseInt(id)));
+                }
         	}
         }
         
