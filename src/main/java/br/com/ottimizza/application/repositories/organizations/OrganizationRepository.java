@@ -46,6 +46,9 @@ public interface OrganizationRepository
     @Query("SELECT o FROM Organization o WHERE o.id = :id AND o.type = 1")
     Organization fetchAccountingById(@Param("id") BigInteger id);
 
+    @Query("SELECT o FROM Organization o WHERE o.cnpj = :cnpj AND o.type = 1")
+    Organization fetchAccountingByCNPJ(@Param("cnpj") String cnpj);
+
     @Deprecated
     @Query("SELECT " + "   CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END              "
             + " FROM Organization o                                              "

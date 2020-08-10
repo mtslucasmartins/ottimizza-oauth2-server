@@ -24,7 +24,7 @@ public class SentryConfiguration {
     );
 
     List<String> ignoredClasses = Arrays.asList(
-        "java.lang.IllegalArgumentException"
+        // "java.lang.IllegalArgumentException"
     );
 
     @Bean

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,11 @@ import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 
+import br.com.ottimizza.application.domain.dtos.models.invitation.InvitationDTO;
+import br.com.ottimizza.application.domain.exceptions.OrganizationAlreadyRegisteredException;
 import br.com.ottimizza.application.domain.exceptions.OrganizationNotFoundException;
 import br.com.ottimizza.application.domain.exceptions.users.UserNotFoundException;
+import br.com.ottimizza.application.domain.mappers.InvitationMapper;
 import br.com.ottimizza.application.domain.responses.GenericResponse;
 import br.com.ottimizza.application.repositories.clients.OAuthClientRepository;
 import br.com.ottimizza.application.repositories.organizations.OrganizationRepository;
@@ -55,10 +59,24 @@ public class InvitationService {
     OrganizationRepository organizationRepository;
 
     @Inject
-    UserOrganizationInviteRepository userOrganizationInviteRepository;
+    UserOrganizationInviteRepository invitationRepository;
     
     @Inject
     MailServices mailServices;
+
+    /**
+     * Método responsável por buscar detalhes do convite, 
+     * para tela de signup com dados já preenchidos
+     * 
+     * @param token          | Token do Convite
+     * @return InvitationDTO | DTO contendo os dados do convite.
+     */
+    public InvitationDTO fetchInvitationByToken(String token) throws IllegalArgumentException, Exception {
+        return InvitationMapper.fromEntity(
+            invitationRepository.fetchByToken(token).orElseThrow(() 
+                    -> new IllegalArgumentException("Convite não encontrado!"))
+        );
+    }
 
     public UserOrganizationInvite invite(UserOrganizationInvite inviteDetails, Principal principal) 
             throws UserNotFoundException, OrganizationNotFoundException, Exception {
@@ -68,7 +86,6 @@ public class InvitationService {
         if (inviteDetails.getEmail() == null || inviteDetails.getEmail().equals("")) {
             throw new IllegalArgumentException("Informe o e-mail para enviar o convite!");
         }
-
         if (inviteDetails.getType() == null || (inviteDetails.getType() < 0 || inviteDetails.getType() > 2)) {
             throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
         }
@@ -142,12 +159,12 @@ public class InvitationService {
                 //inviteDetails.setType(organization.getType());
                 inviteDetails.setOrganization(organization);
             }
-            List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
+            List<UserOrganizationInvite> invites = invitationRepository.findByEmailAndOrganizationId(
                 inviteDetails.getEmail(), inviteDetails.getOrganization().getId()
             );
 
             if (invites.size() == 0) {
-                inviteDetails = userOrganizationInviteRepository.save(inviteDetails);
+                inviteDetails = invitationRepository.save(inviteDetails);
             } else {
                 inviteDetails = invites.get(0);
             }
@@ -161,29 +178,47 @@ public class InvitationService {
             throws Exception {
         User authenticated = userRepository.findByUsername(principal.getName())
                                             .orElseThrow(() -> new UserNotFoundException(""));
-        return userOrganizationInviteRepository.fetchInvitedUsersByAccountingId(
+        return invitationRepository.fetchInvitedUsersByAccountingId(
             email, authenticated.getOrganization().getId(), PageRequest.of(pageIndex, pageSize));
     }
 
-    private Organization findOrganization(Organization organization) throws OrganizationNotFoundException {
-        if (organization != null) {
-            if (organization.getId() != null) {
-                BigInteger id = organization.getId();
-                Optional.of(organizationRepository.fetchById(id)).orElseThrow(() -> 
-                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o ID informado!")
-                );
-            } else if (organization.getCnpj() != null && !organization.getCnpj().equals("")) {
-                String cnpj = organization.getCnpj().replaceAll("\\D", "");
-                Optional.of(organizationRepository.fetchByCnpj(cnpj)).orElseThrow(() -> 
-                    new OrganizationNotFoundException("Não foi encontrada nenhuma empresa com o CNPJ informado!")
-                );
-            }
-        }
-        return null;
+
+
+ 
+    public InvitationDTO inviteAccountant(InvitationDTO invitationDTO) 
+                                            throws IllegalArgumentException, 
+                                                    OrganizationAlreadyRegisteredException, 
+                                                    OrganizationNotFoundException, 
+                                                    Exception {
+        UserOrganizationInvite invitation = InvitationMapper.fromDTO(invitationDTO);
+
+        // Validação de convite.
+        this.validateAccountantInvitation(invitation);
+
+        invitation.setToken(UUID.randomUUID().toString());
+
+        // Contabilidade relacionada.
+        Organization accounting = invitation.getOrganization();
+        accounting.setType(Organization.Type.ACCOUNTING);
+        accounting.setCnpj(accounting.getCnpj().replace("\\D+", ""));
+        invitation.setOrganization(organizationRepository.save(accounting));
+
+        // Produtos e Autoridades.
+        invitation.setProducts("2");
+        invitation.setAuthorities("READ;WRITE;ADMIN");
+
+        invitation = invitationRepository.save(invitation);
+
+        // Envio de E-mail.
+        sendAccountantInvitation(invitation);
+
+        return InvitationMapper.fromEntity(invitation);
     }
 
+    //
+    //
     private UserOrganizationInvite findInviteByEmailAndOrganizationId(String email, BigInteger organizationId) {
-        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmailAndOrganizationId(
+        List<UserOrganizationInvite> invites = invitationRepository.findByEmailAndOrganizationId(
             email, organizationId
         );
         if (invites.size() == 0) {
@@ -194,7 +229,7 @@ public class InvitationService {
     }
     
     private UserOrganizationInvite findInviteByEmail(String email) {
-        List<UserOrganizationInvite> invites = userOrganizationInviteRepository.findByEmail(email);
+        List<UserOrganizationInvite> invites = invitationRepository.findByEmail(email);
         if (invites.size() == 0) {
             return null;
         } else {
@@ -202,15 +237,83 @@ public class InvitationService {
         }
     }
 
+    //
+    //
+    private boolean validateAccountantInvitation(UserOrganizationInvite invitation) 
+            throws IllegalArgumentException, Exception {
+        List<Integer> tiposPermitidos = Arrays.asList(
+            User.Type.ADMINISTRATOR, User.Type.ACCOUNTANT, User.Type.CUSTOMER
+        );
+        
+        if (invitation.getEmail() == null || invitation.getEmail().equals("")) {
+            throw new IllegalArgumentException("Informe o e-mail para enviar o convite!");
+        }
+        
+        if (!tiposPermitidos.contains(invitation.getType())) {
+            throw new IllegalArgumentException("Informe o tipo de usuário para enviar o convite!");
+        }
+
+
+        User existingUser = userRepository.findByEmail(invitation.getEmail());
+        if(existingUser != null){
+            throw new IllegalArgumentException("O email informado já está registrado!");
+        }
+
+        Organization accounting = invitation.getOrganization();
+        if (accounting == null) {
+            throw new IllegalArgumentException("Informe os detalhes da contabilidade!");
+        }
+        if (accounting.getName() == null || accounting.getName().equals("")) {
+            throw new IllegalArgumentException("Informe o nome da contabilidade!");
+        }
+        if (accounting.getCnpj() == null || accounting.getCnpj().equals("")) {
+            throw new IllegalArgumentException("Informe o CNPJ da contabilidade!");
+        }
+        accounting.setCnpj(accounting.getCnpj().replace("\\D+", ""));
+        if (organizationRepository.cnpjIsAlreadyRegistered(accounting.getCnpj(), Organization.Type.ACCOUNTING, null, null)) {
+            throw new OrganizationAlreadyRegisteredException("Já existe uma contabilidade com o CNPJ informado!");
+        }
+
+        if(invitation.getType() == User.Type.ACCOUNTANT) {
+        	UserOrganizationInvite existingInvitation = findInviteByEmail(invitation.getEmail());
+            if (existingInvitation != null) {
+                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
+            }
+        } else {
+        	UserOrganizationInvite existingInvitation = findInviteByEmailAndOrganizationId(
+                invitation.getEmail(), invitation.getOrganization().getId()
+            );
+            if (existingInvitation != null) {
+                throw new IllegalArgumentException("Já existe um convite para esse endereço de email!");
+            }
+        }
+       
+        return true;
+    }
+
+    /*
+     */
     @Async
-    private void sendInvitation(UserOrganizationInvite invite, User authorizedUser) {
-        String accountingName = authorizedUser.getOrganization().getName();
+    private void sendAccountantInvitation(UserOrganizationInvite invitation) {
+        String accountingName = invitation.getOrganization().getName();
         String subject = MessageFormat.format("Conta {0}.", accountingName);
-        String template = mailServices.inviteCustomerTemplate(authorizedUser, invite.getToken());
+        String template = mailServices.accountantInvitation(invitation.getToken());
         MailServices.Builder messageBuilder = new MailServices.Builder()
                 .withName(accountingName)
-                .withTo(invite.getEmail())
-                .withCc(authorizedUser.getOrganization().getEmail())
+                .withTo(invitation.getEmail())
+                .withSubject(subject).withHtml(template);
+        mailServices.send(messageBuilder); 
+    }
+
+    @Async
+    private void sendInvitation(UserOrganizationInvite invitation, User authenticated) {
+        String accountingName = authenticated.getOrganization().getName();
+        String subject = MessageFormat.format("Conta {0}.", accountingName);
+        String template = mailServices.inviteCustomerTemplate(authenticated, invitation.getToken());
+        MailServices.Builder messageBuilder = new MailServices.Builder()
+                .withName(accountingName)
+                .withTo(invitation.getEmail())
+                .withCc(authenticated.getOrganization().getEmail())
                 .withSubject(subject).withHtml(template);
         mailServices.send(messageBuilder); 
     }
