@@ -28,6 +28,8 @@ public class ProductDTO implements Serializable {
     private String imageUrl;
 
     private String group;
+    
+    private String aboutUrl;
 
     public Product patch(Product product) {
         if (this.name != null && !this.name.equals(""))
