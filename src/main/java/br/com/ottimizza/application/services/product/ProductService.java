@@ -24,7 +24,7 @@ public class ProductService {
     
 
     public List<ProductDTO> findByGroup(String group, Principal principal, BigInteger userId) throws Exception {
-        return productRepository.findAllByGroupnNew(group, userId)
+        return productRepository.findAllByGroup(group)
                                 .stream().map(ProductMapper::fromEntity).collect(Collectors.toList());
     } 
 
