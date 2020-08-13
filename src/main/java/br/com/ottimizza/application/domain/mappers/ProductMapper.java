@@ -28,6 +28,7 @@ public class ProductMapper { // @formatter:off
             .appUrl(product.getAppUrl())
             .imageUrl(product.getImageUrl())
             .group(product.getGroup())
+            .aboutUrl(product.getAboutUrl())
             .build();
     }
 
@@ -45,6 +46,7 @@ public class ProductMapper { // @formatter:off
             .appUrl(product.getAppUrl())
             .imageUrl(product.getImageUrl())
             .group(product.getGroup())
+            .aboutUrl(product.getAboutUrl())
             .build();
     }
 
