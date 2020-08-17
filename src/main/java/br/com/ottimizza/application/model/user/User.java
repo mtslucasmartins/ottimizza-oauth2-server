@@ -95,6 +95,11 @@ public class User implements Serializable {
 
     @PrePersist
     public void prePersist() {
+        if (email == null) {
+            this.email = this.username;
+        }
+        this.username = this.username.trim();
+        this.username = this.email.trim();
         if (this.active == null) {
             this.active = true;
         }
@@ -102,6 +107,8 @@ public class User implements Serializable {
 
     @PreUpdate
     public void preUpdate() {
+        this.username = this.username.trim();
+        this.username = this.email.trim();
         if (this.active == null) {
             this.active = true;
         }
