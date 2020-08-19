@@ -223,6 +223,9 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
             if (filter.getType() != null) {
                 query.where(user.type.eq(filter.getType()));
             }
+            if (filter.getTypes() != null && filter.getTypes().size() > 0) {
+                query.where(user.type.in(filter.getTypes()));
+            }
             if (filter.getOrganizationId() != null) {
                 query.where(user.organization.id.eq(filter.getOrganizationId()));
             }
